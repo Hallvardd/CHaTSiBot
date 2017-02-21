@@ -1,6 +1,5 @@
 <resources>
-    <string name="app_name">CHaTSiBot</string>
-
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="app_name">Core1Test</string>
+    <string name="edit_message">Enter fagkode</string>
+    <string name="button_send">Send </string>
 </resources>
