@@ -38,8 +38,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             // Read fagkode from user input and find general information about the subject
-            String subject = inputText.getText().toString();
-            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "appearanceTime");
+            String input = inputText.getText().toString();
+                String[] subject = input.split(" ");
+                subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
+            new JSONTask().execute(subject);
             }
         });
     }
@@ -47,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class JSONTask extends AsyncTask<String, String,String> {
 
-        private String result;
+        private String result; // variable to solve the problem of wrong return value in searchJson method
         /**
          * @param params = paramaters from execute(String... params)
          * The first parameter is URL of JSON, the following parameters are search keywords
@@ -82,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
-
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
          * Helper method for searching after simple information in JSON
          * @param parentObject - can be either a JSONObject or null
          * @param parentArray - can be either JSONArray or null
+         * @param parentType - variable to solve the problem of nested objects
          * @param key - key to the JSONObject
          * @param searchkeys - a list of keywords to search, currently only support ONE keyword
          * @return the result of search, null if unsuccessful
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                             searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkeys);
                         } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkeys[1])) {
                             result = currentObject.getString(nextKey);
+                            break;
                         }
                     }
                     i++;
@@ -143,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                         searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkeys);
                     } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkeys[1])) {
                         result = currentObject.getString(nextKey);
+                        break;
                     }
                 }
             }
