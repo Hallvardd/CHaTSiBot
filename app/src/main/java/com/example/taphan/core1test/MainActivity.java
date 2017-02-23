@@ -25,16 +25,20 @@ import java.util.logging.Logger;
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.taphan.core1test";
     private TextView textView;
+    private EditText inputText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
+        inputText = (EditText) findViewById(R.id.edit_message);
         final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/course/tma4105");
+                // Read fagkode from user input and find general information about the subject
+                String subject = inputText.getText().toString();
+                new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject);
             }
         });
     }
@@ -46,14 +50,15 @@ public class MainActivity extends AppCompatActivity {
             HttpURLConnection connection = null;
             BufferedReader br = null;
             try {
+                // Connect to JSON
                 URL u = new URL(params[0]);
                 connection = (HttpURLConnection) u.openConnection();
                 connection.connect();
 
+                // Use a buffer to store JSON info
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuffer buffer = new StringBuffer();
                 String line="";
-
                 while ((line = br.readLine()) != null ) {
                     buffer.append(line);
                 }
@@ -68,15 +73,13 @@ public class MainActivity extends AppCompatActivity {
                 */
 
                 JSONObject courseObject = parentObject.getJSONObject("course");
-
-                /*JSONArray educationalRoleArray = courseObject.getJSONArray("educationalRole");
+                JSONArray educationalRoleArray = courseObject.getJSONArray("educationalRole");
                 JSONObject finalObject = educationalRoleArray.getJSONObject(0);
                 String lecturer = finalObject.getString("code");
                 JSONObject personObject = finalObject.getJSONObject("person");
                 String dispName = personObject.getString("displayName");
-                */
 
-                return null; // buffer.toString() is the entire JSON
+                return lecturer + ": " + dispName; // buffer.toString() is the entire JSON
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -86,7 +89,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
-                if (connection != null) { // Else would get an error trying to close a null object
+                // Close connection, check for null objects in order to avoid error
+                if (connection != null) {
                     try {
                         connection.disconnect();
                         if(br != null) {
@@ -101,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            // Execute our Json reader and store desired information in result
             super.onPostExecute(result);
             textView.setText(result);
 
