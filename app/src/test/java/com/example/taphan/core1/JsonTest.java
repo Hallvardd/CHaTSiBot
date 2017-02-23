@@ -1,9 +1,6 @@
-package com.example.taphan.core1test;
+package com.example.taphan.core1;
 
-import org.json.JSONObject;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

@@ -1,4 +1,4 @@
-package com.example.taphan.core1test;
+package com.example.taphan.core1;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

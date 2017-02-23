@@ -1,6 +1,5 @@
-package com.example.taphan.core1test;
+package com.example.taphan.core1;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,14 +18,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.example.taphan.core1test";
+    public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
     private TextView textView;
     private EditText inputText;
     @Override
@@ -41,10 +39,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             // Read fagkode from user input and find general information about the subject
             String subject = inputText.getText().toString();
-            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "englishName");
+            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "combinationName");
             }
         });
     }
+
 
     public class JSONTask extends AsyncTask<String, String,String> {
 
@@ -74,17 +73,8 @@ public class MainActivity extends AppCompatActivity {
                 // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-                String result = searchJson(parentObject, null, "course", params); // params[0] = url
-                Map<String, String> jsonMap = new HashMap<>();
-                return result;
-                /*JSONObject courseObject = parentObject.getJSONObject("course");
-                JSONArray educationalRoleArray = courseObject.getJSONArray("educationalRole");
-                JSONObject finalObject = educationalRoleArray.getJSONObject(0);
-                String lecturer = finalObject.getString("code");
-                JSONObject personObject = finalObject.getJSONObject("person");
-                String dispName = personObject.getString("displayName");
 
-                return lecturer + ": " + dispName; // buffer.toString() is the entire JSON*/
+                return searchJson(parentObject, null, "course", params);
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -108,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
             return null;
         }
 
+
         /**
-         * Hjelpemetode for søking etter enkelt informasjon i JSON
+         * Helper method for searching after simple information in JSON
          * @param parentObject - can be either a JSONObject or null
          * @param parentArray - can be either JSONArray or null
          * @param key - key to the JSONObject
@@ -119,24 +110,43 @@ public class MainActivity extends AppCompatActivity {
          */
         private String searchJson(JSONObject parentObject, JSONArray parentArray, String key, String... searchkeys) throws JSONException {
             // Choose to only handle information on courses, and not from cache or request
-            if(parentObject != null){
-                JSONObject current = parentObject.getJSONObject(key);
-                Iterator iterator = current.keys();
-                while(iterator.hasNext()) {
-                    String nextKey = (String) iterator.next();
-                    if(current.get(nextKey) instanceof JSONObject) {
-                        searchJson(current.getJSONObject(nextKey), null, nextKey, searchkeys);
-                    } else if(current.get(nextKey) instanceof String) {
-                        if (nextKey.equals(searchkeys[1])) {
-                            return current.getString(nextKey);
+            if(parentArray != null) {
+                int i = 0;
+                while (i < parentArray.length()) {
+                    JSONObject currentObject = parentArray.getJSONObject(i);
+                    Iterator iterator = currentObject.keys();
+                    while(iterator.hasNext()) {
+                        String nextKey = (String) iterator.next();
+                        if(currentObject.get(nextKey) instanceof JSONObject) {
+                            searchJson(currentObject.getJSONObject(nextKey), null, nextKey, searchkeys);
+                        } else if(currentObject.get(nextKey) instanceof String) {
+                            if (nextKey.equals(searchkeys[1])) {
+                                return currentObject.getString(nextKey);
+                            }
                         }
                     }
+                    i++;
                 }
-            } else if(parentArray != null) {
-
+            } else if(parentObject != null){
+                JSONObject currentObject = parentObject.getJSONObject(key);
+                Iterator iterator = currentObject.keys();
+                while(iterator.hasNext()) {
+                    String nextKey = (String) iterator.next();
+                    System.out.println(nextKey);
+                    if(currentObject.get(nextKey) instanceof JSONObject) {
+                        searchJson(currentObject.getJSONObject(nextKey), null, nextKey, searchkeys);
+                    } else if(currentObject.get(nextKey) instanceof String) {
+                        if (nextKey.equals(searchkeys[1])) {
+                            return currentObject.getString(nextKey);
+                        }
+                    } else if(currentObject.get(nextKey) instanceof JSONArray) {
+                        searchJson(null, currentObject.getJSONArray(nextKey), nextKey, searchkeys);
+                    }
+                }
             }
-            return null;
+            return "Not found";
         }
+
 
         /**
          * Convert JSONObject into a map, can then iterate through map (must iterate twice, use as last option)
@@ -165,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return out;
         }
+
 
         @Override
         protected void onPostExecute(String result) {
