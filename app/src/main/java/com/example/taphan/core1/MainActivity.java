@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             // Read fagkode from user input and find general information about the subject
             String subject = inputText.getText().toString();
-            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "combinationName");
+            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "studyLevelCode");
             }
         });
     }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
 
-                return searchJson(parentObject, null, "course", params);
+                return searchJson(parentObject, null,"object", "course", params);
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -108,8 +108,12 @@ public class MainActivity extends AppCompatActivity {
          * @return the result of search, null if unsuccessful
          * @throws JSONException
          */
-        private String searchJson(JSONObject parentObject, JSONArray parentArray, String key, String... searchkeys) throws JSONException {
+        private String searchJson(JSONObject parentObject, JSONArray parentArray, String parentType, String key, String... searchkeys) throws JSONException {
             // Choose to only handle information on courses, and not from cache or request
+            if(key.equals(searchkeys[1])) {
+                System.out.println("test key equals");
+                return key;
+            }
             if(parentArray != null) {
                 int i = 0;
                 while (i < parentArray.length()) {
@@ -118,9 +122,10 @@ public class MainActivity extends AppCompatActivity {
                     while(iterator.hasNext()) {
                         String nextKey = (String) iterator.next();
                         if(currentObject.get(nextKey) instanceof JSONObject) {
-                            searchJson(currentObject.getJSONObject(nextKey), null, nextKey, searchkeys);
+                            searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkeys);
                         } else if(currentObject.get(nextKey) instanceof String) {
                             if (nextKey.equals(searchkeys[1])) {
+                                System.out.println("Found the key in array! " + nextKey);
                                 return currentObject.getString(nextKey);
                             }
                         }
@@ -128,19 +133,23 @@ public class MainActivity extends AppCompatActivity {
                     i++;
                 }
             } else if(parentObject != null){
-                JSONObject currentObject = parentObject.getJSONObject(key);
+                JSONObject currentObject = parentObject;
+                // In order to get past educationalRole-person, need to check for parent type
+                if(!parentType.equals("object")) {
+                    currentObject = parentObject.getJSONObject(key);
+                }
                 Iterator iterator = currentObject.keys();
                 while(iterator.hasNext()) {
                     String nextKey = (String) iterator.next();
-                    System.out.println(nextKey);
                     if(currentObject.get(nextKey) instanceof JSONObject) {
-                        searchJson(currentObject.getJSONObject(nextKey), null, nextKey, searchkeys);
+                        searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkeys);
                     } else if(currentObject.get(nextKey) instanceof String) {
                         if (nextKey.equals(searchkeys[1])) {
+                            System.out.println("Found the word! " + nextKey);
                             return currentObject.getString(nextKey);
                         }
                     } else if(currentObject.get(nextKey) instanceof JSONArray) {
-                        searchJson(null, currentObject.getJSONArray(nextKey), nextKey, searchkeys);
+                        searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkeys);
                     }
                 }
             }
