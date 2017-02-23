@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             // Read fagkode from user input and find general information about the subject
             String subject = inputText.getText().toString();
-            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject);
+            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "englishName");
             }
         });
     }
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-                String result = searchJson(parentObject, "course", params); // params[] = url
+                String result = searchJson(parentObject, null, "course", params); // params[0] = url
                 Map<String, String> jsonMap = new HashMap<>();
                 return result;
                 /*JSONObject courseObject = parentObject.getJSONObject("course");
@@ -110,30 +110,36 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * Hjelpemetode for søking etter enkelt informasjon i JSON
-         * @param parentObject
+         * @param parentObject - can be either a JSONObject or null
+         * @param parentArray - can be either JSONArray or null
          * @param key - key to the JSONObject
+         * @param searchkeys - a list of keywords to search, currently only support ONE keyword
          * @return the result of search, null if unsuccessful
          * @throws JSONException
          */
-        private String searchJson(JSONObject parentObject, String key, String... searchkeys) throws JSONException {
+        private String searchJson(JSONObject parentObject, JSONArray parentArray, String key, String... searchkeys) throws JSONException {
             // Choose to only handle information on courses, and not from cache or request
-            JSONObject currentObject = parentObject.getJSONObject(key);
-            Iterator iterator = currentObject.keys();
-            while(iterator.hasNext()) {
-                String nextKey = (String) iterator.next();
-                if(currentObject.get(nextKey) instanceof JSONObject) {
-                    System.out.println(nextKey);
-                    JSONObject nextObject = currentObject.getJSONObject(nextKey);
+            if(parentObject != null){
+                JSONObject current = parentObject.getJSONObject(key);
+                Iterator iterator = current.keys();
+                while(iterator.hasNext()) {
+                    String nextKey = (String) iterator.next();
+                    if(current.get(nextKey) instanceof JSONObject) {
+                        searchJson(current.getJSONObject(nextKey), null, nextKey, searchkeys);
+                    } else if(current.get(nextKey) instanceof String) {
+                        if (nextKey.equals(searchkeys[1])) {
+                            return current.getString(nextKey);
+                        }
+                    }
+                }
+            } else if(parentArray != null) {
 
-                if(nextObject != null) {
-                    searchJson(nextObject,nextKey, searchkeys);
-                }}
             }
             return null;
         }
 
         /**
-         * Convert JSONObject into a map, can then iterate through map (must iterate twice, used as last option)
+         * Convert JSONObject into a map, can then iterate through map (must iterate twice, use as last option)
          * @param json
          * @param out
          * @return a map containing all JSONObject
