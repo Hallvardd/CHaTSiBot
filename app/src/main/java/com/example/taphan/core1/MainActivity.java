@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
             // Read fagkode from user input and find general information about the subject
             String subject = inputText.getText().toString();
-            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "studyLevelCode");
+            new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/" + subject, "appearanceTime");
             }
         });
     }
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class JSONTask extends AsyncTask<String, String,String> {
 
+        private String result;
         /**
          * @param params = paramaters from execute(String... params)
          * The first parameter is URL of JSON, the following parameters are search keywords
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public String doInBackground(String... params) {
+            result = "Not found";
             HttpURLConnection connection = null;
             BufferedReader br = null;
             try {
@@ -110,10 +112,7 @@ public class MainActivity extends AppCompatActivity {
          */
         private String searchJson(JSONObject parentObject, JSONArray parentArray, String parentType, String key, String... searchkeys) throws JSONException {
             // Choose to only handle information on courses, and not from cache or request
-            if(key.equals(searchkeys[1])) {
-                System.out.println("test key equals");
-                return key;
-            }
+
             if(parentArray != null) {
                 int i = 0;
                 while (i < parentArray.length()) {
@@ -123,11 +122,8 @@ public class MainActivity extends AppCompatActivity {
                         String nextKey = (String) iterator.next();
                         if(currentObject.get(nextKey) instanceof JSONObject) {
                             searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkeys);
-                        } else if(currentObject.get(nextKey) instanceof String) {
-                            if (nextKey.equals(searchkeys[1])) {
-                                System.out.println("Found the key in array! " + nextKey);
-                                return currentObject.getString(nextKey);
-                            }
+                        } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkeys[1])) {
+                            result = currentObject.getString(nextKey);
                         }
                     }
                     i++;
@@ -143,17 +139,14 @@ public class MainActivity extends AppCompatActivity {
                     String nextKey = (String) iterator.next();
                     if(currentObject.get(nextKey) instanceof JSONObject) {
                         searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkeys);
-                    } else if(currentObject.get(nextKey) instanceof String) {
-                        if (nextKey.equals(searchkeys[1])) {
-                            System.out.println("Found the word! " + nextKey);
-                            return currentObject.getString(nextKey);
-                        }
                     } else if(currentObject.get(nextKey) instanceof JSONArray) {
                         searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkeys);
+                    } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkeys[1])) {
+                        result = currentObject.getString(nextKey);
                     }
                 }
             }
-            return "Not found";
+            return result;
         }
 
 
