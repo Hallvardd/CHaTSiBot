@@ -1,5 +1,6 @@
 package com.example.taphan.core1test;
 
+import org.json.JSONObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -9,9 +10,8 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
+public class JsonTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void jsontask_match() throws Exception {
     }
 }

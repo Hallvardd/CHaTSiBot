@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/course/tdt4105");
+                new JSONTask().execute("http://www.ime.ntnu.no/api/course/en/course/tma4105");
             }
         });
     }
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
     public class JSONTask extends AsyncTask<String, String,String> {
 
         @Override
-        protected String doInBackground(String... params) {
+        public String doInBackground(String... params) {
             HttpURLConnection connection = null;
             BufferedReader br = null;
             try {
@@ -57,19 +58,33 @@ public class MainActivity extends AppCompatActivity {
                     buffer.append(line);
                 }
 
-                /*String finalJson = buffer.toString();
-
+                // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
+                String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-                JSONObject courseObject = parentObject.getJSONObject("course");
-                String code = courseObject.getString("code");
+
+                /*JSONObject requestObject = parentObject.getJSONObject("request"); // code+year gir course/tma41052016
+                String code = requestObject.getString("courseCode");
+                int year = requestObject.getInt("year");
                 */
-                return buffer.toString() ; // buffer.toString() is the entire JSON
+
+                JSONObject courseObject = parentObject.getJSONObject("course");
+
+                /*JSONArray educationalRoleArray = courseObject.getJSONArray("educationalRole");
+                JSONObject finalObject = educationalRoleArray.getJSONObject(0);
+                String lecturer = finalObject.getString("code");
+                JSONObject personObject = finalObject.getJSONObject("person");
+                String dispName = personObject.getString("displayName");
+                */
+
+                return null; // buffer.toString() is the entire JSON
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
 
+            } catch (JSONException e) {
+                e.printStackTrace();
             } finally {
                 if (connection != null) { // Else would get an error trying to close a null object
                     try {
