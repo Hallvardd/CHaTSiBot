@@ -8,6 +8,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.taphan.core1.questionDatabase.Answer;
+import com.example.taphan.core1.questionDatabase.Course;
+import com.example.taphan.core1.questionDatabase.Question;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,8 +37,65 @@ public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
     private TextView textView;
     private EditText inputText;
+    private DatabaseReference mDatabase; //database variables
+    private DatabaseReference courseBranch;
+    private DatabaseReference questionBranch;
+    private DatabaseReference answerBranch;    // end
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // opens an instance of the database and makes three main branches, one for each type
+        // of objects
+        DatabaseControll dbc = new DatabaseControll();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        courseBranch = mDatabase.child("Course");
+        questionBranch = mDatabase.child("Question");
+        answerBranch = mDatabase.child("Answer");
+        courseBranch.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Course course = dataSnapshot.getValue(Course.class);
+                System.out.println(course.getCourseCode());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+        questionBranch.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Question question = dataSnapshot.getValue(Question.class);
+                System.out.println(question);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+        answerBranch.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Answer answer = dataSnapshot.getValue(Answer.class);
+                System.out.println(answer);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
+        // Only for demo
+        dbc.addCourseDatabase(courseBranch, "TDT4140", "Pekka Kalevi Abrahamsson", "pekka.abrahamsson@ntnu.no");
+        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the project due?");
+        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the deadline for our project?");
+        dbc.addCourseDatabase(courseBranch, "TDT4145", "Svein Inge something", "Svein@ntnu.no");
+        dbc.addAnswerDatabase(); //some answer
+        //
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
@@ -190,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
             textView.setText(result);
 
         }
+
     }
 
 }
