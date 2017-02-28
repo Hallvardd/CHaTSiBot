@@ -11,7 +11,6 @@ import android.widget.TextView;
 import com.example.taphan.core1.questionDatabase.Answer;
 import com.example.taphan.core1.questionDatabase.Course;
 import com.example.taphan.core1.questionDatabase.Question;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,8 +34,8 @@ import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
-    private TextView textView;
-    private EditText inputText;
+    protected TextView textView;
+    protected EditText inputText;
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
     private DatabaseReference questionBranch;
@@ -46,11 +45,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
         // of objects
-        DatabaseControll dbc = new DatabaseControll();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
         courseBranch = mDatabase.child("Course");
         questionBranch = mDatabase.child("Question");
         answerBranch = mDatabase.child("Answer");
+        final DatabaseController dbc = new DatabaseController();
+
         courseBranch.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -88,13 +89,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Only for demo
-        dbc.addCourseDatabase(courseBranch, "TDT4140", "Pekka Kalevi Abrahamsson", "pekka.abrahamsson@ntnu.no");
-        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the project due?");
-        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the deadline for our project?");
-        dbc.addCourseDatabase(courseBranch, "TDT4145", "Svein Inge something", "Svein@ntnu.no");
-        dbc.addAnswerDatabase(); //some answer
-        //
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -108,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
             String input = inputText.getText().toString();
                 String[] subject = input.split(" ");
                 subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
-            new JSONTask().execute(subject);
+            JSONTask task = new JSONTask();
+                task.execute(subject);
             }
         });
     }
@@ -117,6 +113,11 @@ public class MainActivity extends AppCompatActivity {
     public class JSONTask extends AsyncTask<String, String,String> {
 
         private String result; // variable to solve the problem of wrong return value in searchJson method
+
+        private String getResult() {
+            return result;
+        }
+
         /**
          * @param params = paramaters from execute(String... params)
          * The first parameter is URL of JSON, the following parameters are search keywords
@@ -124,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public String doInBackground(String... params) {
-            result = "Not found";
             HttpURLConnection connection = null;
             BufferedReader br = null;
             try {
@@ -145,7 +145,10 @@ public class MainActivity extends AppCompatActivity {
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
 
+                result = "Not found";
+
                 return searchJson(parentObject, null,"object", "course", params);
+
 
             } catch (MalformedURLException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
@@ -165,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            return null;
+            return result;
         }
 
 
@@ -251,10 +254,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(String newResult) {
             // Execute our Json reader and store desired information in result
-            super.onPostExecute(result);
-            textView.setText(result);
+            super.onPostExecute(newResult);
+            result = newResult;
+            textView.setText(newResult);
+            System.out.println(result);
 
         }
 
