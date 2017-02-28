@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-android:orientation="horizontal">
+android:orientation="horizontal"
+    android:weightSum="1">
 
     <GridLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent">
 
-        <EditText
-            android:layout_weight="1"
-            android:layout_width="304dp"
-            android:id="@+id/edit_message"
-            android:layout_height="wrap_content"
-            android:hint="@string/edit_message"
-            android:layout_alignBottom="@+id/button"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_row="0"
-            android:layout_column="0" />
-
         <TextView
-            android:layout_height="220dp"
+            android:layout_height="209dp"
             android:id="@+id/jsonText"
             android:layout_width="322dp"
             android:layout_row="1"
@@ -41,6 +31,18 @@ android:orientation="horizontal">
             android:elevation="0dp"
             android:layout_row="0"
             android:layout_column="1" />
+
+        <EditText
+            android:layout_weight="1"
+            android:layout_width="308dp"
+            android:id="@+id/edit_message"
+            android:layout_height="wrap_content"
+            android:hint="@string/edit_message"
+            android:layout_alignBottom="@+id/button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_row="0"
+            android:layout_column="0" />
     </GridLayout>
 
 </LinearLayout>
