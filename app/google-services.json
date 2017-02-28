@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "351456585982",
+    "firebase_url": "https://chatsibot-ea36d.firebaseio.com",
+    "project_id": "chatsibot-ea36d",
+    "storage_bucket": "chatsibot-ea36d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:351456585982:android:4ae159003b481aed",
+        "android_client_info": {
+          "package_name": "com.example.taphan.core1test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "351456585982-3095jrj5hm4r9m45lt0cskuec1bt5r3j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taphan.core1test",
+            "certificate_hash": "eb92ae9484c2c4dd34c269396c88a6e3b49ecd2b"
+          }
+        },
+        {
+          "client_id": "351456585982-nmr45sbd5lqm5gk47iqlfuvim2rb54hb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.taphan.core1test",
+            "certificate_hash": "bdbf6b9e67a1050cb56696e89afb7406c5ae893a"
+          }
+        },
+        {
+          "client_id": "351456585982-995k8m50nq6dg54snj0e05lfntnru1u1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4SedHAdrKSJHoJAGeiMLh5cGp6BejUUc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "351456585982-995k8m50nq6dg54snj0e05lfntnru1u1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
