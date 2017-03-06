@@ -30,6 +30,7 @@ dependencies {
     compile 'com.google.firebase:firebase-database:10.2.0'
     compile 'com.firebaseui:firebase-ui-database:1.0.0'
 
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
 }
 
 

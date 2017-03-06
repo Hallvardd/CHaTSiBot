@@ -32,7 +32,7 @@ public class DatabaseController {
     }
 
 
-    protected void addQuestionDatabase(DatabaseReference qDatabase, DatabaseReference cDatabase, String courseCode, String text ){
+    protected void addQuestionDatabase(DatabaseReference qDatabase, String courseCode, String text ){
         Question question = new Question();
         String key = qDatabase.push().getKey();
         question.setQuestionID(key);
