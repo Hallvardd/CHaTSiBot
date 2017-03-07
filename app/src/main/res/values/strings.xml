@@ -4,6 +4,8 @@
     <string name="button_send">Send </string>
     <string name="title_activity_login">Sign in</string>
 
+    <string name="msg">Please enable all permission</string>
+
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
