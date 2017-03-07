@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Core1Test</string>
+    <string name="app_name">CHaTSiBot</string>
     <string name="edit_message">Enter fagkode</string>
     <string name="button_send">Send </string>
     <string name="title_activity_login">Sign in</string>
