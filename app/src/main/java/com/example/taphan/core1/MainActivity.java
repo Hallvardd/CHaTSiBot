@@ -1,6 +1,7 @@
 package com.example.taphan.core1;
 
 import android.*;
+import android.Manifest;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -70,9 +71,7 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
         displayDb = (TextView) findViewById(R.id.displayDb);
 
         requestAppPermissions(new String[]{
-                        android.Manifest.permission.READ_CONTACTS,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        android.Manifest.permission.WRITE_CONTACTS},
+                        Manifest.permission.RECORD_AUDIO},
                 R.string.msg,REQUEST_PERMISSION);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
