@@ -7,7 +7,7 @@ public class Question {
 
     private String questionID; //key
     private String refAnsID;
-    private String questionText;
+    private String questionTxt;
     private String refCourseCode;
 
     public Question(){
@@ -30,12 +30,12 @@ public class Question {
         this.refAnsID = refAnsID;
     }
 
-    public String getQuestionText() {
-        return questionText;
+    public String getQuestionTxt() {
+        return questionTxt;
     }
 
-    public void setQuestionText(String question) {
-        this.questionText = question;
+    public void setQuestionTxt(String question) {
+        this.questionTxt = question;
     }
 
     public String getRefCourseCode() {

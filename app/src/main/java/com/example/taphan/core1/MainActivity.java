@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
 
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         courseBranch = mDatabase.child("Course");
         questionBranch = mDatabase.child("Question");
@@ -90,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!currentQuestions.isEmpty()){
                     // This loop should be used to compare questions when the functionality is implemented.
                     for(Question currentQ:currentQuestions){
-                        output += currentQ.getQuestionText()+" ";
+                        output += currentQ.getQuestionTxt()+" ";
                     }
                 }
                 displayDb.setText(output);
@@ -101,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("Oh my god, what have you done!?");
             }
         });
+    }
+
+    public void listenButtonOnClick(View view) {
     }
 
     public class JSONTask extends AsyncTask<String, String,String> {
