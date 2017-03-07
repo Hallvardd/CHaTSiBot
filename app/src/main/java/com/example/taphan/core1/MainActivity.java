@@ -33,10 +33,22 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
+import ai.api.AIListener;
+import ai.api.AIServiceException;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIService;
+import ai.api.model.AIError;
+import ai.api.model.AIResponse;
+import ai.api.model.Result;
+import com.google.gson.JsonElement;
+
+public class MainActivity extends AppCompatActivity implements AIListener {
     private TextView textView;
     private EditText inputText;
+    private Button listenButton;
+    private TextView resultTextView;
+    private AIService aiService;
+
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
     private DatabaseReference questionBranch;
@@ -98,6 +110,19 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Configure API.AI
+        listenButton = (Button) findViewById(R.id.listenButton);
+        resultTextView = (TextView) findViewById(R.id.resultTextView);
+        // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
+        final AIConfiguration config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
+                AIConfiguration.SupportedLanguages.English,
+                AIConfiguration.RecognitionEngine.System);
+        aiService = AIService.getService(this, config);
+        aiService.setListener(this);
+
+
+        // Configure Send button for JSON-check
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         final Button button = (Button) findViewById(R.id.button);
@@ -111,6 +136,56 @@ public class MainActivity extends AppCompatActivity {
             new JSONTask().execute(subject);
             }
         });
+    }
+
+
+    public void listenButtonOnClick(final View view) throws AIServiceException{
+        aiService.startListening();
+    }
+
+    // Show result when listening is complete
+    @Override
+    public void onResult(final AIResponse response) {
+        Result result = response.getResult();
+
+        // Get parameters
+        String parameterString = "";
+        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+            }
+        }
+
+        // Show results in TextView.
+        resultTextView.setText("Query:" + result.getResolvedQuery() +
+                "\nAction: " + result.getAction() +
+                "\nParameters: " + parameterString);
+    }
+
+    // Handle error
+    @Override
+    public void onError(AIError error) {
+        resultTextView.setText(error.toString());
+    }
+
+    @Override
+    public void onAudioLevel(final float level) {
+
+    }
+
+    @Override
+    public void onListeningStarted() {
+
+    }
+
+    @Override
+    public void onListeningCanceled() {
+
+    }
+
+    @Override
+    public void onListeningFinished() {
+
     }
 
 
