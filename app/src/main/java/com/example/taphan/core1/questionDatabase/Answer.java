@@ -11,10 +11,11 @@ import java.util.ArrayList;
 public class Answer{
 
     private String answerID;  // Key
-    private String answer;
-    private ArrayList<String> listeners;
+    private String answerTxt;
+    private ArrayList<String> questions;
 
     public Answer(){
+        questions = new ArrayList<>();
 
     }
 
@@ -26,16 +27,16 @@ public class Answer{
         this.answerID = answerID;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getAnswerTxt() {
+        return answerTxt;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setAnswerTxt(String answerTxt) {
+        this.answerTxt = answerTxt;
     }
 
-    public void addListener(String questionKey){
-        listeners.add(questionKey);
+    public void addQuestion(String questionKey){
+        questions.add(questionKey);
     }
 
     /* The removeListener function deletes questions up for deletion from the listener
@@ -43,9 +44,9 @@ public class Answer{
        answer isn't linked to anything and must be deleted as not to waste space.
      */
 
-    public boolean removeListener(String questionkey){
-        listeners.remove(questionkey);
-        return listeners.isEmpty();
+    public boolean removeListener(String questionKey){
+        questions.remove(questionKey);
+        return questions.isEmpty();
     }
 
 }
