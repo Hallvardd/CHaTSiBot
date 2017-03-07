@@ -37,6 +37,7 @@ dependencies {
     // api.ai SDK dependencies
     compile 'commons-io:commons-io:2.4'
 
+    compile 'com.android.support.constraint:constraint-layout:1.0.1'
 }
 
 
