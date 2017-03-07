@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "351456585982-3095jrj5hm4r9m45lt0cskuec1bt5r3j.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.taphan.core1test",
-            "certificate_hash": "eb92ae9484c2c4dd34c269396c88a6e3b49ecd2b"
-          }
-        },
-        {
           "client_id": "351456585982-nmr45sbd5lqm5gk47iqlfuvim2rb54hb.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

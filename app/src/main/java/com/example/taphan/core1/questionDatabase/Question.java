@@ -30,7 +30,7 @@ public class Question {
         this.refAnsID = refAnsID;
     }
 
-    public String getQuestion() {
+    public String getQuestionText() {
         return questionText;
     }
 

@@ -4,14 +4,10 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.example.taphan.core1.questionDatabase.Answer;
-import com.example.taphan.core1.questionDatabase.Course;
 import com.example.taphan.core1.questionDatabase.Question;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +24,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -35,8 +32,11 @@ import java.util.logging.Logger;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
-    private TextView textView;
-    private EditText inputText;
+    protected TextView textView;
+    protected TextView displayDb;
+    protected EditText inputText;
+    protected ArrayList<Question> currentQuestions = new ArrayList<>();
+
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
     private DatabaseReference questionBranch;
@@ -46,77 +46,68 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
         // of objects
-        DatabaseControll dbc = new DatabaseControll();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        courseBranch = mDatabase.child("Course");
-        questionBranch = mDatabase.child("Question");
-        answerBranch = mDatabase.child("Answer");
-        courseBranch.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Course course = dataSnapshot.getValue(Course.class);
-                System.out.println(course.getCourseCode());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-        questionBranch.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Question question = dataSnapshot.getValue(Question.class);
-                System.out.println(question);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-        answerBranch.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Answer answer = dataSnapshot.getValue(Answer.class);
-                System.out.println(answer);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
-
-        // Only for demo
-        dbc.addCourseDatabase(courseBranch, "TDT4140", "Pekka Kalevi Abrahamsson", "pekka.abrahamsson@ntnu.no");
-        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the project due?");
-        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the deadline for our project?");
-        dbc.addCourseDatabase(courseBranch, "TDT4145", "Svein Inge something", "Svein@ntnu.no");
-        dbc.addAnswerDatabase(); //some answer
-        //
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
-        final Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        displayDb = (TextView) findViewById(R.id.displayDb);
+
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        courseBranch = mDatabase.child("Course");
+        questionBranch = mDatabase.child("Question");
+        answerBranch = mDatabase.child("Answer");
+        DatabaseController dbc = new DatabaseController();
+        }
+
+    public void buttonClick(View view) {
+        // Read courseCode from user input and find general information about the subject
+        String input = inputText.getText().toString();
+        String[] subject = input.split(" ");
+        final String courseCode = subject[0]; //Course code for search.
+        final String question = input; //Question up for comparison.
+
+        // Finding the requested data in the IME api, should always be called when possible.
+        subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
+        JSONTask task = new JSONTask();
+        task.execute(subject);
+
+        /* The function of the following part of the code is sorting questions by the questions
+        reference to course. Ideally there should be a more efficient solution to this. As of now
+        the program does a linear search through all Question objects, finding matching refCourseCode
+        to the course specified.*/
+        questionBranch.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
-            // Read fagkode from user input and find general information about the subject
-            String input = inputText.getText().toString();
-                String[] subject = input.split(" ");
-                subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
-            new JSONTask().execute(subject);
+            public void onDataChange(DataSnapshot dataSnapshot) { //
+                String output = "Questions: ";
+                for(DataSnapshot d: dataSnapshot.getChildren()){
+                    Question q = d.getValue(Question.class);
+                    if(q.getRefCourseCode().equalsIgnoreCase(courseCode)){
+                        currentQuestions.add(q);
+                    }
+                }
+                if(!currentQuestions.isEmpty()){
+                    // This loop should be used to compare questions when the functionality is implemented.
+                    for(Question currentQ:currentQuestions){
+                        output += currentQ.getQuestionText()+" ";
+                    }
+                }
+                displayDb.setText(output);
+                currentQuestions.clear();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("Oh my god, what have you done!?");
             }
         });
     }
 
-
     public class JSONTask extends AsyncTask<String, String,String> {
-
         private String result; // variable to solve the problem of wrong return value in searchJson method
+        private String getResult() {
+            return result;
+        }
         /**
          * @param params = paramaters from execute(String... params)
          * The first parameter is URL of JSON, the following parameters are search keywords
@@ -124,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public String doInBackground(String... params) {
-            result = "Not found";
             HttpURLConnection connection = null;
             BufferedReader br = null;
             try {
@@ -135,20 +125,17 @@ public class MainActivity extends AppCompatActivity {
 
                 // Use a buffer to store JSON info
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 String line="";
                 while ((line = br.readLine()) != null ) {
                     buffer.append(line);
                 }
-
                 // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-
+                result = "Not found";
                 return searchJson(parentObject, null,"object", "course", params);
 
-            } catch (MalformedURLException ex) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
             } catch (JSONException e) {
@@ -165,9 +152,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-            return null;
+            return result;
         }
-
 
         /**
          * Helper method for searching after simple information in JSON
@@ -181,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
          */
         private String searchJson(JSONObject parentObject, JSONArray parentArray, String parentType, String key, String... searchkeys) throws JSONException {
             // Choose to only handle information on courses, and not from cache or request
-
             if(parentArray != null) {
                 int i = 0;
                 while (i < parentArray.length()) {
@@ -220,41 +205,13 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
-
-        /**
-         * Convert JSONObject into a map, can then iterate through map (must iterate twice, use as last option)
-         * @param json
-         * @param out
-         * @return a map containing all JSONObject
-         * @throws JSONException
-         */
-        private Map<String,String> parse(JSONObject json , Map<String,String> out) throws JSONException{
-            Iterator<String> keys = json.keys();
-            while(keys.hasNext()){
-                String key = keys.next();
-                String val = null;
-                if ( json.get(key) instanceof JSONObject ) {
-                    JSONObject value = json.getJSONObject(key);
-                    parse(value,out);
-                }
-
-                else {
-                    val = json.getString(key);
-                }
-
-                if(val != null){
-                    out.put(key,val);
-                }
-            }
-            return out;
-        }
-
-
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(String newResult) {
             // Execute our Json reader and store desired information in result
-            super.onPostExecute(result);
-            textView.setText(result);
+            super.onPostExecute(newResult);
+            result = newResult;
+            textView.setText(newResult);
+            System.out.println(result);
 
         }
 
