@@ -30,12 +30,24 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "com.example.taphan.core1";
-    protected TextView textView;
+import ai.api.AIListener;
+import ai.api.AIServiceException;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIService;
+import ai.api.model.AIError;
+import ai.api.model.AIResponse;
+import ai.api.model.Result;
+import com.google.gson.JsonElement;
+
+public class MainActivity extends AppCompatActivity implements AIListener {
+    private TextView textView;
+    private EditText inputText;
+    private Button listenButton;
+    private TextView resultTextView;
+    private AIService aiService;
     protected TextView displayDb;
-    protected EditText inputText;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
+
 
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
@@ -98,9 +110,98 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Oh my god, what have you done!?");
+                System.out.println("The read failed: " + databaseError.getCode());
             }
         });
+
+        // Only for demo
+        dbc.addCourseDatabase(courseBranch, "TDT4140", "Pekka Kalevi Abrahamsson", "pekka.abrahamsson@ntnu.no");
+        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the project due?");
+        dbc.addQuestionDatabase(questionBranch, courseBranch, "TDT4140","When is the deadline for our project?");
+        dbc.addCourseDatabase(courseBranch, "TDT4145", "Svein Inge something", "Svein@ntnu.no");
+        dbc.addAnswerDatabase(); //some answer
+        //
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Configure API.AI
+        listenButton = (Button) findViewById(R.id.listenButton);
+        resultTextView = (TextView) findViewById(R.id.resultTextView);
+        // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
+        final AIConfiguration config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
+                AIConfiguration.SupportedLanguages.English,
+                AIConfiguration.RecognitionEngine.System);
+        aiService = AIService.getService(this, config);
+        aiService.setListener(this);
+
+
+        // Configure Send button for JSON-check
+        textView = (TextView)findViewById(R.id.jsonText);
+        inputText = (EditText) findViewById(R.id.edit_message);
+        final Button button = (Button) findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            // Read fagkode from user input and find general information about the subject
+            String input = inputText.getText().toString();
+                String[] subject = input.split(" ");
+                subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
+            new JSONTask().execute(subject);
+
+            }
+        });
+    }
+
+
+  // API.AI code
+    public void listenButtonOnClick(final View view) throws AIServiceException{
+        aiService.startListening();
+    }
+
+    // Show result when listening is complete
+    @Override
+    public void onResult(final AIResponse response) {
+        Result result = response.getResult();
+
+        // Get parameters
+        String parameterString = "";
+        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+            }
+        }
+
+        // Show results in TextView.
+        resultTextView.setText("Query:" + result.getResolvedQuery() +
+                "\nAction: " + result.getAction() +
+                "\nParameters: " + parameterString);
+    }
+
+    // Handle error
+    @Override
+    public void onError(AIError error) {
+        resultTextView.setText(error.toString());
+    }
+
+    @Override
+    public void onAudioLevel(final float level) {
+
+    }
+
+    @Override
+    public void onListeningStarted() {
+
+    }
+
+    @Override
+    public void onListeningCanceled() {
+
+    }
+
+    @Override
+    public void onListeningFinished() {
+
     }
 
     public class JSONTask extends AsyncTask<String, String,String> {
