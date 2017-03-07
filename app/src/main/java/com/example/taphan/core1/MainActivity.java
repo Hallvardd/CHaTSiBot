@@ -1,16 +1,12 @@
 package com.example.taphan.core1;
 
-import android.*;
-import android.Manifest;
 import android.os.AsyncTask;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.taphan.core1.questionDatabase.Question;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +40,7 @@ import ai.api.model.AIResponse;
 import ai.api.model.Result;
 import com.google.gson.JsonElement;
 
-public class MainActivity extends AbsRuntimePermission implements AIListener {
+public class MainActivity extends AppCompatActivity implements AIListener {
     private TextView textView;
     private EditText inputText;
     private Button listenButton;
@@ -53,7 +49,6 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
-    private static final int REQUEST_PERMISSION = 10;
 
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
@@ -64,15 +59,12 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
         // of objects
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
-        requestAppPermissions(new String[]{
-                        Manifest.permission.RECORD_AUDIO},
-                R.string.msg,REQUEST_PERMISSION);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         courseBranch = mDatabase.child("Course");
@@ -88,13 +80,11 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
-    }
+        dbc.addQuestionDatabase(questionBranch,"TDT4140", "PEkkapekkapekka?" );
 
-    @Override
-    public void onPermissionsGranted(int requestCode) {
-        //Do anything when permisson granted
-        //Toast.makeText(getApplicationContext(), "Permission granted", Toast.LENGTH_LONG).show();
-    }
+
+
+        }
 
     public void buttonClick(View view) {
         // Read courseCode from user input and find general information about the subject
@@ -137,6 +127,8 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
             }
         });
     }
+
+
 
 
   // API.AI code
@@ -188,7 +180,6 @@ public class MainActivity extends AbsRuntimePermission implements AIListener {
     public void onListeningFinished() {
 
     }
-
 
     public class JSONTask extends AsyncTask<String, String,String> {
         private String result; // variable to solve the problem of wrong return value in searchJson method

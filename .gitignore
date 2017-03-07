@@ -7,3 +7,17 @@
 /build
 /captures
 .externalNativeBuild
+
+
+
+/.idea/vcs.xml
+/IntelliLang.xml
+/web-browsers.xml
+/inspection/
+/androidStudioFirstRun.xml
+/debugger.xml
+/editor.codeinsight.xml
+/other.xml
+/gradle.run.settings.xml
+/ide.general.xml
+/ignore.xml
