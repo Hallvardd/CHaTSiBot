@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
+        dbc.addQuestionDatabase(questionBranch,"TDT4140", "PEkkapekkapekka?" );
 
 
 
