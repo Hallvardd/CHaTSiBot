@@ -36,15 +36,26 @@ public class DatabaseController {
         qDatabase.child(key).setValue(question);
     }
 
-    protected void addAnswerDatabase(DatabaseReference aDatabase, DatabaseReference qDatabase, String questionKey, String answerTxt){
+    protected void addAnswerDatabase(DatabaseReference aDatabase, final DatabaseReference qDatabase, final String questionKey, String answerTxt){
         Answer answer = new Answer();
-        String key = aDatabase.push().getKey();
+        final String key = aDatabase.push().getKey();
         answer.setAnswerTxt(answerTxt);
         // Needs code to access question in database, this needs to be two separate databases, and the question might have to be moved later.
         answer.setAnswerID(key);
         answer.addQuestion(questionKey);
-       // qDatabase.updateChildren(); // needs to do something
         aDatabase.child(key).setValue(answer);
+        qDatabase.child(questionKey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Question q = dataSnapshot.getValue(Question.class);
+                q.setRefAnsID(key);
+                qDatabase.child(questionKey).setValue(q);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     protected void moveQuestion(){

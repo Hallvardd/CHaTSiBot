@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
-
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
     private DatabaseReference questionBranch;
@@ -80,10 +79,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
-        dbc.addQuestionDatabase(questionBranch,"TDT4140", "PEkkapekkapekka?" );
-
-
-
         }
 
     public void buttonClick(View view) {
@@ -106,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) { //
                 String output = "Questions: ";
-                for(DataSnapshot d: dataSnapshot.getChildren()){
+                for(DataSnapshot d : dataSnapshot.getChildren()){
                     Question q = d.getValue(Question.class);
                     if(q.getRefCourseCode().equalsIgnoreCase(courseCode)){
                         currentQuestions.add(q);
@@ -204,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 // Use a buffer to store JSON info
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder buffer = new StringBuilder();
-                String line="";
+                String line;
                 while ((line = br.readLine()) != null ) {
                     buffer.append(line);
                 }
