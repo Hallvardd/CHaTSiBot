@@ -1,8 +1,9 @@
 package com.example.taphan.core1;
 
 import android.util.Log;
+import android.widget.Toast;
+
 import com.example.taphan.core1.questionDatabase.Answer;
-import com.example.taphan.core1.questionDatabase.Course;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,61 +13,77 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseController {
+class DatabaseController {
 
-    protected DatabaseController() {
+    private final static String questionBranchName ="questions";
+    private final static String answerBranchName ="answers";
+    private final static String uaQuestionBranchName = "unansweredQuestions";
+
+    DatabaseController() {
 
     }
 
     // Adding courses will only be done when courses are used for the first time.
-    protected void addCourseDatabase(DatabaseReference cDatabase, String courseCode, String profName, String email){
-        Course course = new Course();
-        course.setCourseCode(courseCode);
-        course.setProfName(profName);
-        course.setEmailAddress(email);
-        cDatabase.child(courseCode).setValue(course); //Adds a new course entry and sets coursCode as key
+    void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
+        DatabaseReference courseDatabase = database.child(courseCode);
+        courseDatabase.child("profName").setValue(profName);
+        courseDatabase.child("email").setValue(email);
+        courseDatabase.child("questions");
+        courseDatabase.child("answers");
     }
 
-    protected void addQuestionDatabase(DatabaseReference qDatabase, String courseCode, String text ){
+    void addUnansweredQuestionToDB(DatabaseReference database, String courseCode, String text){
+        DatabaseReference courseQuestionDatabase = database.child(courseCode).child(uaQuestionBranchName);
         Question question = new Question();
-        String key = qDatabase.push().getKey();
+        String key = courseQuestionDatabase.push().getKey();
         question.setQuestionID(key);
-        question.setRefCourseCode(courseCode);
         question.setQuestionTxt(text);
-        qDatabase.child(key).setValue(question);
+        courseQuestionDatabase.child(key).setValue(question);
     }
 
-    protected void addAnswerDatabase(DatabaseReference aDatabase, final DatabaseReference qDatabase, final String questionKey, String answerTxt){
+    void addQuestionToDb(DatabaseReference database, String courseCode, String text){
+        DatabaseReference courseQuestionDatabase = database.child(courseCode).child(questionBranchName);
+        Question question = new Question();
+        String key = courseQuestionDatabase.push().getKey();
+        question.setQuestionID(key);
+        question.setQuestionTxt(text);
+        courseQuestionDatabase.child(key).setValue(question);
+    }
+
+    void addAnswerToDatabase(DatabaseReference database, final String courseCode,final String questionID, String answerTxt){
         Answer answer = new Answer();
+        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
+        final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
+        final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
         final String key = aDatabase.push().getKey();
+        final String newQuestionID = qDatabase.push().getKey();
         answer.setAnswerTxt(answerTxt);
-        // Needs code to access question in database, this needs to be two separate databases, and the question might have to be moved later.
         answer.setAnswerID(key);
-        answer.addQuestion(questionKey);
+        answer.addQuestion(newQuestionID);
         aDatabase.child(key).setValue(answer);
-        qDatabase.child(questionKey).addListenerForSingleValueEvent(new ValueEventListener() {
+        uaqDatabase.child(questionID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Question q = dataSnapshot.getValue(Question.class);
                 q.setRefAnsID(key);
-                qDatabase.child(questionKey).setValue(q);
+                qDatabase.child(newQuestionID).setValue(q);
+                uaqDatabase.child(questionID).removeValue();
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
 
-    protected void moveQuestion(){
-        // should move the a question containing an answer to the answeredQuestionDatabase
+    // A answer can answer several questions, this method adds a reference to from a question to a existing answer
+    // if there is a match
+    protected void addAnsweredQuestion(DatabaseReference qDatabase,DatabaseReference aDatabase){
+
+
     }
 
+    protected void moveQuestion(DatabaseReference database, String courseCode, String questionID){
 
-    // why did I create this method?
-    protected void addQuestionToCourse(DatabaseReference cDatabase, Course course, String questionID){
-        course.addQuestion(questionID);
-        cDatabase.child(course.getCourseCode()).setValue(course);
     }
 }
 

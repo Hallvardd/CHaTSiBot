@@ -8,7 +8,6 @@ public class Question {
     private String questionID; //key
     private String refAnsID;
     private String questionTxt;
-    private String refCourseCode;
 
     public Question(){
 
@@ -38,12 +37,5 @@ public class Question {
         this.questionTxt = question;
     }
 
-    public String getRefCourseCode() {
-        return refCourseCode;
-    }
-
-    public void setRefCourseCode(String refCourseCode) {
-        this.refCourseCode = refCourseCode;
-    }
 }
 
