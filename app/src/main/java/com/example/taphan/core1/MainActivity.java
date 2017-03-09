@@ -32,12 +32,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.api.AIListener;
+import ai.api.AIServiceContext;
+import ai.api.AIServiceContextBuilder;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
+import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
@@ -45,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private EditText inputText;
     private Button listenButton;
     private TextView resultTextView;
+    private AIConfiguration config;
+    private AIDataService aiDataService;
     private AIService aiService;
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
@@ -75,10 +81,11 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
         // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
-        final AIConfiguration config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
+        config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
+        aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
         dbc.addQuestionDatabase(questionBranch,"TDT4140", "PEkkapekkapekka?" );
 
@@ -133,7 +140,14 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
   // API.AI code
     public void listenButtonOnClick(final View view) throws AIServiceException{
-        aiService.startListening();
+        inputText.getText().toString();
+        AIRequest aiRequest = new AIRequest();
+        aiRequest.setQuery("text you want to send");
+        aiService.textRequest(aiRequest);
+        final AIResponse aiResponse = aiDataService.request(aiRequest);
+        
+        //aiService.startListening();
+
     }
 
     // Show result when listening is complete
