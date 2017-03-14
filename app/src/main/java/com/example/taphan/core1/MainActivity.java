@@ -61,11 +61,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseController dbc = new DatabaseController();
-        //dbc.addUnansweredQuestionToDB(mDatabase,"TDT4140","Friday nokia Pekka taco?");
-        dbc.addAnswerToDatabase(mDatabase,"TDT4140","-KemautodcZCThDECvMF","Taco friday! Nokkia nokkia, pekka, pekk. Nokia -Pekka Abrahamson");
 
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);

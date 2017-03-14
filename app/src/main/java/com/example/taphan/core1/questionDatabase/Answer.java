@@ -15,8 +15,13 @@ public class Answer{
     private ArrayList<String> questions;
 
     public Answer(){
-        questions = new ArrayList<>();
+        this.questions = new ArrayList<>();
+    }
 
+    public Answer(String answerID, String answerTxt){
+        this.questions = new ArrayList<>();
+        this.answerID = answerID;
+        this.answerTxt = answerTxt;
     }
 
     public String getAnswerID() {
@@ -39,9 +44,9 @@ public class Answer{
         questions.add(questionKey);
     }
 
-    /* The removeListener function deletes questions up for deletion from the listener
-       list, it also return whether the list is empty or not. If the list is empty the
-       answer isn't linked to anything and must be deleted as not to waste space.
+    /** The removeListener function deletes questions up for deletion from the listener
+     * list, it also return whether the list is empty or not. If the list is empty the
+     *  answer isn't linked to anything and must be deleted as not to waste space.
      */
 
     public boolean removeListener(String questionKey){
