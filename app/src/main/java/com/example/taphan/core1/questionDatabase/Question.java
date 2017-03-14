@@ -6,15 +6,20 @@ public class Question {
     // A question can only have one answer and refer to only one course.
 
     private String questionID; //key
-    private String refAnsID;
     private String questionTxt;
-    private String refCourseCode;
+    private String refAnsID;
 
     public Question(){
 
     }
 
-    public String getQuestionID() {
+    public Question(String questionID, String questionTxt){
+        this.questionID = questionID;
+        this.questionTxt = questionTxt;
+
+    }
+
+    public String getQuestionID(){
         return questionID;
     }
 
@@ -38,12 +43,5 @@ public class Question {
         this.questionTxt = question;
     }
 
-    public String getRefCourseCode() {
-        return refCourseCode;
-    }
-
-    public void setRefCourseCode(String refCourseCode) {
-        this.refCourseCode = refCourseCode;
-    }
 }
 

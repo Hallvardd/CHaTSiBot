@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
     private DatabaseReference mDatabase; //database variables
-    private DatabaseReference courseBranch;
-    private DatabaseReference questionBranch;
-    private DatabaseReference answerBranch;    // end
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +66,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        courseBranch = mDatabase.child("Course");
-        questionBranch = mDatabase.child("Question");
-        answerBranch = mDatabase.child("Answer");
         DatabaseController dbc = new DatabaseController();
 
         listenButton = (Button) findViewById(R.id.listenButton);
@@ -85,8 +78,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         aiService = AIService.getService(this, config);
         aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
-        dbc.addQuestionDatabase(questionBranch,"TDT4140", "PEkkapekkapekka?" );
-    }
+
+        }
 
     public void buttonClick(View view) {
         // Read courseCode from user input and find general information about the subject
@@ -104,15 +97,13 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         reference to course. Ideally there should be a more efficient solution to this. As of now
         the program does a linear search through all Question objects, finding matching refCourseCode
         to the course specified.*/
-        questionBranch.addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child(courseCode).child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) { //
                 String output = "Questions: ";
-                for(DataSnapshot d: dataSnapshot.getChildren()){
+                for(DataSnapshot d : dataSnapshot.getChildren()){
                     Question q = d.getValue(Question.class);
-                    if(q.getRefCourseCode().equalsIgnoreCase(courseCode)){
-                        currentQuestions.add(q);
-                    }
+                    currentQuestions.add(q);
                 }
                 if(!currentQuestions.isEmpty()){
                     // This loop should be used to compare questions when the functionality is implemented.
@@ -129,8 +120,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             }
         });
     }
-
-
 
   // API.AI code
     public void listenButtonOnClick(final View view) throws AIServiceException{
@@ -225,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 // Use a buffer to store JSON info
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder buffer = new StringBuilder();
-                String line="";
+                String line;
                 while ((line = br.readLine()) != null ) {
                     buffer.append(line);
                 }

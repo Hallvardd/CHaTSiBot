@@ -1,61 +1,91 @@
 package com.example.taphan.core1;
 
-import android.util.Log;
+
+
+import android.widget.TextView;
+
 import com.example.taphan.core1.questionDatabase.Answer;
-import com.example.taphan.core1.questionDatabase.Course;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import java.util.ArrayList;
-import java.util.List;
 
-public class DatabaseController {
 
-    protected DatabaseController() {
 
+class DatabaseController {
+    private final static String questionBranchName ="questions";
+    private final static String answerBranchName ="answers";
+    private final static String uaQuestionBranchName = "unansweredQuestions";
+
+    DatabaseController() {
     }
-
     // Adding courses will only be done when courses are used for the first time.
-    protected void addCourseDatabase(DatabaseReference cDatabase, String courseCode, String profName, String email){
-        Course course = new Course();
-        course.setCourseCode(courseCode);
-        course.setProfName(profName);
-        course.setEmailAddress(email);
-        cDatabase.child(courseCode).setValue(course); //Adds a new course entry and sets coursCode as key
+    // courses are not object, but branches of the database, the question database and
+    // answer database in these branches are on the same level as the course info
+    void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
+        DatabaseReference courseDatabase = database.child(courseCode);
+        courseDatabase.child("profName").setValue(profName);
+        courseDatabase.child("email").setValue(email);
+        courseDatabase.child("questions");
+        courseDatabase.child("answers");
     }
 
-    protected void addQuestionDatabase(DatabaseReference qDatabase, String courseCode, String text ){
-        Question question = new Question();
-        String key = qDatabase.push().getKey();
-        question.setQuestionID(key);
-        question.setRefCourseCode(courseCode);
-        question.setQuestionTxt(text);
-        qDatabase.child(key).setValue(question);
+    void addUnansweredQuestionToDB(DatabaseReference database, String courseCode, String text, String questionKeywords){
+        DatabaseReference courseQuestionDatabase = database.child(courseCode).child(uaQuestionBranchName);
+        String key = courseQuestionDatabase.push().getKey();
+        Question question = new Question(key,text);
+        courseQuestionDatabase.child(key).setValue(question);
     }
 
-    protected void addAnswerDatabase(DatabaseReference aDatabase, DatabaseReference qDatabase, String questionKey, String answerTxt){
+    void addAnswerToDatabase(final DatabaseReference database, final String courseCode, final String questionID, String answerTxt){
         Answer answer = new Answer();
-        String key = aDatabase.push().getKey();
+        final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
+        final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
+        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
+        final String answerKey = aDatabase.push().getKey();
+        final String newQuestionID = qDatabase.push().getKey();
+
         answer.setAnswerTxt(answerTxt);
-        // Needs code to access question in database, this needs to be two separate databases, and the question might have to be moved later.
-        answer.setAnswerID(key);
-        answer.addQuestion(questionKey);
-       // qDatabase.updateChildren(); // needs to do something
-        aDatabase.child(key).setValue(answer);
+        answer.setAnswerID(answerKey);
+        answer.addQuestion(newQuestionID);
+        uaqDatabase.child(questionID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Question q = dataSnapshot.getValue(Question.class);
+                q.setRefAnsID(answerKey);
+                qDatabase.child(newQuestionID).setValue(q);
+                uaqDatabase.child(questionID).removeValue();
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        aDatabase.child(answerKey).setValue(answer);
     }
 
-    protected void moveQuestion(){
-        // should move the a question containing an answer to the answeredQuestionDatabase
+    // A answer can answer several questions, this method adds a reference to from a question to a existing answer
+    // if there is a match
+    void addAnsweredQuestion(DatabaseReference database, String courseCode, String questionTxt, String questionKeywords, final String answerID){
+        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
+        final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
+        final String key = qDatabase.push().getKey();
+        Question q = new Question(key,questionTxt);
+        q.setRefAnsID(answerID);
+        qDatabase.child(key).setValue(q);
+        aDatabase.child(answerID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Answer a = dataSnapshot.getValue(Answer.class);
+                a.addQuestion(key);
+                aDatabase.child(answerID).setValue(a);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
     }
 
-
-    // why did I create this method?
-    protected void addQuestionToCourse(DatabaseReference cDatabase, Course course, String questionID){
-        course.addQuestion(questionID);
-        cDatabase.child(course.getCourseCode()).setValue(course);
-    }
 }
 
