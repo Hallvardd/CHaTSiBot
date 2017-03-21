@@ -12,6 +12,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 
 
 class DatabaseController {
@@ -29,10 +30,11 @@ class DatabaseController {
      be added to the database. The to avoid duplicates a reference to the question will also be
      added to the path.
      */
+
     void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
         final String[] pathArray = path.split("-");
         DatabaseReference d = database;
-        for(String s:pathArray){ // for each list in the   
+        for(String s:pathArray){ // for each list in the
             d = d.child(s);
         }
         final String courseCode = pathArray[0];
@@ -53,19 +55,20 @@ class DatabaseController {
                     textView.setText(snap.getAnswerID());
                     if (!snap.getAnswerID().equals("NA")){
                         String answerID = snap.getAnswerID();
-                        DatabaseReference answerDb = database.child(courseCode).child(answerBranchName).child(answerID);
-                        answerDb.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Answer answer = dataSnapshot.getValue(Answer.class);
-                                // setText view as the answer
-                                textView.setText(answer.getAnswerTxt());
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                            }
-                        });
+                        textView.setText(answerID);
+//                        DatabaseReference answerDb = database.child(courseCode).child(answerBranchName).child(answerID);
+//                        answerDb.addListenerForSingleValueEvent(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                Answer answer = dataSnapshot.getValue(Answer.class);
+//                                // setText view as the answer
+//                                textView.setText(answer.getAnswerTxt());
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError) {
+//                            }
+//                        });
                     }
                     else if (!snap.getQuestionID().isEmpty()) {
                         textView.setText("The question has already been asked \nThe question will be added to your list of asked questions");
@@ -80,61 +83,63 @@ class DatabaseController {
         });
     }
 
-    void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
-        DatabaseReference courseDatabase = database.child(courseCode);
-        courseDatabase.child("profName").setValue(profName);
-        courseDatabase.child("email").setValue(email);
-        courseDatabase.child("questions");
-        courseDatabase.child("answers");
-    }
+
+    // !!-- This method might not longer be needed --!!
+//    void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
+//        DatabaseReference courseDatabase = database.child(courseCode);
+//        courseDatabase.child("profName").setValue(profName);
+//        courseDatabase.child("email").setValue(email);
+//        courseDatabase.child("questions");
+//        courseDatabase.child("answers");
+//    }
 
 
-    void addAnswerToDatabase(final DatabaseReference database, final String questionID, String answerTxt){
+    void addAnswerToDatabase(final DatabaseReference database, final String questionID, String courseCode, final String answerTxt){
         Answer answer = new Answer();
-        final DatabaseReference aDatabase = database.child(answerBranchName);
-        final DatabaseReference uaqDatabase = database.child(uaQuestionBranchName);
-        final DatabaseReference qDatabase = database.child(questionBranchName);
-        final String answerKey = aDatabase.push().getKey();
+        final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
+//        final DatabaseReference aDatabase = database.child(answerBranchName);
+        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
         final String newQuestionID = qDatabase.push().getKey();
-
-        answer.setAnswerTxt(answerTxt);
-        answer.setAnswerID(answerKey);
-        answer.addQuestion(newQuestionID);
-        uaqDatabase.child(questionID).addListenerForSingleValueEvent(new ValueEventListener() {
+//        final String answerKey = aDatabase.push().getKey();
+//        answer.setAnswerTxt(answerTxt);
+//        answer.setAnswerID(answerKey);
+//        answer.addQuestion(newQuestionID);
+        uaqDatabase.child(questionID).addListenerForSingleValueEvent(new ValueEventListener(){
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Question q = dataSnapshot.getValue(Question.class);
-                q.setRefAnsID(answerKey);
-                qDatabase.child(newQuestionID).setValue(q);
-                uaqDatabase.child(questionID).removeValue();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-        aDatabase.child(answerKey).setValue(answer);
-    }
+                String [] path = q.getQuestionPath().split("-");
+                q.setQuestionID(newQuestionID);
+                DatabaseReference pTQ = database;
+                for(String p:path){                             // Iterates over the questions keywords and "extends" the branch.
+                    pTQ = pTQ.child(p);
+                }
+                final DatabaseReference pathToQuestion = pTQ.child("state"); // adds state as the final branch of the database Reference,
+                                                                // each asked question will have "state as their final branch"
+                pathToQuestion.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) { // the DataSnapshot consists of one and only one State() object
+                        State snap = dataSnapshot.getValue(State.class);
+                        snap.setAnswerID(answerTxt); // possible to use an answer object later.
+                        snap.setQuestion(newQuestionID);
+                        pathToQuestion.setValue(snap);
+                    }
 
-    // A answer can answer several questions, this method adds a reference to from a question to a existing answer
-    // if there is a match
-    void addAnsweredQuestion(DatabaseReference database, String courseCode, String questionTxt, String questionKeywords, final String answerID, String questionPath){
-        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
-        final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
-        final String key = qDatabase.push().getKey();
-        Question q = new Question(key,questionTxt, questionPath);
-        q.setRefAnsID(answerID);
-        qDatabase.child(key).setValue(q);
-        aDatabase.child(answerID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Answer a = dataSnapshot.getValue(Answer.class);
-                a.addQuestion(key);
-                aDatabase.child(answerID).setValue(a);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                //q.setRefAnsID(answerKey);
+                qDatabase.child(newQuestionID).setValue(q); // Adds the question to the answered question database
+                uaqDatabase.child(questionID).removeValue(); // Deletes the question so it won't appear in the professors feed.
+                // NB! as of now we don't keep the answered questions saved in the database. this should be implemented later, to allow bad answers and questions to be deleted
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    //    aDatabase.child(answerKey).setValue(answer); not used for now!
     }
 }
 
