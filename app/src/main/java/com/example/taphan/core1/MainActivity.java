@@ -144,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                         }
                     }
 
+                    // Send til databasen for å finne svar, kall en metode
+                    // Hvis returnert False, legg den inn i unansweredQuestions in database
+
                     // Show results in TextView.
                     resultTextView.setText("Query:" + result.getResolvedQuery() +
                             "\nAction: " + result.getAction() +
@@ -163,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     public void onError(AIError error) {
         resultTextView.setText(error.toString());
     }
+
 
     @Override
     public void onAudioLevel(final float level) {

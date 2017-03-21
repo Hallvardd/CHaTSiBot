@@ -18,10 +18,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="CHaTSibot" >
-        </activity>
-        <activity
             android:name=".loginTest.LoginActivity"
             android:label="CHaTSibot" >
         </activity>
