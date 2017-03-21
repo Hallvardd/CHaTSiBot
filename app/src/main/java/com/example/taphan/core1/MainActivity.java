@@ -33,12 +33,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.api.AIListener;
+import ai.api.AIServiceContext;
+import ai.api.AIServiceContextBuilder;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
+import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,34 +55,31 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     private EditText inputText;
     private Button listenButton;
     private TextView resultTextView;
+    private AIConfiguration config;
+    private AIDataService aiDataService;
     private AIService aiService;
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
+<<<<<<< HEAD
     private Button signOutButton;
 
 
+=======
+>>>>>>> 765adf9e70e80f784476695daad9f28ae94c3cbb
     private DatabaseReference mDatabase; //database variables
-    private DatabaseReference courseBranch;
-    private DatabaseReference questionBranch;
-    private DatabaseReference answerBranch;    // end
 
     private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
         // of objects
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        courseBranch = mDatabase.child("Course");
-        questionBranch = mDatabase.child("Question");
-        answerBranch = mDatabase.child("Answer");
         DatabaseController dbc = new DatabaseController();
 
         signOutButton = (Button) findViewById(R.id.signOutButton);
@@ -86,10 +87,11 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
         // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
-        final AIConfiguration config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
+        config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
+        aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
 
         }
@@ -99,36 +101,35 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         switch(view.getId()) {
 
             case R.id.button:
-            // Read courseCode from user input and find general information about the subject
-            String input = inputText.getText().toString();
-            String[] subject = input.split(" ");
-            final String courseCode = subject[0]; //Course code for search.
-            final String question = input; //Question up for comparison.
 
-            // Finding the requested data in the IME api, should always be called when possible.
-            subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
-            JSONTask task = new JSONTask();
-            task.execute(subject);
+        // Read courseCode from user input and find general information about the subject
+        String input = inputText.getText().toString();
+        String[] subject = input.split(" ");
+        final String courseCode = subject[0]; //Course code for search.
+        final String question = input; //Question up for comparison.
 
-            /* The function of the following part of the code is sorting questions by the questions
-            reference to course. Ideally there should be a more efficient solution to this. As of now
-            the program does a linear search through all Question objects, finding matching refCourseCode
-            to the course specified.*/
-            questionBranch.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) { //
-                    String output = "Questions: ";
-                    for (DataSnapshot d : dataSnapshot.getChildren()) {
-                        Question q = d.getValue(Question.class);
-                        if (q.getRefCourseCode().equalsIgnoreCase(courseCode)) {
-                            currentQuestions.add(q);
-                        }
-                    }
-                    if (!currentQuestions.isEmpty()) {
-                        // This loop should be used to compare questions when the functionality is implemented.
-                        for (Question currentQ : currentQuestions) {
-                            output += currentQ.getQuestionTxt() + " ";
-                        }
+        // Finding the requested data in the IME api, should always be called when possible.
+        subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
+        JSONTask task = new JSONTask();
+        task.execute(subject);
+
+        /* The function of the following part of the code is sorting questions by the questions
+        reference to course. Ideally there should be a more efficient solution to this. As of now
+        the program does a linear search through all Question objects, finding matching refCourseCode
+        to the course specified.*/
+        mDatabase.child(courseCode).child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) { //
+                String output = "Questions: ";
+                for(DataSnapshot d : dataSnapshot.getChildren()){
+                    Question q = d.getValue(Question.class);
+                    currentQuestions.add(q);
+                }
+                if(!currentQuestions.isEmpty()){
+                    // This loop should be used to compare questions when the functionality is implemented.
+                    for(Question currentQ:currentQuestions){
+                        output += currentQ.getQuestionTxt()+" ";
+
                     }
                     displayDb.setText(output);
                     currentQuestions.clear();
@@ -147,31 +148,47 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     }
 
-
-
-
   // API.AI code
     public void listenButtonOnClick(final View view) throws AIServiceException{
-        aiService.startListening();
+        //resultTextView.setText(inputText.getText().toString());
+        final AIRequest aiRequest = new AIRequest();
+        aiRequest.setQuery(inputText.getText().toString());
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+                final AIRequest request = requests[0];
+                try {
+                    final AIResponse response = aiDataService.request(aiRequest);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+                    //   process aiResponse here
+                    // Get parameters
+                    Result result = aiResponse.getResult();
+                    String parameterString = "";
+                    if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+                        for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                        }
+                    }
+
+                    // Show results in TextView.
+                    resultTextView.setText("Query:" + result.getResolvedQuery() +
+                            "\nAction: " + result.getAction() +
+                            "\nParameters: " + parameterString);
+                }
+            }
+        }.execute(aiRequest);
     }
 
-    // Show result when listening is complete
     @Override
     public void onResult(final AIResponse response) {
-        Result result = response.getResult();
 
-        // Get parameters
-        String parameterString = "";
-        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
-            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
-                parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
-            }
-        }
-
-        // Show results in TextView.
-        resultTextView.setText("Query:" + result.getResolvedQuery() +
-                "\nAction: " + result.getAction() +
-                "\nParameters: " + parameterString);
     }
 
     // Handle error
@@ -200,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     }
 
+
     public class JSONTask extends AsyncTask<String, String,String> {
         private String result; // variable to solve the problem of wrong return value in searchJson method
         private String getResult() {
@@ -223,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                 // Use a buffer to store JSON info
                 br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 StringBuilder buffer = new StringBuilder();
-                String line="";
+                String line;
                 while ((line = br.readLine()) != null ) {
                     buffer.append(line);
                 }

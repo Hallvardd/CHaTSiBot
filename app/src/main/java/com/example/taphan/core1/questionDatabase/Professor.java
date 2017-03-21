@@ -2,9 +2,6 @@ package com.example.taphan.core1.questionDatabase;
 
 import java.util.ArrayList;
 
-/**
- * Created by Halst on 06.03.2017.
- */
 
 public class Professor implements User {
 
