@@ -51,7 +51,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.example.taphan.core1.loginTest.LoginActivity;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
-
     private TextView textView;
     private EditText inputText;
     private Button listenButton;
@@ -63,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
     private Button signOutButton;
+
     private DatabaseReference mDatabase; //database variables
-    DatabaseController dbc;
 
     private FirebaseAuth auth;
     @Override
@@ -76,10 +75,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        dbc = new DatabaseController();
-
+        DatabaseController dbc = new DatabaseController();
 
         signOutButton = (Button) findViewById(R.id.signOutButton);
 
@@ -104,13 +101,13 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         // Read courseCode from user input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
+        final String courseCode = subject[0]; //Course code for search.
+        final String question = input; //Question up for comparison.
 
         // Finding the requested data in the IME api, should always be called when possible.
         subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
         JSONTask task = new JSONTask();
         task.execute(subject);
-
-
             case R.id.signOutButton:
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
