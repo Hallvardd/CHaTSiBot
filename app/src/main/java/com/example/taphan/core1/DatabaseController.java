@@ -29,11 +29,10 @@ class DatabaseController {
      be added to the database. The to avoid duplicates a reference to the question will also be
      added to the path.
      */
-    void searchDatabase(final DatabaseReference database,String path, final String questionTxt){
-        String dbvalue;
+    void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
         final String[] pathArray = path.split("-");
         DatabaseReference d = database;
-        for(String s:pathArray){
+        for(String s:pathArray){ // for each list in the   
             d = d.child(s);
         }
         final String courseCode = pathArray[0];
@@ -41,23 +40,37 @@ class DatabaseController {
         dbQuestionPath.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                State snap = dataSnapshot.getValue(State.class);
-                // if the state is empty a  new question is created and a reference is added
-                // to the question attribute of the state
-                if(snap.equals(null)){
+                if(!dataSnapshot.exists()){
                     DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
                     String key = uaQuestionDB.push().getKey();
-                    Question q = new Question(key,questionTxt,dbQuestionPath); // a question object is created with reference to the path.
+                    Question q = new Question(key,questionTxt,path); // a question object is created with reference to the path.
+                    textView.setText(key);
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
-                    dbQuestionPath.setValue(new State(null,key));
-                    dbvalue = key;
+                    dbQuestionPath.setValue(new State("NA",key));
                 }
-                else if(!snap.getAnswerID().isEmpty()){
+                else {
+                    State snap = dataSnapshot.getValue(State.class);
+                    textView.setText(snap.getAnswerID());
+                    if (!snap.getAnswerID().equals("NA")){
+                        String answerID = snap.getAnswerID();
+                        DatabaseReference answerDb = database.child(courseCode).child(answerBranchName).child(answerID);
+                        answerDb.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Answer answer = dataSnapshot.getValue(Answer.class);
+                                // setText view as the answer
+                                textView.setText(answer.getAnswerTxt());
+                            }
 
-                }
-
-                else if(!snap.getQuetsionID().isEmpty()){
-
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }
+                    else if (!snap.getQuestionID().isEmpty()) {
+                        textView.setText("The question has already been asked \nThe question will be added to your list of asked questions");
+                        // Todo add question to a students list of asked questions.
+                    }
                 }
             }
             @Override
@@ -65,7 +78,6 @@ class DatabaseController {
 
             }
         });
-
     }
 
     void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
@@ -76,12 +88,6 @@ class DatabaseController {
         courseDatabase.child("answers");
     }
 
-    void addUnansweredQuestionToDB(DatabaseReference database, String courseCode, String text, String questionKeywords){
-        DatabaseReference courseQuestionDatabase = database.child(courseCode).child(uaQuestionBranchName);
-        String key = courseQuestionDatabase.push().getKey();
-        Question question = new Question(key,text);
-        courseQuestionDatabase.child(key).setValue(question);
-    }
 
     void addAnswerToDatabase(final DatabaseReference database, final String questionID, String answerTxt){
         Answer answer = new Answer();
@@ -111,11 +117,11 @@ class DatabaseController {
 
     // A answer can answer several questions, this method adds a reference to from a question to a existing answer
     // if there is a match
-    void addAnsweredQuestion(DatabaseReference database, String courseCode, String questionTxt, String questionKeywords, final String answerID){
+    void addAnsweredQuestion(DatabaseReference database, String courseCode, String questionTxt, String questionKeywords, final String answerID, String questionPath){
         final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
         final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
         final String key = qDatabase.push().getKey();
-        Question q = new Question(key,questionTxt);
+        Question q = new Question(key,questionTxt, questionPath);
         q.setRefAnsID(answerID);
         qDatabase.child(key).setValue(q);
         aDatabase.child(answerID).addListenerForSingleValueEvent(new ValueEventListener() {
