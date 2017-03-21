@@ -1,5 +1,6 @@
 package com.example.taphan.core1;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -44,6 +45,11 @@ import ai.api.model.Result;
 import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import com.example.taphan.core1.loginTest.LoginActivity;
+
 public class MainActivity extends AppCompatActivity implements AIListener {
     private TextView textView;
     private EditText inputText;
@@ -55,8 +61,15 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
+<<<<<<< HEAD
+    private Button signOutButton;
+
+
+=======
+>>>>>>> 765adf9e70e80f784476695daad9f28ae94c3cbb
     private DatabaseReference mDatabase; //database variables
 
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
@@ -68,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         displayDb = (TextView) findViewById(R.id.displayDb);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         DatabaseController dbc = new DatabaseController();
+
+        signOutButton = (Button) findViewById(R.id.signOutButton);
 
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
@@ -82,6 +97,11 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         }
 
     public void buttonClick(View view) {
+
+        switch(view.getId()) {
+
+            case R.id.button:
+
         // Read courseCode from user input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
@@ -109,16 +129,23 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                     // This loop should be used to compare questions when the functionality is implemented.
                     for(Question currentQ:currentQuestions){
                         output += currentQ.getQuestionTxt()+" ";
+
                     }
+                    displayDb.setText(output);
+                    currentQuestions.clear();
                 }
-                displayDb.setText(output);
-                currentQuestions.clear();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+            });
+
+            case R.id.signOutButton:
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
+        }
+
     }
 
   // API.AI code
@@ -301,6 +328,10 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             textView.setText(newResult);
             System.out.println(result);
 
+        }
+
+        public void signOut() {
+            auth.signOut();
         }
 
     }
