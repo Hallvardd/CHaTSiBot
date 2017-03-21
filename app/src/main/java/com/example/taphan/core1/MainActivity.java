@@ -1,5 +1,6 @@
 package com.example.taphan.core1;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,31 +33,44 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.api.AIListener;
+import ai.api.AIServiceContext;
+import ai.api.AIServiceContextBuilder;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
 import ai.api.model.AIError;
+import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
-public class MainActivity extends AppCompatActivity implements AIListener {
-    TextView textView;
-    EditText inputText;
-    Button listenButton;
-    TextView resultTextView;
-    AIService aiService;
-    TextView displayDb;
-    ArrayList<Question> currentQuestions = new ArrayList<>();
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-    DatabaseReference mDatabase; //database variables
+import com.example.taphan.core1.loginTest.LoginActivity;
+
+public class MainActivity extends AppCompatActivity implements AIListener {
+
+    private TextView textView;
+    private EditText inputText;
+    private Button listenButton;
+    private TextView resultTextView;
+    private AIConfiguration config;
+    private AIDataService aiDataService;
+    private AIService aiService;
+    protected TextView displayDb;
+    protected ArrayList<Question> currentQuestions = new ArrayList<>();
+
+    private Button signOutButton;
+    private DatabaseReference mDatabase; //database variables
     DatabaseController dbc;
 
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
         // of objects
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = (TextView)findViewById(R.id.jsonText);
@@ -67,17 +81,26 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         dbc = new DatabaseController();
 
 
+        signOutButton = (Button) findViewById(R.id.signOutButton);
+
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
         // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
-        final AIConfiguration config = new AIConfiguration("a7ccbd15c0db40bfb729a72c12efc15f",
+        config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
+        aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
+
         }
 
     public void buttonClick(View view) {
+
+        switch(view.getId()) {
+
+            case R.id.button:
+
         // Read courseCode from user input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
@@ -87,30 +110,55 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         JSONTask task = new JSONTask();
         task.execute(subject);
 
+
+            case R.id.signOutButton:
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
+        }
+
     }
 
   // API.AI code
     public void listenButtonOnClick(final View view) throws AIServiceException{
-        aiService.startListening();
+        //resultTextView.setText(inputText.getText().toString());
+        final AIRequest aiRequest = new AIRequest();
+        aiRequest.setQuery(inputText.getText().toString());
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+                final AIRequest request = requests[0];
+                try {
+                    final AIResponse response = aiDataService.request(aiRequest);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+                    //   process aiResponse here
+                    // Get parameters
+                    Result result = aiResponse.getResult();
+                    String parameterString = "";
+                    if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+                        for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                        }
+                    }
+
+                    // Show results in TextView.
+                    resultTextView.setText("Query:" + result.getResolvedQuery() +
+                            "\nAction: " + result.getAction() +
+                            "\nParameters: " + parameterString);
+                }
+            }
+        }.execute(aiRequest);
     }
 
-    // Show result when listening is complete
     @Override
     public void onResult(final AIResponse response) {
-        Result result = response.getResult();
 
-        // Get parameters
-        String parameterString = "";
-        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
-            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
-                parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
-            }
-        }
-
-        // Show results in TextView.
-        resultTextView.setText("Query:" + result.getResolvedQuery() +
-                "\nAction: " + result.getAction() +
-                "\nParameters: " + parameterString);
     }
 
     // Handle error
@@ -138,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     public void onListeningFinished() {
 
     }
+
 
     public class JSONTask extends AsyncTask<String, String,String> {
         private String result; // variable to solve the problem of wrong return value in searchJson method
@@ -249,6 +298,10 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             textView.setText(newResult);
             System.out.println(result);
 
+        }
+
+        public void signOut() {
+            auth.signOut();
         }
 
     }
