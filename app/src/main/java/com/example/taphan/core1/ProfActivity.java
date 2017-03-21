@@ -10,10 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.taphan.core1.Messages.MessageAdapter;
+import com.example.taphan.core1.MessageAdapter;
 import com.pusher.client.Pusher;
 import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.SubscriptionEventListener;
@@ -26,7 +27,7 @@ public class ProfActivity extends AppCompatActivity implements View.OnClickListe
     private TextView greeting;
 
     EditText messageInput;
-    Button sendButton;
+    public Button sendButton;
 
     MessageAdapter messageAdapter;
 
@@ -36,35 +37,17 @@ public class ProfActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prof);
 
-        greeting = (TextView) findViewById(R.id.bot_msg);
+        greeting = (TextView) findViewById(R.id.botMsg);
         greeting.setText("Hello professor! I am Indian too!");
 
         messageInput = (EditText) findViewById(R.id.message_input);
         sendButton = (Button) findViewById(R.id.send_button);
-
+        
         sendButton.setOnClickListener(this);
         messageAdapter = new MessageAdapter(this, new ArrayList<String>());
-        final ScrollView messagesView = (ScrollView) findViewById(R.id.messages_view);
-        //messagesView.setAdapter(messageAdapter);
+        final ListView messagesView = (ListView) findViewById(R.id.messages_view);
+        messagesView.setAdapter(messageAdapter);
 
-        // initialize Pusher
-        Pusher pusher = new Pusher("70d36468efcb07076e81");
-
-        // subscribe to our "messages" channel
-        Channel channel = pusher.subscribe("messages");
-
-        // listen for the "new_message" event
-        channel.bind("new_message", new SubscriptionEventListener() {
-
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                messageAdapter.add(data);
-            }
-
-        });
-
-        // connect to the Pusher API
-        pusher.connect();
 
     }
 
@@ -77,5 +60,7 @@ public class ProfActivity extends AppCompatActivity implements View.OnClickListe
 
     private void postMessage() {
         // TODO post to Adapter???
+
     }
+
 }
