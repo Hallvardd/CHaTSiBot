@@ -61,12 +61,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
-<<<<<<< HEAD
     private Button signOutButton;
 
-
-=======
->>>>>>> 765adf9e70e80f784476695daad9f28ae94c3cbb
     private DatabaseReference mDatabase; //database variables
 
     private FirebaseAuth auth;
@@ -112,35 +108,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
         JSONTask task = new JSONTask();
         task.execute(subject);
-
-        /* The function of the following part of the code is sorting questions by the questions
-        reference to course. Ideally there should be a more efficient solution to this. As of now
-        the program does a linear search through all Question objects, finding matching refCourseCode
-        to the course specified.*/
-        mDatabase.child(courseCode).child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { //
-                String output = "Questions: ";
-                for(DataSnapshot d : dataSnapshot.getChildren()){
-                    Question q = d.getValue(Question.class);
-                    currentQuestions.add(q);
-                }
-                if(!currentQuestions.isEmpty()){
-                    // This loop should be used to compare questions when the functionality is implemented.
-                    for(Question currentQ:currentQuestions){
-                        output += currentQ.getQuestionTxt()+" ";
-
-                    }
-                    displayDb.setText(output);
-                    currentQuestions.clear();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    System.out.println("The read failed: " + databaseError.getCode());
-                }
-            });
-
             case R.id.signOutButton:
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
