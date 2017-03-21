@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Core1Test</string>
+    <string name="app_name">CHaTSiBot</string>
     <string name="edit_message">Enter fagkode</string>
     <string name="button_send">Send </string>
 
@@ -20,7 +20,7 @@
     <string name="hint_password">Password</string>
     <string name="hint_name">Fullname</string>
     <string name="btn_login">LOGIN</string>
-    <string name="btn_link_to_register">Not a member? Get registered in Firebase now!</string>
+    <string name="btn_link_to_register">Not a member? Register here!</string>
     <string name="btn_link_to_login">Already registered. Login Me!</string>
     <string name="title_activity_reset_password">ResetPasswordActivity</string>
     <string name="btn_forgot_password">Forgot your password?</string>

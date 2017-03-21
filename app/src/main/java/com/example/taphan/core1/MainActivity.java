@@ -1,5 +1,6 @@
 package com.example.taphan.core1;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -40,6 +41,11 @@ import ai.api.model.AIResponse;
 import ai.api.model.Result;
 import com.google.gson.JsonElement;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import com.example.taphan.core1.loginTest.LoginActivity;
+
 public class MainActivity extends AppCompatActivity implements AIListener {
     private TextView textView;
     private EditText inputText;
@@ -49,12 +55,15 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected TextView displayDb;
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
+    private Button signOutButton;
+
 
     private DatabaseReference mDatabase; //database variables
     private DatabaseReference courseBranch;
     private DatabaseReference questionBranch;
     private DatabaseReference answerBranch;    // end
 
+    private FirebaseAuth auth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // opens an instance of the database and makes three main branches, one for each type
@@ -72,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         answerBranch = mDatabase.child("Answer");
         DatabaseController dbc = new DatabaseController();
 
+        signOutButton = (Button) findViewById(R.id.signOutButton);
+
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
         // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
@@ -81,50 +92,59 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         aiService = AIService.getService(this, config);
         aiService.setListener(this);
 
-
-
         }
 
     public void buttonClick(View view) {
-        // Read courseCode from user input and find general information about the subject
-        String input = inputText.getText().toString();
-        String[] subject = input.split(" ");
-        final String courseCode = subject[0]; //Course code for search.
-        final String question = input; //Question up for comparison.
 
-        // Finding the requested data in the IME api, should always be called when possible.
-        subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
-        JSONTask task = new JSONTask();
-        task.execute(subject);
+        switch(view.getId()) {
 
-        /* The function of the following part of the code is sorting questions by the questions
-        reference to course. Ideally there should be a more efficient solution to this. As of now
-        the program does a linear search through all Question objects, finding matching refCourseCode
-        to the course specified.*/
-        questionBranch.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { //
-                String output = "Questions: ";
-                for(DataSnapshot d: dataSnapshot.getChildren()){
-                    Question q = d.getValue(Question.class);
-                    if(q.getRefCourseCode().equalsIgnoreCase(courseCode)){
-                        currentQuestions.add(q);
+            case R.id.button:
+            // Read courseCode from user input and find general information about the subject
+            String input = inputText.getText().toString();
+            String[] subject = input.split(" ");
+            final String courseCode = subject[0]; //Course code for search.
+            final String question = input; //Question up for comparison.
+
+            // Finding the requested data in the IME api, should always be called when possible.
+            subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
+            JSONTask task = new JSONTask();
+            task.execute(subject);
+
+            /* The function of the following part of the code is sorting questions by the questions
+            reference to course. Ideally there should be a more efficient solution to this. As of now
+            the program does a linear search through all Question objects, finding matching refCourseCode
+            to the course specified.*/
+            questionBranch.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) { //
+                    String output = "Questions: ";
+                    for (DataSnapshot d : dataSnapshot.getChildren()) {
+                        Question q = d.getValue(Question.class);
+                        if (q.getRefCourseCode().equalsIgnoreCase(courseCode)) {
+                            currentQuestions.add(q);
+                        }
                     }
-                }
-                if(!currentQuestions.isEmpty()){
-                    // This loop should be used to compare questions when the functionality is implemented.
-                    for(Question currentQ:currentQuestions){
-                        output += currentQ.getQuestionTxt()+" ";
+                    if (!currentQuestions.isEmpty()) {
+                        // This loop should be used to compare questions when the functionality is implemented.
+                        for (Question currentQ : currentQuestions) {
+                            output += currentQ.getQuestionTxt() + " ";
+                        }
                     }
+                    displayDb.setText(output);
+                    currentQuestions.clear();
                 }
-                displayDb.setText(output);
-                currentQuestions.clear();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("The read failed: " + databaseError.getCode());
+                }
+            });
+
+            case R.id.signOutButton:
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
+        }
+
     }
 
 
@@ -290,6 +310,10 @@ public class MainActivity extends AppCompatActivity implements AIListener {
             textView.setText(newResult);
             System.out.println(result);
 
+        }
+
+        public void signOut() {
+            auth.signOut();
         }
 
     }

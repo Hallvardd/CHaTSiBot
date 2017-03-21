@@ -92,6 +92,14 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/signOutButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="listenButtonOnClick"
+                android:text="Sign out" />
+
+            <Button
                 android:id="@+id/listenButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
