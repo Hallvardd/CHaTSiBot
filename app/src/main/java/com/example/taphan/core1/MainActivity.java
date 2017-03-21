@@ -41,15 +41,16 @@ import ai.api.model.Result;
 import com.google.gson.JsonElement;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
-    private TextView textView;
-    private EditText inputText;
-    private Button listenButton;
-    private TextView resultTextView;
-    private AIService aiService;
-    protected TextView displayDb;
-    protected ArrayList<Question> currentQuestions = new ArrayList<>();
+    TextView textView;
+    EditText inputText;
+    Button listenButton;
+    TextView resultTextView;
+    AIService aiService;
+    TextView displayDb;
+    ArrayList<Question> currentQuestions = new ArrayList<>();
 
-    private DatabaseReference mDatabase; //database variables
+    DatabaseReference mDatabase; //database variables
+    DatabaseController dbc;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +62,10 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseController dbc = new DatabaseController();
+        dbc = new DatabaseController();
+
 
         listenButton = (Button) findViewById(R.id.listenButton);
         resultTextView = (TextView) findViewById(R.id.resultTextView);
@@ -78,40 +81,12 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         // Read courseCode from user input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
-        final String courseCode = subject[0]; //Course code for search.
-        final String question = input; //Question up for comparison.
 
         // Finding the requested data in the IME api, should always be called when possible.
         subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
         JSONTask task = new JSONTask();
         task.execute(subject);
 
-        /* The function of the following part of the code is sorting questions by the questions
-        reference to course. Ideally there should be a more efficient solution to this. As of now
-        the program does a linear search through all Question objects, finding matching refCourseCode
-        to the course specified.*/
-        mDatabase.child(courseCode).child("questions").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { //
-                String output = "Questions: ";
-                for(DataSnapshot d : dataSnapshot.getChildren()){
-                    Question q = d.getValue(Question.class);
-                    currentQuestions.add(q);
-                }
-                if(!currentQuestions.isEmpty()){
-                    // This loop should be used to compare questions when the functionality is implemented.
-                    for(Question currentQ:currentQuestions){
-                        output += currentQ.getQuestionTxt()+" ";
-                    }
-                }
-                displayDb.setText(output);
-                currentQuestions.clear();
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
-        });
     }
 
   // API.AI code
