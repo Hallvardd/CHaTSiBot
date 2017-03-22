@@ -1,8 +1,5 @@
 package com.example.taphan.core1;
 
-/**
- * Created by taphan on 22.03.2017.
- */
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,11 +43,10 @@ class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (chatMessageObj.left) {
             row = inflater.inflate(R.layout.right, parent, false);
-            chatText = (TextView) row.findViewById(R.id.userMsg);
         }else{
             row = inflater.inflate(R.layout.left, parent, false);
-            chatText = (TextView) row.findViewById(R.id.botMsg);
         }
+        chatText = (TextView) row.findViewById(R.id.msgr);
         chatText.setText(chatMessageObj.message);
         return row;
     }
