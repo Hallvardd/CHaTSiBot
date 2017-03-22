@@ -61,9 +61,9 @@ public class MessageAdapter extends ArrayAdapter<String> {
             holder = new MessageViewHolder();
 
             // set the holder's properties to elements in `leftl`
-            holder.thumbnailImageView = (ImageView) convertView.findViewById(R.id.iconL);
-            holder.arrowView = (ImageView) convertView.findViewById(R.id.arrowL);
-            holder.bodyView = (TextView) convertView.findViewById(R.id.botMsg);
+            //holder.thumbnailImageView = (ImageView) convertView.findViewById(R.id.iconL);
+            //holder.arrowView = (ImageView) convertView.findViewById(R.id.arrowL);
+            //holder.bodyView = (TextView) convertView.findViewById(R.id.botMsg);
 
             holder.bodyView.setText(text);
             // assign the holder to the view we will return
