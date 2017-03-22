@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.layoutClass;
 
 /**
  * Created by taphan on 22.03.2017.
