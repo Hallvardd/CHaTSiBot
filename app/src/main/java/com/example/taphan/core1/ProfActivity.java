@@ -7,21 +7,16 @@ package com.example.taphan.core1;
 import android.database.DataSetObserver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ScrollView;
-import android.widget.TextView;
-import com.example.taphan.core1.MessageAdapter;
 
-
-import java.util.ArrayList;
+import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
+import com.example.taphan.core1.layoutClass.ChatMessage;
 
 public class ProfActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
@@ -30,7 +25,7 @@ public class ProfActivity extends AppCompatActivity {
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
-    private boolean side = false;
+    private boolean side = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +39,7 @@ public class ProfActivity extends AppCompatActivity {
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
         listView.setAdapter(chatArrayAdapter);
 
+        // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -60,7 +56,7 @@ public class ProfActivity extends AppCompatActivity {
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
 
-        //to scroll the list view to bottom on data change
+        // to scroll the list view to bottom on data change
         chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -71,49 +67,20 @@ public class ProfActivity extends AppCompatActivity {
     }
 
     private boolean sendChatMessage() {
+        // Implement code to handle answer input from bot after user input here
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
+        chatText.setText("");
+        side = !side; // Switch side everytime there is a new message
+        sendBotMessage();
+        return true;
+    }
+
+    private boolean sendBotMessage() {
+        // Implement code for answer from bot here
+        chatArrayAdapter.add(new ChatMessage(side, "I am a bot"));
         chatText.setText("");
         side = !side; // Switch side everytime there is a new message
         return true;
     }
-
-
-/*
-    private TextView greeting;
-
-    EditText messageInput;
-    public Button sendButton;
-
-    MessageAdapter messageAdapter;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_prof);
-
-        greeting = (TextView) findViewById(R.id.botMsg);
-        greeting.setText("Hello professor! I am Indian too!");
-
-        messageInput = (EditText) findViewById(R.id.message_input);
-        sendButton = (Button) findViewById(R.id.send_button);
-        
-        sendButton.setOnClickListener(this);
-        messageAdapter = new MessageAdapter(this, new ArrayList<String>());
-        final LinearLayout messagesView = (LinearLayout) findViewById(R.id.layout2);
-        messagesView.setAdapter(messageAdapter);
-    }
-
-
-
-    @Override
-    public void onClick(View v) {
-        postMessage();
-    }
-
-    private void postMessage() {
-        // TODO post to Adapter???
-        messageAdapter.add(messageInput.getText().toString());
-    }*/
 
 }
