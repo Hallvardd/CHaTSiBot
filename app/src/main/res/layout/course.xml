@@ -3,11 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/course"
+    <TextView
+        android:id="@+id/course_object"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorAccent"
+        android:layout_height="41dp"
+        android:background="null"
+        android:textAllCaps="true"
+        android:textSize="16dp"
+        android:gravity="center"
         android:text="Course name"
         android:textColor="@android:color/black" />
 </LinearLayout>

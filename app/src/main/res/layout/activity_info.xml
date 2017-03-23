@@ -18,8 +18,6 @@
         android:weightSum="1">
 
 
-        <!-- Login Button -->
-
         <Button
             android:id="@+id/add_course"
             android:layout_width="fill_parent"
@@ -29,14 +27,14 @@
             android:text="Add course"
             android:textColor="@android:color/black" />
 
-        <Button
+        <!--Button
             android:id="@+id/choose_course"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dip"
             android:background="@color/colorAccent"
             android:text="Choose course"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black" /-->
 
         <Button
             android:id="@+id/info"

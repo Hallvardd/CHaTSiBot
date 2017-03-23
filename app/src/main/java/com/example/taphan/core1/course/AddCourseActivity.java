@@ -25,7 +25,6 @@ public class AddCourseActivity extends AppCompatActivity {
 
     private EditText enterCourse;
     private Button addCourseButton;
-    private ArrayList<String> courseKeys;
     ListView listView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -37,8 +36,7 @@ public class AddCourseActivity extends AppCompatActivity {
 
         // Add items to course list when initialized
         listView = (ListView) findViewById(R.id.courseview);
-        courseKeys = new ArrayList<>();
-        final ArrayAdapter adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.course, courseKeys);
+        final CourseAdapter adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
         // Add a course to the Course object containing all courses
@@ -47,8 +45,7 @@ public class AddCourseActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "msg");
                 String course = enterCourse.getText().toString();
-                courseKeys.add(course);
-                adapter.add(course);
+                adapter.add(new Course(course));
             }
         });
 
@@ -57,7 +54,6 @@ public class AddCourseActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String chosenCourse = (parent.getItemAtPosition(position) + "").trim(); // Find the course key that was chosen
-                courseKeys.add(chosenCourse);
                 Intent chat = new Intent(getApplicationContext(), ChatActivity.class);
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
             }

@@ -10,27 +10,14 @@ import java.util.HashMap;
 
 public class Course {
 
-    private ArrayList<String> courseKeys;
-    private String chosenCourse;
+    private String courseKey = "";
 
-    public Course() {
-        courseKeys = new ArrayList<>();
+    public Course(String courseKey) {
+        this.courseKey = courseKey;
     }
 
-    public ArrayList<String> getCourseKeys() {
-        return courseKeys;
-    }
-
-    public void add(String courseKey) {
-        courseKeys.add(courseKey);
-    }
-
-    public void setChosenCourse(String chosenCourse) {
-        this.chosenCourse = chosenCourse;
-    }
-
-    public String getChosenCourse() {
-        return chosenCourse;
+    public String getCourse() {
+        return courseKey;
     }
 
 }
