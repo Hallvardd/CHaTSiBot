@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.example.taphan.core1.questionDatabase.Answer;
 import com.example.taphan.core1.questionDatabase.Question;
+import com.example.taphan.core1.questionDatabase.State;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,11 +19,55 @@ class DatabaseController {
     private final static String answerBranchName ="answers";
     private final static String uaQuestionBranchName = "unansweredQuestions";
 
-    DatabaseController() {
+    DatabaseController() {}
+    /*
+     searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
+     question is answered the path will exist with and the answer branch will contain a String
+     containing an reference to an answer object.
+
+     if the question is not answered the answer branch will be empty and an unanswered question will
+     be added to the database. The to avoid duplicates a reference to the question will also be
+     added to the path.
+     */
+    void searchDatabase(final DatabaseReference database,String path, final String questionTxt){
+        String dbvalue;
+        final String[] pathArray = path.split("-");
+        DatabaseReference d = database;
+        for(String s:pathArray){
+            d = d.child(s);
+        }
+        final String courseCode = pathArray[0];
+        final DatabaseReference dbQuestionPath = d.child("state");
+        dbQuestionPath.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                State snap = dataSnapshot.getValue(State.class);
+                // if the state is empty a  new question is created and a reference is added
+                // to the question attribute of the state
+                if(snap.equals(null)){
+                    DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
+                    String key = uaQuestionDB.push().getKey();
+                    Question q = new Question(key,questionTxt,dbQuestionPath); // a question object is created with reference to the path.
+                    uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+                    dbQuestionPath.setValue(new State(null,key));
+                    dbvalue = key;
+                }
+                else if(!snap.getAnswerID().isEmpty()){
+
+                }
+
+                else if(!snap.getQuetsionID().isEmpty()){
+
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
-    // Adding courses will only be done when courses are used for the first time.
-    // courses are not object, but branches of the database, the question database and
-    // answer database in these branches are on the same level as the course info
+
     void addCourseDatabase(DatabaseReference database, String courseCode, String profName, String email){
         DatabaseReference courseDatabase = database.child(courseCode);
         courseDatabase.child("profName").setValue(profName);
@@ -38,11 +83,11 @@ class DatabaseController {
         courseQuestionDatabase.child(key).setValue(question);
     }
 
-    void addAnswerToDatabase(final DatabaseReference database, final String courseCode, final String questionID, String answerTxt){
+    void addAnswerToDatabase(final DatabaseReference database, final String questionID, String answerTxt){
         Answer answer = new Answer();
-        final DatabaseReference aDatabase = database.child(courseCode).child(answerBranchName);
-        final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
-        final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
+        final DatabaseReference aDatabase = database.child(answerBranchName);
+        final DatabaseReference uaqDatabase = database.child(uaQuestionBranchName);
+        final DatabaseReference qDatabase = database.child(questionBranchName);
         final String answerKey = aDatabase.push().getKey();
         final String newQuestionID = qDatabase.push().getKey();
 
@@ -84,8 +129,6 @@ class DatabaseController {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-
     }
-
 }
 
