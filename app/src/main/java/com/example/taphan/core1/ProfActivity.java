@@ -81,6 +81,9 @@ public class ProfActivity extends AppCompatActivity {
         });
         */
 
+//        Adding test questions for demonstration should follow this format
+//        dbc.searchDatabase(mDatabase,"TAC101-price-vegetable-tomato","How much does a tomato cost?", tv);
+
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
 
@@ -92,9 +95,6 @@ public class ProfActivity extends AppCompatActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
-
-
-
     }
 
 
@@ -144,14 +144,13 @@ public class ProfActivity extends AppCompatActivity {
             Question q = qList.get(0);
             dbc.addAnswerToDatabase(mDatabase,q.getQuestionID(),course,chatText.getText().toString()); //takes in attributes from the question and uses it to answer the question and delete the unanswered question.
             sendProfAnswer(chatText.toString());
-            qList.remove(0);
+            qList.remove(0); // removes the first item of the list, the question is also removed from the database by the above method for answering the question. 
             if(!qList.isEmpty()){
                 sendStudentQuestion(qList.get(0).getQuestionTxt());
             }
             else{
                 sendStudentQuestion("There are no more questions right now");
             }
-
         }
     }
 
