@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     protected ArrayList<Question> currentQuestions = new ArrayList<>();
 
     private Button signOutButton;
+
     private DatabaseReference mDatabase; //database variables
     DatabaseController dbc;
 
@@ -110,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         JSONTask task = new JSONTask();
         task.execute(subject);
 
-
             case R.id.signOutButton:
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
 
@@ -147,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                         }
                     }
 
+                    // Send til databasen for å finne svar, kall en metode
+                    // Hvis returnert False, legg den inn i unansweredQuestions in database
+
                     // Show results in TextView.
                     resultTextView.setText("Query:" + result.getResolvedQuery() +
                             "\nAction: " + result.getAction() +
@@ -166,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
     public void onError(AIError error) {
         resultTextView.setText(error.toString());
     }
+
 
     @Override
     public void onAudioLevel(final float level) {
