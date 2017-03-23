@@ -5,6 +5,7 @@ package com.example.taphan.core1.layoutClass;
  */
 
 import android.database.DataSetObserver;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -18,14 +19,32 @@ import android.widget.ListView;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
 import com.example.taphan.core1.layoutClass.ChatMessage;
+import com.google.gson.JsonElement;
 
-public class ChatActivity extends AppCompatActivity {
+import java.util.Map;
+
+import ai.api.AIListener;
+import ai.api.AIServiceException;
+import ai.api.android.AIConfiguration;
+import ai.api.android.AIDataService;
+import ai.api.android.AIService;
+import ai.api.model.AIError;
+import ai.api.model.AIRequest;
+import ai.api.model.AIResponse;
+import ai.api.model.Result;
+
+public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
+
+    private AIConfiguration config;
+    private AIDataService aiDataService;
+    private AIService aiService;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,13 +62,20 @@ public class ChatActivity extends AppCompatActivity {
         chatText = (EditText) findViewById(R.id.msg);
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return (event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && sendChatMessage();
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    try{
+                        return sendChatMessage();
+                    } catch(AIServiceException e) {}
+                }
+                return false;
             }
         });
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage();
+                try{
+                    sendChatMessage();
+                } catch (AIServiceException e) {}
             }
         });
 
@@ -64,21 +90,105 @@ public class ChatActivity extends AppCompatActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+
+        // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
+        config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
+                AIConfiguration.SupportedLanguages.English,
+                AIConfiguration.RecognitionEngine.System);
+        aiService = AIService.getService(this, config);
+        aiDataService = new AIDataService(this,config);
+        aiService.setListener(this);
     }
 
-    private boolean sendChatMessage() {
+    private boolean sendChatMessage() throws AIServiceException{
         // Implement code to handle answer input from bot after user input here
-        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+        //chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+        listenButtonOnClick();
         chatText.setText("");
-        sendBotMessage();
+        //sendBotMessage();
         return true;
     }
 
-    private boolean sendBotMessage() {
+    private void sendBotMessage(String message) {
         // Implement code for answer from bot here
-        chatArrayAdapter.add(new ChatMessage(false, "I am a bot"));
+        chatArrayAdapter.add(new ChatMessage(false, message));
         chatText.setText("");
-        return true;
+    }
+
+    // API.AI code
+    public void listenButtonOnClick() throws AIServiceException {
+        //resultTextView.setText(inputText.getText().toString());
+        final AIRequest aiRequest = new AIRequest();
+        aiRequest.setQuery(chatText.getText().toString());
+
+        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+
+        new AsyncTask<AIRequest, Void, AIResponse>() {
+            @Override
+            protected AIResponse doInBackground(AIRequest... requests) {
+                final AIRequest request = requests[0];
+                try {
+                    final AIResponse response = aiDataService.request(aiRequest);
+                    return response;
+                } catch (AIServiceException e) {
+                }
+                return null;
+            }
+            @Override
+            protected void onPostExecute(AIResponse aiResponse) {
+                if (aiResponse != null) {
+                    //   process aiResponse here
+                    // Get parameters
+                    Result result = aiResponse.getResult();
+                    String parameterString = "";
+                    if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+                        for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                        }
+                    }
+
+                    // Send til databasen for å finne svar, kall en metode
+                    // Hvis returnert False, legg den inn i unansweredQuestions in database
+
+                    // Send answer from bot
+                    sendBotMessage("Query:" + result.getResolvedQuery() +
+                            "\nAction: " + result.getAction() +
+                            "\nParameters: " + parameterString);
+                }
+            }
+        }.execute(aiRequest);
+    }
+
+    @Override
+    public void onResult(final AIResponse response) {
+
+    }
+
+    // Handle error
+    @Override
+    public void onError(AIError error) {
+        //resultTextView.setText(error.toString());
+    }
+
+
+    @Override
+    public void onAudioLevel(final float level) {
+
+    }
+
+    @Override
+    public void onListeningStarted() {
+
+    }
+
+    @Override
+    public void onListeningCanceled() {
+
+    }
+
+    @Override
+    public void onListeningFinished() {
+
     }
 
 }
