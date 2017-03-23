@@ -8,14 +8,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/textview"
-        android:paddingBottom="8dp"
+        android:paddingBottom="5dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:paddingTop="5dp"
-        android:text="Sampleleft"
+        android:text="Sample"
         android:textColor="#000" />
 
 

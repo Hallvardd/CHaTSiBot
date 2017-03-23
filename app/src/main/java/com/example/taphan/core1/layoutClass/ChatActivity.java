@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.layoutClass;
 
 /**
  * Created by Charles on 21.03.2017.
@@ -15,17 +15,17 @@ import android.widget.EditText;
 
 import android.widget.ListView;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
 import com.example.taphan.core1.layoutClass.ChatMessage;
 
-public class ProfActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity";
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
-    private boolean side = true;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,18 +68,16 @@ public class ProfActivity extends AppCompatActivity {
 
     private boolean sendChatMessage() {
         // Implement code to handle answer input from bot after user input here
-        chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
+        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
         chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
         sendBotMessage();
         return true;
     }
 
     private boolean sendBotMessage() {
         // Implement code for answer from bot here
-        chatArrayAdapter.add(new ChatMessage(side, "I am a bot"));
+        chatArrayAdapter.add(new ChatMessage(false, "I am a bot"));
         chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
         return true;
     }
 
