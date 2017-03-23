@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.taphan.core1.R;
 import com.google.gson.JsonElement;
@@ -32,6 +33,8 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import static com.example.taphan.core1.course.AddCourseActivity.globalCourse;
+
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
 
@@ -39,6 +42,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
+    private TextView title;
+    private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
     private AIDataService aiDataService;
@@ -49,10 +54,16 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_prof);
+        setContentView(R.layout.activity_chat);
+
+        // Set title of current chat activity corresponds to current course
+        title = (TextView) findViewById(R.id.chat_title);
+        currentCourse = globalCourse.getChosenCourse();
+        title.setText(currentCourse);
 
         buttonSend = (Button) findViewById(R.id.send);
 
+        // The listview to show chat bubbles
         listView = (ListView) findViewById(R.id.msgview);
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
         listView.setAdapter(chatArrayAdapter);
@@ -90,7 +101,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             }
         });
 
-        // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
+        // The necessary base code to connect and use API.AI
         config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
