@@ -1,4 +1,4 @@
-package com.example.taphan.core1.activity;
+package com.example.taphan.core1.course;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.taphan.core1.R;
+import com.example.taphan.core1.login.LoginActivity;
 
 /**
  * Created by Charles on 23.03.2017.
@@ -42,7 +43,15 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
 
-        // TODO: Sign out
+        //
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(InfoActivity.this, LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
 

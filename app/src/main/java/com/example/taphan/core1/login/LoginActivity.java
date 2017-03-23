@@ -1,4 +1,4 @@
-package com.example.taphan.core1.loginTest;
+package com.example.taphan.core1.login;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,8 +14,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.taphan.core1.layoutClass.ChatActivity;
-import com.example.taphan.core1.activity.InfoActivity;
+import com.example.taphan.core1.chat.ChatActivity;
+import com.example.taphan.core1.course.InfoActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

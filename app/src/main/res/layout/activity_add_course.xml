@@ -1,6 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:weightSum="1"
+    tools:context=".course.AddCourseActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.18"
+        android:text="Enter a course code or course name, then click on the 'Add' button to add a course" />
+
+    <EditText
+        android:id="@+id/enter_course"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter course" />
+
+    <Button
+        android:id="@+id/add_course_button"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="100dip"
+        android:background="@color/colorAccent"
+        android:text="Add course"
+        android:textColor="@android:color/black" />
 
 </LinearLayout>

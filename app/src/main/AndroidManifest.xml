@@ -11,17 +11,18 @@
         android:label="CHaTSibot"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".loginTest.LoginActivity">
+        <activity android:name=".course.InfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".layoutClass.ChatActivity"/>
-        <activity android:name=".loginTest.SignupActivity"/>
-        <activity android:name=".activity.InfoActivity"/>
-        <activity android:name=".activity.AddCourseActivity"/>
-        <activity android:name=".activity.ChooseCourseActivity"/>
+        <!-- activity android:name=".activity.InfoActivity"/ -->
+        <activity android:name=".chat.ChatActivity"/>
+        <activity android:name=".login.LoginActivity"/>
+        <activity android:name=".login.SignupActivity"/>
+        <activity android:name=".course.AddCourseActivity"/>
+        <activity android:name=".course.ChooseCourseActivity"/>
     </application>
 
 </manifest>

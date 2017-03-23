@@ -1,7 +1,8 @@
-package com.example.taphan.core1.layoutClass;
+package com.example.taphan.core1.chat;
 
 /**
  * Created by Charles on 21.03.2017.
+ * The main class for chatting with bot
  */
 
 import android.database.DataSetObserver;
@@ -17,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
-import com.example.taphan.core1.layoutClass.ChatMessage;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
@@ -102,7 +101,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
     private boolean sendChatMessage() throws AIServiceException{
         // Implement code to handle answer input from bot after user input here
-        //chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
         listenButtonOnClick();
         chatText.setText("");
         //sendBotMessage();
@@ -117,11 +116,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
-        //resultTextView.setText(inputText.getText().toString());
         final AIRequest aiRequest = new AIRequest();
         aiRequest.setQuery(chatText.getText().toString());
-
-        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
 
         new AsyncTask<AIRequest, Void, AIResponse>() {
             @Override

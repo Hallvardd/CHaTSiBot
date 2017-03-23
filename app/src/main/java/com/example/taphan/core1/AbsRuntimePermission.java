@@ -13,7 +13,7 @@ import android.util.SparseIntArray;
 import android.view.View;
 
 /**
- * Created by NgocTri on 7/4/2016.
+ * A class to ask user for permission to access microphone, making it available to communicate with bot using audio
  */
 public abstract class AbsRuntimePermission extends Activity {
     private SparseIntArray mErrorString;

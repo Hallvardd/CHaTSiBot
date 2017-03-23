@@ -10,11 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.taphan.core1.questionDatabase.Question;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,8 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.api.AIListener;
-import ai.api.AIServiceContext;
-import ai.api.AIServiceContextBuilder;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
@@ -46,9 +40,8 @@ import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import com.example.taphan.core1.loginTest.LoginActivity;
+import com.example.taphan.core1.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
 

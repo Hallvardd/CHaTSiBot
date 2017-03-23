@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.taphan.core1.loginTest.LoginActivity">
+    tools:context="com.example.taphan.core1.login.LoginActivity">
 
     <ProgressBar
         android:id="@+id/progressBar"

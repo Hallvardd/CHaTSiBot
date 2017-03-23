@@ -1,4 +1,4 @@
-package com.example.taphan.core1.layoutClass;
+package com.example.taphan.core1.chat;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +11,10 @@ import com.example.taphan.core1.R;
 
 import java.util.ArrayList;
 import java.util.List;
+
+/**
+ * An Adapter class used for making messages into chat bubbles
+ */
 
 public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
