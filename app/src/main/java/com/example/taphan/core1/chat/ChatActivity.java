@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
+import com.example.taphan.core1.course.AddCourseActivity;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
@@ -32,6 +33,7 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
@@ -56,8 +58,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
-        //currentCourse = globalCourse.getChosenCourse();
-        //title.setText(currentCourse);
+        currentCourse = AddCourseActivity.globalCourse.getCourse();
+        title.setText(currentCourse.toUpperCase());
 
         buttonSend = (Button) findViewById(R.id.send);
 

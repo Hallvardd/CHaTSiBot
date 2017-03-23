@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
@@ -25,6 +26,7 @@ public class AddCourseActivity extends AppCompatActivity {
 
     private EditText enterCourse;
     private Button addCourseButton;
+    public static Course globalCourse;
     ListView listView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -43,7 +45,6 @@ public class AddCourseActivity extends AppCompatActivity {
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "msg");
                 String course = enterCourse.getText().toString();
                 adapter.add(new Course(course));
             }
@@ -53,14 +54,13 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String chosenCourse = (parent.getItemAtPosition(position) + "").trim(); // Find the course key that was chosen
+                globalCourse = (Course) parent.getItemAtPosition(position); // Find the course key that was chosen
                 Intent chat = new Intent(getApplicationContext(), ChatActivity.class);
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
+
             }
         });
 
     }
-
-
 
 }
