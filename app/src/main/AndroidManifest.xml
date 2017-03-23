@@ -11,15 +11,18 @@
         android:label="CHaTSibot"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".layoutClass.ChatActivity">
+        <activity android:name=".loginTest.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name=".loginTest.LoginActivity"
+            android:name=".layoutClass.ChatActivity"
             android:label="CHaTSibot" >
+        </activity>
+        <activity
+            android:name=".loginTest.SignupActivity">
         </activity>
     </application>
 
