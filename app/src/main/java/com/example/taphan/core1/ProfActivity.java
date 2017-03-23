@@ -60,28 +60,26 @@ public class ProfActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         dbc = new DatabaseController();
         qList = new ArrayList<>();
-        tv =(TextView) findViewById(R.id.resulttv);
+        tv = (TextView) findViewById(R.id.resulttv);
+
         fillQList("TAC101");
-        String s ="Well";
-        for(Question q:qList){
-            s += "Hello" + q.getQuestionTxt();
-        }
-
-
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
+        /*
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return (event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && sendStudentQuestion();
+                return (event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && sendStudentQuestion(chatText.getText().toString());
             }
         });
+        /*
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 sendStudentQuestion();
             }
         });
+        */
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
@@ -94,19 +92,29 @@ public class ProfActivity extends AppCompatActivity {
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+
+
+
     }
 
-    public void fillQList(String course){
-        DatabaseReference subjectQuestionsRef = mDatabase.child(course).child(uaQuestionBranchName);
-        subjectQuestionsRef.addValueEventListener(new ValueEventListener() {
+
+    public void fillQList(String courseCode){
+        DatabaseReference subjectQuestionsRef = mDatabase.child(courseCode).child(uaQuestionBranchName);
+        subjectQuestionsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            boolean a = true;
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot qSnap: dataSnapshot.getChildren()){
                     Question q = qSnap.getValue(Question.class);
                     qList.add(q);
-                    tv.setText("Funker");
+                    if(a){
+                        tv.setText(q.getQuestionTxt());
+                        sendStudentQuestion(q.getQuestionTxt());
+                        a = false;
+                    }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -114,26 +122,37 @@ public class ProfActivity extends AppCompatActivity {
         });
 
     }
-    public void addQuestionToList(Question q){
-        qList.add(q);
-        tv.setText(q.getQuestionTxt());
-    }
 
-    private boolean sendStudentQuestion() {
+    private boolean sendProfAnswer(String answer) {
         // Implement code to handle answer input from bot after user input here
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
         side = !side; // Switch side everytime there is a new message
-        sendProfAnswer();
         return true;
     }
 
-    private boolean sendProfAnswer() {
+    private boolean sendStudentQuestion(String question) {
         // Implement code for answer from bot here
-        chatArrayAdapter.add(new ChatMessage(side, "I am a bot"));
+        chatArrayAdapter.add(new ChatMessage(side, question));
         chatText.setText("");
         side = !side; // Switch side everytime there is a new message
         return true;
+    }
+
+    public void sendMsg(View view) {
+        if(!qList.isEmpty()) {
+            Question q = qList.get(0);
+            dbc.addAnswerToDatabase(mDatabase,q.getQuestionID(),course,chatText.getText().toString()); //takes in attributes from the question and uses it to answer the question and delete the unanswered question.
+            sendProfAnswer(chatText.toString());
+            qList.remove(0);
+            if(!qList.isEmpty()){
+                sendStudentQuestion(qList.get(0).getQuestionTxt());
+            }
+            else{
+                sendStudentQuestion("There are no more questions right now");
+            }
+
+        }
     }
 
 
