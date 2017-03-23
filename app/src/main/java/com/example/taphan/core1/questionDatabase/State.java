@@ -24,13 +24,13 @@ public class State {
         this.questionID = questionID;
 
     }
-    public String getQuetsionID(){
+    public String getQuestionID(){
         return questionID;
     }
 
 
     public void setAnswerID(String answerID){
-        this.questionID = questionID;
+        this.answerID = answerID;
     }
 
     public String getAnswerID(){

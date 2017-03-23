@@ -63,7 +63,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     private Button signOutButton;
 
-    private DatabaseReference mDatabase; //database variables
+    private DatabaseReference mDatabase; //database
+    private DatabaseController dbc;
 
     private FirebaseAuth auth;
     @Override
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        DatabaseController dbc = new DatabaseController();
+        dbc = new DatabaseController();
 
         signOutButton = (Button) findViewById(R.id.signOutButton);
 
@@ -138,19 +139,26 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                     // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
+                    String key = null;
+                    String question = aiResponse.toString();
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
                             parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                            key = entry.getKey()+"-"+ entry.getValue();
                         }
                     }
+
+                    dbc.searchDatabase(mDatabase, key, question, resultTextView);
+
 
                     // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
 
-                    // Show results in TextView.
+                    /*/ Show results in TextView.
                     resultTextView.setText("Query:" + result.getResolvedQuery() +
                             "\nAction: " + result.getAction() +
                             "\nParameters: " + parameterString);
+                    */
                 }
             }
         }.execute(aiRequest);

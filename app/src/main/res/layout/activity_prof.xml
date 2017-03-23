@@ -7,6 +7,12 @@
     android:orientation="vertical"
     tools:context=".ProfActivity">
 
+    <TextView
+        android:id="@+id/resulttv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
     <ListView
         android:id="@+id/msgview"
         android:layout_width="fill_parent"
