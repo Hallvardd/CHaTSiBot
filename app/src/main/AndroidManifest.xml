@@ -17,13 +17,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".layoutClass.ChatActivity"
-            android:label="CHaTSibot" >
-        </activity>
-        <activity
-            android:name=".loginTest.SignupActivity">
-        </activity>
+        <activity android:name=".layoutClass.ChatActivity"/>
+        <activity android:name=".loginTest.SignupActivity"/>
+        <activity android:name=".activity.InfoActivity"/>
+        <activity android:name=".activity.AddCourseActivity"/>
+        <activity android:name=".activity.ChooseCourseActivity"/>
     </application>
 
 </manifest>

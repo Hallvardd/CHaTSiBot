@@ -3,14 +3,10 @@ package com.example.taphan.core1.loginTest;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.example.taphan.core1.MainActivity;
 import com.example.taphan.core1.R;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.taphan.core1.layoutClass.ChatActivity;
+import com.example.taphan.core1.activity.InfoActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -109,7 +106,8 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     {
-                                        Intent intent = new Intent(LoginActivity.this, ChatActivity.class);
+                                        // Log in successfully will lead to Info page
+                                        Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }

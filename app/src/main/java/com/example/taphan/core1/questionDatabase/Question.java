@@ -10,13 +10,13 @@ public class Question {
     private String questionID; //key
     private String questionTxt;
     private String refAnsID;
-    private DatabaseReference questionPath;
+    private String questionPath;
 
     public Question(){
 
     }
 
-    public Question(String questionID, String questionTxt, DatabaseReference questionPath){
+    public Question(String questionID, String questionTxt, String questionPath){
         this.questionID = questionID;
         this.questionTxt = questionTxt;
         this.questionPath = questionPath;
@@ -47,12 +47,11 @@ public class Question {
         this.questionTxt = question;
     }
 
-    public void setQuestionPath(DatabaseReference questionPath){
+    public void setQuestionPath(String questionPath){
         this.questionPath = questionPath;
     }
-    public DatabaseReference getQuestionPath(){
+    public String getQuestionPath(){
         return  questionPath;
     }
 
 }
-
