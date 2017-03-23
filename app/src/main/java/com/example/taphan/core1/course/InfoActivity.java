@@ -17,14 +17,12 @@ public class InfoActivity extends AppCompatActivity{
 
     private Button signOutButton;
     private Button addCourseButton;
-    private Button chooseCourseButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
 
         addCourseButton = (Button) findViewById(R.id.add_course);
-        chooseCourseButton = (Button) findViewById(R.id.choose_course);
         signOutButton = (Button) findViewById(R.id.sign_out);
 
         addCourseButton.setOnClickListener(new View.OnClickListener() {
@@ -35,15 +33,7 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
 
-        chooseCourseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                Intent intent = new Intent(InfoActivity.this, ChooseCourseActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        //
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

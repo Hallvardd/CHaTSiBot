@@ -33,8 +33,6 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
-import static com.example.taphan.core1.course.AddCourseActivity.globalCourse;
-
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
 
@@ -58,8 +56,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
-        currentCourse = globalCourse.getChosenCourse();
-        title.setText(currentCourse);
+        //currentCourse = globalCourse.getChosenCourse();
+        //title.setText(currentCourse);
 
         buttonSend = (Button) findViewById(R.id.send);
 

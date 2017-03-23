@@ -22,7 +22,6 @@
         <activity android:name=".login.LoginActivity"/>
         <activity android:name=".login.SignupActivity"/>
         <activity android:name=".course.AddCourseActivity"/>
-        <activity android:name=".course.ChooseCourseActivity"/>
     </application>
 
 </manifest>
