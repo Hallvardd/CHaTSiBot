@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.chat;
 
 import ai.api.model.AIError;
 import ai.api.model.AIResponse;

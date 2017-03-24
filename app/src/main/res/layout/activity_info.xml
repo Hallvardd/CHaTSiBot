@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".course.InfoActivity">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/colorPrimary"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:weightSum="1">
+
+
+        <Button
+            android:id="@+id/add_course"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-30dip"
+            android:background="@color/colorAccent"
+            android:text="Add course"
+            android:textColor="@android:color/black" />
+
+        <!--Button
+            android:id="@+id/choose_course"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dip"
+            android:background="@color/colorAccent"
+            android:text="Choose course"
+            android:textColor="@android:color/black" /-->
+
+        <Button
+            android:id="@+id/info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dip"
+            android:background="@color/colorAccent"
+            android:text="Info"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/sign_out"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dip"
+            android:background="@color/colorAccent"
+            android:text="Sign out"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

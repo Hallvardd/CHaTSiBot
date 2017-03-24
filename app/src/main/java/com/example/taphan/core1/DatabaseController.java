@@ -46,6 +46,7 @@ class DatabaseController {
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,path); // a question object is created with reference to the path.
                     textView.setText("The question has been sent to your professor.");
+
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
                     dbQuestionPath.setValue(new State("NA",key));
                 }
