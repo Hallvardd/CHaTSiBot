@@ -12,10 +12,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
 
 import java.util.ArrayList;
+
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 /**
  * Created by taphan on 23.03.2017.
@@ -55,8 +58,15 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                globalCourse = (Course) parent.getItemAtPosition(position); // Find the course key that was chosen
-                Intent chat = new Intent(getApplicationContext(), ChatActivity.class);
+                globalCourse = (Course) parent.getItemAtPosition(position); // Find
+                Intent chat;// the course key that was chosen
+                if(globalUser.getUser().equals("Professor")){
+                    chat = new Intent(getApplicationContext(), ProfActivity.class);
+
+                } else {
+                    chat = new Intent(getApplicationContext(), ChatActivity.class);
+
+                }
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
 
             }

@@ -14,4 +14,8 @@ public class User {
     public User(String user) {
         this.user = user;
     }
+
+    public String getUser() {
+        return user;
+    }
 }

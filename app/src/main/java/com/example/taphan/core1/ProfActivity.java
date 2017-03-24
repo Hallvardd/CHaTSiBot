@@ -41,7 +41,7 @@ public class ProfActivity extends AppCompatActivity {
 
     private DatabaseController dbc; // creates a databaseController to access firebase data.
     private DatabaseReference mDatabase; //database reference to our firebase database.
-    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
+    private final String course = "tdt4140"; // placeholder for variable deciding which questions to read from and answer.
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
 
@@ -62,7 +62,7 @@ public class ProfActivity extends AppCompatActivity {
         qList = new ArrayList<>();
         tv = (TextView) findViewById(R.id.resulttv);
 
-        fillQList("TAC101");
+        fillQList(course);
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
@@ -124,7 +124,7 @@ public class ProfActivity extends AppCompatActivity {
     }
 
     private boolean sendProfAnswer(String answer) {
-        // Implement code to handle answer input from bot after user input here
+        // Implement code to handle answer input from bot after globalUser input here
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
         side = false; // Switch side everytime there is a new message
