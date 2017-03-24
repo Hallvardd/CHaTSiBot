@@ -37,7 +37,7 @@
         android:layout_height="204dp"
         android:background="@null"
         android:divider="@null"
-        android:stackFromBottom="true"
+        android:stackFromBottom="false"
         android:layout_weight="0.35"
         android:transcriptMode="alwaysScroll" />
 

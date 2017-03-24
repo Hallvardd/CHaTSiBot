@@ -9,6 +9,8 @@ public class User {
     private String email;
     private String pw;
 
+    // TODO add users to database and save their courses
+
     public User(String user) {
         this.user = user;
     }

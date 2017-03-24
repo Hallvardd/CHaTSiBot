@@ -20,7 +20,7 @@ public class DatabaseController {
     private final static String answerBranchName ="answers";
     private final static String uaQuestionBranchName = "unansweredQuestions";
 
-    DatabaseController() {}
+    public DatabaseController() {}
     /*
      searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
      question is answered the path will exist with and the answer branch will contain a String

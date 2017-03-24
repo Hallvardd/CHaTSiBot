@@ -24,6 +24,7 @@ import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.example.taphan.core1.user.User;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonElement;
 
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
+    private TextView invisible;
     private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
@@ -74,6 +76,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         title = (TextView) findViewById(R.id.chat_title);
         currentCourse = AddCourseActivity.globalCourse.getCourse();
         title.setText(currentCourse.toUpperCase());
+
+        // Make an invisible TextView to store information from database, and send it to bot
+        invisible = (TextView) findViewById(R.id.invisible_text);
 
         buttonSend = (Button) findViewById(R.id.send);
 
@@ -114,6 +119,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+
+
+        // Database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        dbc = new DatabaseController();
 
         // The necessary base code to connect and use API.AI
         config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
@@ -162,20 +172,21 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
+                    String key = "";
+                    String value = "";
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            key = entry.getKey();
+                            value = entry.getValue() + "";
                             parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
                         }
                     }
 
-                    // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
-                    //dbc.searchDatabase(mDatabase,"TAC101-price-vegetable-tomato","How much does a tomato cost?", title);
+                    dbc.searchDatabase(mDatabase, key, value, invisible);
 
                     // Send answer from bot
-                    sendBotMessage("Query:" + result.getResolvedQuery() +
-                            "\nAction: " + result.getAction() +
-                            "\nParameters: " + parameterString);
+                    sendBotMessage(invisible.getText().toString());
                 }
             }
         }.execute(aiRequest);
