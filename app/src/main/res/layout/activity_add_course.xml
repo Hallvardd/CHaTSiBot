@@ -7,7 +7,8 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin"
     android:weightSum="1"
-    tools:context=".course.AddCourseActivity">
+    android:background="@color/course_main"
+    tools:context=".course.AddCourseActivity" >
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,10 +36,10 @@
         android:id="@+id/courseview"
         android:layout_width="match_parent"
         android:layout_height="204dp"
+        android:layout_weight="0.35"
         android:background="@null"
         android:divider="@null"
-        android:stackFromBottom="true"
-        android:layout_weight="0.35"
+        android:stackFromBottom="false"
         android:transcriptMode="alwaysScroll" />
 
 </LinearLayout>

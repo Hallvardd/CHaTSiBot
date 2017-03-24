@@ -47,6 +47,7 @@ public class AddCourseActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
                 adapter.add(new Course(course));
+                enterCourse.setText("");
             }
         });
 

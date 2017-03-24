@@ -7,8 +7,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="CHaTSibot"
+        android:icon="@mipmap/chatsibot_logo"
+        android:label="CHaTSiBot"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -18,10 +18,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".loginTest.LoginActivity"
-            android:label="CHaTSibot" >
-        </activity>
+
         <!-- activity android:name=".activity.InfoActivity"/ -->
         <activity android:name=".chat.ChatActivity"/>
         <activity android:name=".login.LoginActivity"/>
