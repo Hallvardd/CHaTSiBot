@@ -15,7 +15,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-class DatabaseController {
+public class DatabaseController {
     private final static String questionBranchName ="questions";
     private final static String answerBranchName ="answers";
     private final static String uaQuestionBranchName = "unansweredQuestions";
@@ -30,7 +30,7 @@ class DatabaseController {
      added to the path.
      */
 
-    void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
+    public void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
         final String[] pathArray = path.split("-");
         DatabaseReference d = database;
         for(String s:pathArray){ // for each list in the

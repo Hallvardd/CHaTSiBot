@@ -30,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class ProfActivity extends AppCompatActivity {
-    private static final String TAG = "ChatActivity";
+    private static final String TAG = "ProfActivity";
 
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
@@ -66,20 +66,20 @@ public class ProfActivity extends AppCompatActivity {
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
-        /*
+
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 return (event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && sendStudentQuestion(chatText.getText().toString());
             }
         });
-        /*
+
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendStudentQuestion();
+                sendStudentQuestion(chatText.getText().toString());
             }
         });
-        */
+
 
 //        Adding test questions for demonstration should follow this format
 //        dbc.searchDatabase(mDatabase,"TAC101-price-vegetable-tomato","How much does a tomato cost?", tv);
@@ -127,7 +127,7 @@ public class ProfActivity extends AppCompatActivity {
         // Implement code to handle answer input from bot after user input here
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
+        side = false; // Switch side everytime there is a new message
         return true;
     }
 
@@ -135,7 +135,7 @@ public class ProfActivity extends AppCompatActivity {
         // Implement code for answer from bot here
         chatArrayAdapter.add(new ChatMessage(side, question));
         chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
+        side = true; // Switch side everytime there is a new message
         return true;
     }
 
@@ -153,25 +153,5 @@ public class ProfActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    /*
-    private boolean sendChatMessage() {
-        // Implement code to handle answer input from bot after user input here
-        chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
-        chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
-        sendBotMessage();
-        return true;
-    }
-
-    private boolean sendBotMessage() {
-        // Implement code for answer from bot here
-        chatArrayAdapter.add(new ChatMessage(side, "I am a bot"));
-        chatText.setText("");
-        side = !side; // Switch side everytime there is a new message
-        return true;
-    }
-    */
 
 }

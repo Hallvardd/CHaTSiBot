@@ -18,10 +18,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.questionDatabase.Question;
+import com.example.taphan.core1.user.User;
+import com.google.firebase.database.DatabaseReference;
 import com.google.gson.JsonElement;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import ai.api.AIListener;
@@ -33,6 +38,8 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+
+import static com.example.taphan.core1.login.LoginActivity.user;
 
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
@@ -49,6 +56,13 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private AIDataService aiDataService;
     private AIService aiService;
 
+    public DatabaseController dbc; // creates a databaseController to access firebase data.
+    private DatabaseReference mDatabase; //database reference to our firebase database.
+    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
+    private ArrayList<Question> qList;
+    private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
+
+    // TODO decide on whether there will be 2 ChatActivity classes separately for prof and stud
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,6 +170,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
                     // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
+                    //dbc.searchDatabase(mDatabase,"TAC101-price-vegetable-tomato","How much does a tomato cost?", title);
 
                     // Send answer from bot
                     sendBotMessage("Query:" + result.getResolvedQuery() +
