@@ -18,10 +18,16 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.questionDatabase.Question;
+import com.example.taphan.core1.user.User;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonElement;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import ai.api.AIListener;
@@ -34,6 +40,8 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import static com.example.taphan.core1.login.LoginActivity.user;
+
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
@@ -43,12 +51,20 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
+    private TextView invisible;
     private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
     private AIDataService aiDataService;
     private AIService aiService;
 
+    public DatabaseController dbc; // creates a databaseController to access firebase data.
+    private DatabaseReference mDatabase; //database reference to our firebase database.
+    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
+    private ArrayList<Question> qList;
+    private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
+
+    // TODO decide on whether there will be 2 ChatActivity classes separately for prof and stud
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +76,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         title = (TextView) findViewById(R.id.chat_title);
         currentCourse = AddCourseActivity.globalCourse.getCourse();
         title.setText(currentCourse.toUpperCase());
+
+        // Make an invisible TextView to store information from database, and send it to bot
+        invisible = (TextView) findViewById(R.id.invisible_text);
 
         buttonSend = (Button) findViewById(R.id.send);
 
@@ -100,6 +119,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
+
+
+        // Database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        dbc = new DatabaseController();
 
         // The necessary base code to connect and use API.AI
         config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
@@ -148,19 +172,21 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
+                    String key = "";
+                    String value = "";
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            key = entry.getKey();
+                            value = entry.getValue() + "";
                             parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
                         }
                     }
 
-                    // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
+                    dbc.searchDatabase(mDatabase, key, value, invisible);
 
                     // Send answer from bot
-                    sendBotMessage("Query:" + result.getResolvedQuery() +
-                            "\nAction: " + result.getAction() +
-                            "\nParameters: " + parameterString);
+                    sendBotMessage(invisible.getText().toString());
                 }
             }
         }.execute(aiRequest);

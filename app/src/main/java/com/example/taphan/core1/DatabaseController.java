@@ -15,12 +15,12 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-class DatabaseController {
+public class DatabaseController {
     private final static String questionBranchName ="questions";
     private final static String answerBranchName ="answers";
     private final static String uaQuestionBranchName = "unansweredQuestions";
 
-    DatabaseController() {}
+    public DatabaseController() {}
     /*
      searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
      question is answered the path will exist with and the answer branch will contain a String
@@ -30,7 +30,7 @@ class DatabaseController {
      added to the path.
      */
 
-    void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
+    public void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
         final String[] pathArray = path.split("-");
         DatabaseReference d = database;
         for(String s:pathArray){ // for each list in the

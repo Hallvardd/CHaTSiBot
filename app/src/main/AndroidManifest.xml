@@ -20,6 +20,8 @@
         </activity>
 
         <!-- activity android:name=".activity.InfoActivity"/ -->
+        <!--activity android:name=".course.InfoActivity"/-->
+
         <activity android:name=".chat.ChatActivity"/>
         <activity android:name=".login.LoginActivity"/>
         <activity android:name=".login.SignupActivity"/>
