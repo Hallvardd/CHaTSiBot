@@ -21,17 +21,19 @@ public class DatabaseController {
     private final static String uaQuestionBranchName = "unansweredQuestions";
 
     public DatabaseController() {}
-    /*
-     searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
-     question is answered the path will exist with and the answer branch will contain a String
-     containing an reference to an answer object.
-     if the question is not answered the answer branch will be empty and an unanswered question will
-     be added to the database. The to avoid duplicates a reference to the question will also be
-     added to the path.
-     */
 
-    public void searchDatabase(final DatabaseReference database, final String path, final String questionTxt, final TextView textView){
-        final String[] pathArray = path.split("-");
+
+    public void searchDatabase(final DatabaseReference database, String path, final String questionTxt, final TextView textView){
+        /*
+        searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
+        question is answered the path will exist with and the answer branch will contain a String
+        containing an reference to an answer object.
+        if the question is not answered the answer branch will be empty and an unanswered question will
+        be added to the database. The to avoid duplicates a reference to the question will also be
+        added to the path.
+        */
+        final String lcPath = path.toLowerCase(); // sets path to lowercase
+        final String[] pathArray = lcPath.split("-");
         DatabaseReference d = database;
         for(String s:pathArray){ // for each list in the
             d = d.child(s);
@@ -44,7 +46,7 @@ public class DatabaseController {
                 if(!dataSnapshot.exists()){
                     DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
                     String key = uaQuestionDB.push().getKey();
-                    Question q = new Question(key,questionTxt,path); // a question object is created with reference to the path.
+                    Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
                     textView.setText("The question has been sent to your professor.");
 
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
@@ -56,23 +58,10 @@ public class DatabaseController {
                     if (!snap.getAnswerID().equals("NA")){
                         String answerID = snap.getAnswerID();
                         textView.setText(answerID);
-//                        DatabaseReference answerDb = database.child(courseCode).child(answerBranchName).child(answerID);
-//                        answerDb.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                Answer answer = dataSnapshot.getValue(Answer.class);
-//                                // setText view as the answer
-//                                textView.setText(answer.getAnswerTxt());
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//                            }
-//                        });
                     }
                     else if (!snap.getQuestionID().isEmpty()) {
                         textView.setText("The question has already been asked \nThe question will be added to your list of asked questions");
-                        // Todo add question to a students list of asked questions.
+                        // TODO add question to a students list of asked questions.
                     }
                 }
             }
@@ -86,6 +75,7 @@ public class DatabaseController {
 
     void addAnswerToDatabase(final DatabaseReference database, final String questionID, String courseCode, final String answerTxt){
         Answer answer = new Answer();
+        courseCode = courseCode.toLowerCase();
         final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
         final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
         final String newQuestionID = qDatabase.push().getKey();
