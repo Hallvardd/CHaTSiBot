@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".ProfActivity">
+        <activity android:name=".course.InfoActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -21,10 +21,10 @@
 
         <!-- activity android:name=".activity.InfoActivity"/ -->
 
-        <activity android:name=".course.InfoActivity"/>
         <activity android:name=".chat.ChatActivity"/>
         <activity android:name=".login.SignupActivity"/>
         <activity android:name=".course.AddCourseActivity"/>
+        <activity android:name=".course.AppInfoActivity"/>
     </application>
 
 </manifest>

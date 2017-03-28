@@ -17,6 +17,7 @@ public class InfoActivity extends AppCompatActivity{
 
     private Button signOutButton;
     private Button addCourseButton;
+    private Button infoAppButton;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +25,7 @@ public class InfoActivity extends AppCompatActivity{
 
         addCourseButton = (Button) findViewById(R.id.add_course);
         signOutButton = (Button) findViewById(R.id.sign_out);
+        infoAppButton = (Button) findViewById(R.id.app_info);
 
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,6 +44,13 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
 
+        infoAppButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                Intent intent = new Intent(InfoActivity.this, AppInfoActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
