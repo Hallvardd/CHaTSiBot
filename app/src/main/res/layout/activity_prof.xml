@@ -5,7 +5,14 @@
     android:layout_height="match_parent"
     android:background="#efefef"
     android:orientation="vertical"
-    tools:context=".layoutClass.ChatActivity">
+    tools:context=".ProfActivity">
+
+    <TextView
+        android:id="@+id/resulttv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="invisible" />
 
     <ListView
         android:id="@+id/msgview"
@@ -27,6 +34,7 @@
             android:id="@+id/msg"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
+
             android:layout_weight="2" />
 
         <Button
@@ -34,7 +42,10 @@
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:onClick="sendMsg"
+            android:background="@color/colorAccent"
             android:text="Send" />
+
 
     </LinearLayout>
 <!--

@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.taphan.core1.loginTest.LoginActivity">
+    tools:context="com.example.taphan.core1.login.LoginActivity">
+
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -72,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:background="@color/colorAccent"
+            android:background="@color/signinbutton"
             android:text="@string/action_sign_in_short"
             android:textColor="@android:color/black"
             android:textStyle="bold" />
@@ -81,11 +82,11 @@
             android:id="@+id/btn_reset_password"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
+            android:layout_marginTop="25dip"
             android:background="@null"
             android:text="@string/btn_forgot_password"
             android:textAllCaps="false"
-            android:textColor="@color/colorAccent" />
+            android:textColor="@android:color/black" />
 
         <!-- Link to Login Screen -->
 
@@ -93,11 +94,11 @@
             android:id="@+id/sign_in_button"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dip"
+            android:layout_marginTop="1dip"
             android:background="@null"
-            android:text="@string/btn_link_to_login"
+            android:text="Already a user? Login here!"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@android:color/black"
             android:textSize="15dp" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

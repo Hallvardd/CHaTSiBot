@@ -1,7 +1,8 @@
-package com.example.taphan.core1.layoutClass;
+package com.example.taphan.core1.chat;
 
 /**
  * Created by Charles on 21.03.2017.
+ * The main class for chatting with bot
  */
 
 import android.database.DataSetObserver;
@@ -15,12 +16,21 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
-import com.example.taphan.core1.layoutClass.ChatMessage;
+import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.questionDatabase.Question;
+import com.example.taphan.core1.questionDatabase.State;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import ai.api.AIListener;
@@ -33,6 +43,8 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
+
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
 
@@ -40,20 +52,39 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
+    private TextView title;
+    private TextView invisible;
+    private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
     private AIDataService aiDataService;
     private AIService aiService;
 
+    public DatabaseController dbc; // creates a databaseController to access firebase data.
+    private DatabaseReference mDatabase; //database reference to our firebase database.
+    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
+    private ArrayList<Question> qList;
+    private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
+
+    // TODO decide on whether there will be 2 ChatActivity classes separately for prof and stud
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_prof);
+        setContentView(R.layout.activity_chat);
+
+        // Set title of current chat activity corresponds to current course
+        title = (TextView) findViewById(R.id.chat_title);
+        currentCourse = AddCourseActivity.globalCourse.getCourse();
+        title.setText(currentCourse.toUpperCase());
+
+        // Make an invisible TextView to store information from database, and send it to bot
+        invisible = (TextView) findViewById(R.id.invisible_text);
 
         buttonSend = (Button) findViewById(R.id.send);
 
+        // The listview to show chat bubbles
         listView = (ListView) findViewById(R.id.msgview);
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
         listView.setAdapter(chatArrayAdapter);
@@ -91,18 +122,28 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             }
         });
 
-        // CLIENT_ACCESS_TOKEN = a7ccbd15c0db40bfb729a72c12efc15f
+
+        // Database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        dbc = new DatabaseController();
+
+        // The necessary base code to connect and use API.AI
         config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
         aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
+
+        // Send a welcome message
+        String welcomeMsg = "Welcome! I am CHaTSiBot, here at your service. Please ask a question " +
+                "and press Enter or click on that button to the right.";
+        sendBotMessage(welcomeMsg);
     }
 
     private boolean sendChatMessage() throws AIServiceException{
-        // Implement code to handle answer input from bot after user input here
-        //chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+        // Implement code to handle answer input from bot after globalUser input here
+        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
         listenButtonOnClick();
         chatText.setText("");
         //sendBotMessage();
@@ -112,16 +153,12 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private void sendBotMessage(String message) {
         // Implement code for answer from bot here
         chatArrayAdapter.add(new ChatMessage(false, message));
-        chatText.setText("");
     }
 
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
-        //resultTextView.setText(inputText.getText().toString());
         final AIRequest aiRequest = new AIRequest();
         aiRequest.setQuery(chatText.getText().toString());
-
-        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
 
         new AsyncTask<AIRequest, Void, AIResponse>() {
             @Override
@@ -141,19 +178,18 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
+                    String key = "";
+                    String value = "";
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                            key = entry.getKey();
+                            value = entry.getValue() + "";
                             parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
                         }
                     }
 
-                    // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
-
-                    // Send answer from bot
-                    sendBotMessage("Query:" + result.getResolvedQuery() +
-                            "\nAction: " + result.getAction() +
-                            "\nParameters: " + parameterString);
+                    searchDatabase(mDatabase, key, result.getResolvedQuery());
                 }
             }
         }.execute(aiRequest);
@@ -189,6 +225,53 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     @Override
     public void onListeningFinished() {
 
+    }
+
+    public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
+        /*
+        searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
+        question is answered the path will exist with and the answer branch will contain a String
+        containing an reference to an answer object.
+        if the question is not answered the answer branch will be empty and an unanswered question will
+        be added to the database. The to avoid duplicates a reference to the question will also be
+        added to the path.
+        */
+
+        final String lcPath = path.toLowerCase(); // sets path to lowercase
+        final String[] pathArray = lcPath.split("-");
+        DatabaseReference d = database;
+        for(String s:pathArray){ // for each list in the
+            d = d.child(s);
+        }
+        final String courseCode = pathArray[0];
+        final DatabaseReference dbQuestionPath = d.child("state");
+        dbQuestionPath.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
+                    String key = uaQuestionDB.push().getKey();
+                    Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
+                    sendBotMessage("The question has been sent to your professor.");
+                    uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+                    dbQuestionPath.setValue(new State("NA",key));
+                }
+                else {
+                    State snap = dataSnapshot.getValue(State.class);
+                    if (!snap.getAnswerID().equals("NA")){
+                        String answerID = snap.getAnswerID();
+                        sendBotMessage(answerID);
+                    }
+                    else if (!snap.getQuestionID().isEmpty()) {
+                        sendBotMessage("The question has already been asked");
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

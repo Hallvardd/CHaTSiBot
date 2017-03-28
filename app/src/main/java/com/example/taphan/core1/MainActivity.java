@@ -10,11 +10,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.taphan.core1.questionDatabase.Question;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +21,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,8 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ai.api.AIListener;
-import ai.api.AIServiceContext;
-import ai.api.AIServiceContextBuilder;
 import ai.api.AIServiceException;
 import ai.api.android.AIConfiguration;
 import ai.api.android.AIService;
@@ -46,12 +40,10 @@ import ai.api.android.AIDataService;
 import com.google.gson.JsonElement;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
-import com.example.taphan.core1.loginTest.LoginActivity;
+import com.example.taphan.core1.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity implements AIListener {
-
     private TextView textView;
     private EditText inputText;
     private Button listenButton;
@@ -64,8 +56,9 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
     private Button signOutButton;
 
-    private DatabaseReference mDatabase; //database variables
-    DatabaseController dbc;
+    private DatabaseReference mDatabase; //database
+    private DatabaseController dbc;
+
 
     private FirebaseAuth auth;
     @Override
@@ -77,10 +70,8 @@ public class MainActivity extends AppCompatActivity implements AIListener {
         textView = (TextView)findViewById(R.id.jsonText);
         inputText = (EditText) findViewById(R.id.edit_message);
         displayDb = (TextView) findViewById(R.id.displayDb);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
         dbc = new DatabaseController();
-
 
         signOutButton = (Button) findViewById(R.id.signOutButton);
 
@@ -102,18 +93,18 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
             case R.id.button:
 
-        // Read courseCode from user input and find general information about the subject
+        // Read courseCode from globalUser input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
+        final String courseCode = subject[0]; //Course code for search.
+        final String question = input; //Question up for comparison.
 
         // Finding the requested data in the IME api, should always be called when possible.
         subject[0] = "http://www.ime.ntnu.no/api/course/en/" + subject[0];
         JSONTask task = new JSONTask();
         task.execute(subject);
-
             case R.id.signOutButton:
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
         }
 
     }
@@ -141,19 +132,27 @@ public class MainActivity extends AppCompatActivity implements AIListener {
                     // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
+                    String key = null;
+                    String question = aiResponse.toString();
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
                             parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                            key = entry.getKey()+"-"+ entry.getValue();
                         }
                     }
+
+                    dbc.searchDatabase(mDatabase, key, question, resultTextView);
+
 
                     // Send til databasen for å finne svar, kall en metode
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
 
-                    // Show results in TextView.
+                    /*/ Show results in TextView.
+
                     resultTextView.setText("Query:" + result.getResolvedQuery() +
                             "\nAction: " + result.getAction() +
                             "\nParameters: " + parameterString);
+                    */
                 }
             }
         }.execute(aiRequest);
