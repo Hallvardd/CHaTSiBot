@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.login.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * Created by Charles on 23.03.2017.
@@ -39,6 +40,8 @@ public class InfoActivity extends AppCompatActivity{
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                FirebaseAuth.getInstance().signOut();
+
                 Intent intent = new Intent(InfoActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
@@ -52,6 +55,7 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
     }
+
 
 
 }

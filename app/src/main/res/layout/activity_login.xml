@@ -66,34 +66,35 @@
         <!-- Login Button -->
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="312dp"
         android:layout_height="63dp"
         android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="@dimen/activity_horizontal_margin"
-        android:weightSum="1"
-        android:layout_weight="0.10">
+        android:weightSum="1">
+
         <Button
             android:id="@+id/btn_login_prof"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dip"
             android:layout_marginRight="10dip"
+            android:layout_marginTop="0dip"
             android:background="@color/colorAccent"
             android:text="Professor login"
             android:textColor="@android:color/black" />
+
         <Button
             android:id="@+id/btn_login_stud"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dip"
             android:layout_marginLeft="10dip"
+            android:layout_marginTop="0dip"
             android:background="@color/colorAccent"
             android:text="Student login"
             android:textColor="@android:color/black" />
 
-        </LinearLayout>
+    </LinearLayout>
         <Button
             android:id="@+id/btn_reset_password"
             android:layout_width="fill_parent"

@@ -57,6 +57,12 @@ public class ProfActivity extends AppCompatActivity {
         dbc = new DatabaseController();
         qList = new ArrayList<>();
         tv = (TextView) findViewById(R.id.resulttv);
+
+
+        // User input is accepted by both pressing "Send" button and the "Enter" key
+        chatText = (EditText) findViewById(R.id.msg);
+
+        /*chatText.setOnKeyListener(new View.OnKeyListener() {
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
 
@@ -79,6 +85,7 @@ public class ProfActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+
                 answerQuestion();
             }
         });
@@ -122,6 +129,10 @@ public class ProfActivity extends AppCompatActivity {
 
             }
         });
+
+        String welcomeMsg = "Hello professor, if there are unanswered questions from students they will" +
+                "come up under. Please answer in form: <category>: <answer>";
+        sendStudentQuestion(welcomeMsg);
     }
 
     public boolean answerQuestion(){
@@ -176,7 +187,7 @@ public class ProfActivity extends AppCompatActivity {
     private boolean sendStudentQuestion(String questionTxt) {
         // Implement code for answer from bot here
         // Student questions are displayed on the right side of the screen. This is determined by the true value in the parameter of ChatMessage.
-        chatArrayAdapter.add(new ChatMessage(true, questionTxt));
+        chatArrayAdapter.add(new ChatMessage(true, "Question: " + questionTxt));
         chatText.setText("");
         return true;
     }
