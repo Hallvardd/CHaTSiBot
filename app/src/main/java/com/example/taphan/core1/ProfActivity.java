@@ -57,6 +57,12 @@ public class ProfActivity extends AppCompatActivity {
         dbc = new DatabaseController();
         qList = new ArrayList<>();
         tv = (TextView) findViewById(R.id.resulttv);
+
+
+        // User input is accepted by both pressing "Send" button and the "Enter" key
+        chatText = (EditText) findViewById(R.id.msg);
+
+        /*chatText.setOnKeyListener(new View.OnKeyListener() {
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
 
@@ -79,6 +85,7 @@ public class ProfActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+
                 answerQuestion();
             }
         });

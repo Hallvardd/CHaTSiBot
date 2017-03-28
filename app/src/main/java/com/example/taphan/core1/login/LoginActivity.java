@@ -36,12 +36,12 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-
+/*
         if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, ChatActivity.class));
+            startActivity(new Intent(LoginActivity.this, InfoActivity.class));
             finish();
         }
-
+*/
         // set the view now
         setContentView(R.layout.activity_login);
 
@@ -56,8 +56,6 @@ public class LoginActivity extends AppCompatActivity {
         btnLoginStud = (Button) findViewById(R.id.btn_login_stud);
         btnReset = (Button) findViewById(R.id.btn_reset_password);
 
-        //Get Firebase auth instance
-        auth = FirebaseAuth.getInstance();
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,14 +74,16 @@ public class LoginActivity extends AppCompatActivity {
         btnLoginProf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //user = new User("Professor");
                 globalUser = new User("Professor");
                 clickButton();
             }
         });
 
-        btnLoginProf.setOnClickListener(new View.OnClickListener() {
+        btnLoginStud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //user = new User("Student");
                 globalUser = new User("Student");
                 clickButton();
             }
