@@ -17,11 +17,9 @@ import java.util.ArrayList;
 
 public class DatabaseController {
     private final static String questionBranchName ="questions";
-    private final static String answerBranchName ="answers";
     private final static String uaQuestionBranchName = "unansweredQuestions";
 
     public DatabaseController() {}
-
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt, final TextView textView){
         /*
@@ -32,6 +30,7 @@ public class DatabaseController {
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
+
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");
         DatabaseReference d = database;
@@ -48,7 +47,6 @@ public class DatabaseController {
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
                     textView.setText("The question has been sent to your professor.");
-
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
                     dbQuestionPath.setValue(new State("NA",key));
                 }
@@ -61,7 +59,6 @@ public class DatabaseController {
                     }
                     else if (!snap.getQuestionID().isEmpty()) {
                         textView.setText("The question has already been asked \nThe question will be added to your list of asked questions");
-                        // TODO add question to a students list of asked questions.
                     }
                 }
             }

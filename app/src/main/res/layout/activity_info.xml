@@ -53,5 +53,11 @@
             android:background="@color/colorAccent"
             android:text="Sign out"
             android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/showuser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

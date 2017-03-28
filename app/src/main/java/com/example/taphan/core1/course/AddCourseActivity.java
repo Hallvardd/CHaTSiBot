@@ -44,7 +44,7 @@ public class AddCourseActivity extends AppCompatActivity {
         final CourseAdapter adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
-        // Add a course to the Course object containing all courses
+        // Add a course to the Course object containing all coursesglobalCourse.getCourse()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -59,12 +59,17 @@ public class AddCourseActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 globalCourse = (Course) parent.getItemAtPosition(position); // Find
+                Bundle courseCodeBundle = new Bundle();
+                courseCodeBundle.putString("courseCode", globalCourse.getCourse());
                 Intent chat;// the course key that was chosen
-                if(globalUser.getUser().equals("Professor")){
+                if(globalUser.getUser().equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
+                    chat.putExtras(courseCodeBundle);
 
                 } else {
                     chat = new Intent(getApplicationContext(), ChatActivity.class);
+                    chat.putExtras(courseCodeBundle);
+
 
                 }
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
