@@ -40,7 +40,7 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
-import static com.example.taphan.core1.login.LoginActivity.user;
+//import static com.example.taphan.core1.login.LoginActivity.user;
 
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
@@ -183,7 +183,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     }
 
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
-                    dbc.searchDatabase(mDatabase, key, value, invisible);
+                    dbc.searchDatabase(mDatabase, key, result.getResolvedQuery(), invisible);
 
                     // Send answer from bot
                     sendBotMessage(invisible.getText().toString());

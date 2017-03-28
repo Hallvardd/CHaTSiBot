@@ -36,12 +36,12 @@ public class ProfActivity extends AppCompatActivity {
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
-    private boolean side = true;
+    private boolean side = false;
     private TextView tv;
 
     private DatabaseController dbc; // creates a databaseController to access firebase data.
     private DatabaseReference mDatabase; //database reference to our firebase database.
-    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
+    private final String course = "tdt4145"; // placeholder for variable deciding which questions to read from and answer.
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
 
@@ -62,12 +62,12 @@ public class ProfActivity extends AppCompatActivity {
         qList = new ArrayList<>();
         tv = (TextView) findViewById(R.id.resulttv);
 
-        fillQList("TAC101");
+        fillQList(course);
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
 
-        chatText.setOnKeyListener(new View.OnKeyListener() {
+        /*chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 return (event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER) && sendStudentQuestion(chatText.getText().toString());
             }
@@ -76,9 +76,9 @@ public class ProfActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendStudentQuestion(chatText.getText().toString());
+
             }
-        });
+        });*/
 
 
 //        Adding test questions for demonstration should follow this format
@@ -127,7 +127,7 @@ public class ProfActivity extends AppCompatActivity {
         // Implement code to handle answer input from bot after user input here
         chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
         chatText.setText("");
-        side = false; // Switch side everytime there is a new message
+        side = false;
         return true;
     }
 
