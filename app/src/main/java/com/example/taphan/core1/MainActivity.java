@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements AIListener {
 
             case R.id.button:
 
-        // Read courseCode from user input and find general information about the subject
+        // Read courseCode from globalUser input and find general information about the subject
         String input = inputText.getText().toString();
         String[] subject = input.split(" ");
         final String courseCode = subject[0]; //Course code for search.

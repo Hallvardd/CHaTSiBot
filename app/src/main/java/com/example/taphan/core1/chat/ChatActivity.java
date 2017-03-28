@@ -22,7 +22,6 @@ import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
-import com.example.taphan.core1.user.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.JsonElement;
@@ -40,8 +39,7 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
-//import static com.example.taphan.core1.login.LoginActivity.user;
-
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
@@ -135,7 +133,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     }
 
     private boolean sendChatMessage() throws AIServiceException{
-        // Implement code to handle answer input from bot after user input here
+        // Implement code to handle answer input from bot after globalUser input here
         chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
         listenButtonOnClick();
         chatText.setText("");
