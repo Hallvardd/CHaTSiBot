@@ -130,6 +130,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         aiService = AIService.getService(this, config);
         aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
+
+        // Send a welcome message
+        String welcomeMsg = "Welcome! I am CHaTSiBot, here at your service. Please ask a question " +
+                "and press Enter or click on that button to the right.";
+        sendBotMessage(welcomeMsg);
     }
 
     private boolean sendChatMessage() throws AIServiceException{
@@ -144,7 +149,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private void sendBotMessage(String message) {
         // Implement code for answer from bot here
         chatArrayAdapter.add(new ChatMessage(false, message));
-        chatText.setText("");
     }
 
     // API.AI code

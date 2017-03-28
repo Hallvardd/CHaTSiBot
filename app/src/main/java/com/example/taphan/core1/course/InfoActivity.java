@@ -37,6 +37,7 @@ public class InfoActivity extends AppCompatActivity{
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+
                 Intent intent = new Intent(InfoActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
