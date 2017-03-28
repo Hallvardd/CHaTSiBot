@@ -39,6 +39,7 @@ public class InfoActivity extends AppCompatActivity{
             @Override
             public void onClick(View arg0) {
                 FirebaseAuth.getInstance().signOut();
+
                 Intent intent = new Intent(InfoActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
