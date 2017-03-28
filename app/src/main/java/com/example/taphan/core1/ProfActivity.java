@@ -135,6 +135,10 @@ public class ProfActivity extends AppCompatActivity {
 
             }
         });
+
+        String welcomeMsg = "Hello professor, if there are unanswered questions from students they will" +
+                "come up under. Please answer in form: <category>: <answer>";
+        sendStudentQuestion(welcomeMsg);
     }
 
     public boolean answerQuestion(){
@@ -189,7 +193,7 @@ public class ProfActivity extends AppCompatActivity {
     private boolean sendStudentQuestion(String questionTxt) {
         // Implement code for answer from bot here
         // Student questions are displayed on the right side of the screen. This is determined by the true value in the parameter of ChatMessage.
-        chatArrayAdapter.add(new ChatMessage(true, questionTxt));
+        chatArrayAdapter.add(new ChatMessage(true, "Question: " + questionTxt));
         chatText.setText("");
         return true;
     }

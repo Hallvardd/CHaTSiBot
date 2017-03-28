@@ -24,9 +24,7 @@
 
         <activity android:name=".ProfActivity"/>
         <activity android:name=".course.InfoActivity"/>
-        <activity android:name=".course.AddCourseActivity"/>
-        <activity android:name=".chat.ChatActivity"/>
-        <activity android:name=".ProfActivity"/>
+
     </application>
 
 
