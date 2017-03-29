@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -31,6 +33,7 @@ public class AddCourseActivity extends AppCompatActivity {
     private Button addCourseButton;
     public static Course globalCourse;
     ListView listView;
+    private DatabaseReference mDatabase;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +47,20 @@ public class AddCourseActivity extends AppCompatActivity {
         final CourseAdapter adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
-        // Add a course to the Course object containing all coursesglobalCourse.getCourse()
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+        // Add a course to the Course object containing all courses globalCourse.getCourse()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
                 adapter.add(new Course(course));
                 enterCourse.setText("");
+
+                // Add course to Firebase for current user
+                mDatabase.child("users").child(globalUser.getUserID()).child("courses").child("course").setValue(course);
+                // TODO connect to IME Data API to search for course name in accordance to key for better database entry
             }
         });
 

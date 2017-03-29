@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 public class Course {
 
-    private String courseKey = "";
+    private String courseKey;
 
     public Course(String courseKey) {
         this.courseKey = courseKey;

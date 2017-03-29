@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLoginProf, btnLoginStud, btnReset;
+    private FirebaseUser firebaseUser;
     public static User globalUser;
 
     @Override
@@ -36,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+        firebaseUser = auth.getCurrentUser();
 /*
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, InfoActivity.class));
@@ -67,11 +70,13 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        globalUser = new User();
+        globalUser.setUserID(firebaseUser.getUid());
+
         btnLoginProf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //user = new User("Professor");
-                globalUser = new User();
                 globalUser.setUserType("Professor");
                 clickButton();
             }
@@ -81,7 +86,6 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //user = new User("Student");
-                globalUser = new User();
                 globalUser.setUserType("Student");
                 clickButton();
             }
