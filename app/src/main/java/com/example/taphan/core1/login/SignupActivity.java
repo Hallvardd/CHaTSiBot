@@ -8,6 +8,7 @@ import com.example.taphan.core1.R;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,19 +16,25 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.taphan.core1.chat.ChatActivity;
+import com.example.taphan.core1.course.InfoActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class SignupActivity extends AppCompatActivity {
+    public static final String TAG = "SignUpActivity";
 
     private EditText inputEmail, inputPassword;
     private Button btnSignIn, btnSignUp, btnResetPassword;
     private ProgressBar progressBar;
     private FirebaseAuth auth;
+    private DatabaseReference mDatabase;
+    private FirebaseUser user;
 
 
     @Override
@@ -37,6 +44,8 @@ public class SignupActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
 
         btnSignIn = (Button) findViewById(R.id.sign_in_button);
         btnSignUp = (Button) findViewById(R.id.sign_up_button);
@@ -63,7 +72,7 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String email = inputEmail.getText().toString().trim();
+                final String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
 
                 if (TextUtils.isEmpty(email)) {
@@ -88,6 +97,12 @@ public class SignupActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+
+                                // Add user to 'user' child in firebase to store information about courses
+                                user = auth.getCurrentUser();
+                                String userID = user.getUid(); // Get userID from firebase, then put in database object
+                                mDatabase.child("users").child(userID).child("email").setValue(email);
+
                                 progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
@@ -96,9 +111,10 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
-                                    startActivity(new Intent(SignupActivity.this, ChatActivity.class));
+                                    startActivity(new Intent(SignupActivity.this, InfoActivity.class));
                                     finish();
                                 }
+
                             }
                         });
 

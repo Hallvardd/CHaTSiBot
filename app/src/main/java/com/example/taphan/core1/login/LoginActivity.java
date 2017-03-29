@@ -42,11 +42,7 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
 */
-        // set the view now
         setContentView(R.layout.activity_login);
-
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
 
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
@@ -75,7 +71,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //user = new User("Professor");
-                globalUser = new User("Professor");
+                globalUser = new User();
+                globalUser.setUserType("Professor");
                 clickButton();
             }
         });
@@ -84,7 +81,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //user = new User("Student");
-                globalUser = new User("Student");
+                globalUser = new User();
+                globalUser.setUserType("Student");
                 clickButton();
             }
         });

@@ -5,17 +5,25 @@ package com.example.taphan.core1.user;
  */
 
 public class User {
-    private String user;
-    private String email;
-    private String pw;
+    private String userType;
+    private String courses;
 
-    // TODO add users to database and save their courses
-
-    public User(String user) {
-        this.user = user;
+    public User() {
     }
 
-    public String getUser() {
-        return user;
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public void setCourses(String courses) {
+        this.courses = courses;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public String getCourses() {
+        return courses;
     }
 }

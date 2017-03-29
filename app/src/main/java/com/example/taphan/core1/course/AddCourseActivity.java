@@ -62,7 +62,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 Bundle courseCodeBundle = new Bundle();
                 courseCodeBundle.putString("courseCode", globalCourse.getCourse());
                 Intent chat;// the course key that was chosen
-                if(globalUser.getUser().equalsIgnoreCase("Professor")){
+                if(globalUser.getUserType().equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
                     chat.putExtras(courseCodeBundle);
 

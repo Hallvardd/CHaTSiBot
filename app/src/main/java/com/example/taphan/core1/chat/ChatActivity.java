@@ -66,7 +66,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
 
-    // TODO decide on whether there will be 2 ChatActivity classes separately for prof and stud
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
