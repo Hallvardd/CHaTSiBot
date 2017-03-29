@@ -11,13 +11,26 @@ import java.util.HashMap;
 public class Course {
 
     private String courseKey;
+    private String courseName;
 
+    public Course() {}
     public Course(String courseKey) {
         this.courseKey = courseKey;
     }
 
-    public String getCourse() {
+    public String getCourseKey() {
         return courseKey;
     }
 
+    public void setCourseKey(String courseKey) {
+        this.courseKey = courseKey;
+    }
+
+    public String getCourseName() {
+        return courseName;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
 }
