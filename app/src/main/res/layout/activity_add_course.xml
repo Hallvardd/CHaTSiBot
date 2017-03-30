@@ -7,13 +7,23 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin"
     android:weightSum="1"
-    android:background="@color/course_main"
+    android:background="@color/primary_background"
     tools:context=".course.AddCourseActivity" >
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="211dp"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="-35dp"
+        android:text="Add or choose course"
+        android:textColor="@android:color/black"
+        android:layout_weight="0.04" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_weight="0.21"
+        android:layout_weight="0.24"
         android:text="Enter a course key, then click on the 'Add' button to add a course. Click on a course in order to go to the chat room." />
 
     <EditText
@@ -28,7 +38,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
         android:layout_marginBottom="20dip"
-        android:background="@color/colorAccent"
+        android:background="@color/primary_button"
         android:text="Add course"
         android:textColor="@android:color/black" />
 

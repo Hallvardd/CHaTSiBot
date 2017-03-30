@@ -43,7 +43,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:onClick="sendMsg"
-            android:background="@color/colorAccent"
+            android:background="@color/primary_button"
             android:text="Send" />
 
 
