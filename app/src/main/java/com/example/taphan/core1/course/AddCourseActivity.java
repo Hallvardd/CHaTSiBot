@@ -6,17 +6,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
-
-import java.util.ArrayList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
@@ -31,6 +32,7 @@ public class AddCourseActivity extends AppCompatActivity {
     private Button addCourseButton;
     public static Course globalCourse;
     ListView listView;
+    private DatabaseReference mDatabase;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +46,19 @@ public class AddCourseActivity extends AppCompatActivity {
         final CourseAdapter adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
-        // Add a course to the Course object containing all coursesglobalCourse.getCourse()
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
                 adapter.add(new Course(course));
                 enterCourse.setText("");
+
+                // Add course to Firebase for current user
+                // TODO connect to IME Data API to search for course name in accordance to key for better database entry
+                mDatabase.child("users").child(globalUser.getUserID()).child("courses").child(course).setValue(course);
             }
         });
 
@@ -60,20 +68,32 @@ public class AddCourseActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 globalCourse = (Course) parent.getItemAtPosition(position); // Find
                 Bundle courseCodeBundle = new Bundle();
-                courseCodeBundle.putString("courseCode", globalCourse.getCourse());
+                courseCodeBundle.putString("courseCode", globalCourse.getCourseKey());
                 Intent chat;// the course key that was chosen
-                if(globalUser.getUser().equalsIgnoreCase("Professor")){
+                if(globalUser.getUserType().equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
                     chat.putExtras(courseCodeBundle);
 
                 } else {
                     chat = new Intent(getApplicationContext(), ChatActivity.class);
                     chat.putExtras(courseCodeBundle);
-
-
                 }
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
 
+            }
+        });
+
+        // Add courses from current user to listView
+        mDatabase.child("users").child(globalUser.getUserID()).child("courses").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot cSnapShot: dataSnapshot.getChildren()){
+                    String course = cSnapShot.getKey();
+                    adapter.add(new Course(course)); // Add to listView and show user their current courses
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
 

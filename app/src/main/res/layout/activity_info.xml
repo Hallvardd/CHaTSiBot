@@ -23,18 +23,10 @@
             android:layout_width="fill_parent"
             android:layout_height="60dp"
             android:layout_marginTop="-30dip"
+
             android:background="@color/primary_button"
             android:text="Add/Choose course"
             android:textColor="@android:color/black" />
-
-        <!--Button
-            android:id="@+id/choose_course"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="70dip"
-            android:background="@color/colorAccent"
-            android:text="Choose course"
-            android:textColor="@android:color/black" /-->
 
         <Button
             android:id="@+id/app_info"
@@ -42,7 +34,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="40dip"
             android:background="@color/primary_button"
-            android:text="Info"
+            android:text="About CHaTSiBot"
             android:textColor="@android:color/black" />
 
         <Button
@@ -58,6 +50,7 @@
             android:id="@+id/showuser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=" " />
+            android:text="TextView"/>
+
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
