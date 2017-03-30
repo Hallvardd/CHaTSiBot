@@ -47,6 +47,19 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setAdapter(adapter); // Use a default adapter
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        // Add courses from current user to listView
+        mDatabase.child("users").child(globalUser.getUserID()).child("courses").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot cSnapShot: dataSnapshot.getChildren()){
+                    String course = cSnapShot.getKey();
+                    adapter.add(new Course(course)); // Add to listView and show user their current courses
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
@@ -83,19 +96,7 @@ public class AddCourseActivity extends AppCompatActivity {
             }
         });
 
-        // Add courses from current user to listView
-        mDatabase.child("users").child(globalUser.getUserID()).child("courses").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot cSnapShot: dataSnapshot.getChildren()){
-                    String course = cSnapShot.getKey();
-                    adapter.add(new Course(course)); // Add to listView and show user their current courses
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+
 
     }
 
