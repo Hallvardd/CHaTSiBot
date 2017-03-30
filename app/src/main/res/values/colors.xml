@@ -2,7 +2,7 @@
 <resources>
     <color name="primary_background">#E6E6FA</color> <!-- Lavender Mist -->
 
-    <color name="signOut_button">#FF4081</color> <!-- SASQUATCH SOCKS -->
+    <color name="signOut_button">#FF1010</color> <!-- SASQUATCH SOCKS -->
 
     <color name="signIn_button">#069E2D</color> <!-- North Texas Green -->
     <color name="signUp_background">#D1EDD8</color> <!-- Tea Green -->
