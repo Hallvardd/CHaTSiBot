@@ -8,13 +8,13 @@ import com.example.taphan.core1.R;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.taphan.core1.chat.ChatActivity;
 import com.example.taphan.core1.course.InfoActivity;
 import com.example.taphan.core1.user.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,11 +24,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
+    public static final String TAG = "LoginActivity";
 
     private EditText inputEmail, inputPassword;
     private FirebaseAuth auth;
     private ProgressBar progressBar;
     private Button btnSignup, btnLoginProf, btnLoginStud, btnReset;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser firebaseUser;
     public static User globalUser;
 
@@ -38,13 +40,27 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-        firebaseUser = auth.getCurrentUser();
-/*
+
+        // A listener for when a user sign in and sign out
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                firebaseUser = firebaseAuth.getCurrentUser();
+                if (firebaseUser != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(LoginActivity.this, InfoActivity.class));
             finish();
         }
-*/
+
         setContentView(R.layout.activity_login);
 
         inputEmail = (EditText) findViewById(R.id.email);
@@ -71,12 +87,12 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         globalUser = new User();
-        globalUser.setUserID(firebaseUser.getUid());
+        //globalUser.setUserID("gySGV8C7Adc5B02Kbaio8VkfD013");
 
         btnLoginProf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //user = new User("Professor");
+                //firebaseUser = new User("Professor");
                 globalUser.setUserType("Professor");
                 clickButton();
             }
@@ -85,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLoginStud.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //user = new User("Student");
+                //firebaseUser = new User("Student");
                 globalUser.setUserType("Student");
                 clickButton();
             }
@@ -126,6 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             {
+                                globalUser.setUserID(firebaseUser.getUid());
                                 // Log in successfully will lead to Info page
                                 Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
                                 startActivity(intent);
@@ -135,6 +152,20 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        auth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            auth.removeAuthStateListener(mAuthListener);
+        }
     }
 }
 
