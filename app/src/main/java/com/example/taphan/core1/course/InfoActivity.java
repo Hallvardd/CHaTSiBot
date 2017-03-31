@@ -23,6 +23,7 @@ public class InfoActivity extends AppCompatActivity{
     private Button addCourseButton;
     private Button infoAppButton;
     private DatabaseReference mUserDatabase;
+    private static final String usersBranch =  "users";
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +32,7 @@ public class InfoActivity extends AppCompatActivity{
         addCourseButton = (Button) findViewById(R.id.add_course);
         signOutButton = (Button) findViewById(R.id.sign_out);
         infoAppButton = (Button) findViewById(R.id.app_info);
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child(usersBranch);
 
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +47,8 @@ public class InfoActivity extends AppCompatActivity{
             @Override
             public void onClick(View arg0) {
                 if(!globalUser.getUserID().isEmpty()){
-                    mUserDatabase.child(globalUser.getUserID()).setValue(globalUser);
+                    String uID = globalUser.getUserID();
+//                    mUserDatabase.child(uID).setValue(globalUser);
                 }
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(InfoActivity.this, LoginActivity.class);

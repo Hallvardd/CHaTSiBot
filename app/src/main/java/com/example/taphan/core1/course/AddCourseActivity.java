@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
+import com.example.taphan.core1.user.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,7 +33,6 @@ public class AddCourseActivity extends AppCompatActivity {
     private Button addCourseButton;
     public static Course globalCourse;
     ListView listView;
-    private DatabaseReference mDatabase;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,32 +46,23 @@ public class AddCourseActivity extends AppCompatActivity {
         final CourseAdapter adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        // Add courses from current user to listView
-        mDatabase.child("users").child(globalUser.getUserID()).child("questionsAsked").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot cSnapShot: dataSnapshot.getChildren()){
-                    String course = cSnapShot.getKey();
-                    adapter.add(new Course(course)); // Add to listView and show user their current courses
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
+
+        for(String course:globalUser.getCourses()){
+            adapter.add(new Course(course)); // Add to listView and show user their current courses
+        }
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
+                //globalUser.createCourseQAsked(course);
                 adapter.add(new Course(course));
                 enterCourse.setText("");
 
                 // Add course to Firebase for current user
                 // TODO connect to IME Data API to search for course name in accordance to key for better database entry
-                mDatabase.child("users").child(globalUser.getUserID()).child("courses").child(course).setValue(course);
+                // mDatabase.child("users").child(globalUser.getUserID()).child("courses").child(course).setValue(course);
             }
         });
 
