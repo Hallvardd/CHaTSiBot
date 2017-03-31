@@ -74,24 +74,15 @@
         android:weightSum="1">
 
         <Button
-            android:id="@+id/btn_login_prof"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dip"
-            android:layout_marginTop="0dip"
-            android:background="@color/primary_button"
-            android:text="Professor login"
-            android:textColor="@android:color/black" />
-
-        <Button
-            android:id="@+id/btn_login_stud"
+            android:id="@+id/btn_login"
             android:layout_width="130dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
             android:layout_marginTop="0dip"
             android:background="@color/primary_button"
-            android:text="Student login"
-            android:textColor="@android:color/black" />
+            android:text="Login"
+            android:textColor="@android:color/black"
+            android:layout_weight="0.56" />
 
     </LinearLayout>
         <Button

@@ -55,6 +55,8 @@ public class SignupActivity extends AppCompatActivity {
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
+        userType = "Student";
+
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,13 +100,15 @@ public class SignupActivity extends AppCompatActivity {
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(SignupActivity.this, "Created account complete: " + task.isSuccessful(), Toast.LENGTH_SHORT).show();
                                 User localUser = new User();
-                                localUser.setUserType(userType);
                                 // Add user to 'user' child in firebase to store information about courses
                                 user = auth.getCurrentUser();
                                 String userID = user.getUid(); // Get userID from firebase, then put in database object
-                                mDatabase.child("users").child(userID).child("email").setValue(email);
+                                localUser.setUserType(userType);
+                                localUser.setUserID(userID);
+                                localUser.setEmail(email);
+                                mDatabase.child("users").child(userID).setValue(localUser);
 
                                 progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user. If sign in succeeds
