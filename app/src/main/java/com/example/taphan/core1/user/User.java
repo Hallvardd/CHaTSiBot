@@ -15,8 +15,6 @@ public class User {
 
     }
 
-
-
     public String getUserID() {
         return userID;
     }
@@ -33,17 +31,20 @@ public class User {
         return userType;
     }
 
-    ArrayList<String> getQuestions(String courseCode) {
+    public ArrayList<String> getQuestions(String courseCode) {
         return questionsAsked.get(courseCode);
     }
 
-    void addQuestion(String courseCode, String questionID) {
-        this.questionsAsked.get(courseCode).add(questionID);
-
+    public void addQuestion(String courseCode, String questionID) {
+        if(!questionsAsked.get(courseCode).contains(questionID)) {
+            questionsAsked.get(courseCode).add(questionID);
+        }
     }
 
-    void removeQuestion(String courseCode, String questionID) {
-        this.questionsAsked.get(courseCode).remove(questionID);
+    public void removeQuestion(String courseCode, String questionID) {
+        if(questionsAsked.get(courseCode).contains(questionID)) {
+            questionsAsked.get(courseCode).remove(questionID);
+        }
     }
 
     public String getEmail() {
@@ -53,4 +54,5 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
 }

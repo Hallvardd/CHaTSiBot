@@ -48,7 +48,7 @@ public class AddCourseActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
         // Add courses from current user to listView
-        mDatabase.child("users").child(globalUser.getUserID()).child("courses").addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(globalUser.getUserID()).child("questionsAsked").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot cSnapShot: dataSnapshot.getChildren()){

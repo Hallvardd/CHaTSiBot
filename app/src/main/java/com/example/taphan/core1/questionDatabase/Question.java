@@ -3,6 +3,8 @@ package com.example.taphan.core1.questionDatabase;
 
 import com.google.firebase.database.DatabaseReference;
 
+import java.util.ArrayList;
+
 public class Question {
 
     // A question can only have one answer and refer to only one course.
@@ -11,6 +13,8 @@ public class Question {
     private String questionTxt;
     private String refAnsID;
     private String questionPath;
+    private ArrayList<String> studentsListeners; // A list of the students which have asked the question.
+    // these are notified when the question is answered and moved to a new location.
 
     public Question(){
 
@@ -20,7 +24,23 @@ public class Question {
         this.questionID = questionID;
         this.questionTxt = questionTxt;
         this.questionPath = questionPath;
+        this.studentsListeners = new ArrayList<>();
 
+    }
+
+    public void addSListener(String userID){
+        if(!studentsListeners.contains(userID)){
+            studentsListeners.add(userID);
+        }
+    }
+    public void removeSListener(String userID){
+        if(studentsListeners.contains(userID)){
+            studentsListeners.remove(userID);
+        }
+    }
+
+    public ArrayList<String> getStudentsListeners(){
+        return studentsListeners;
     }
 
     public String getQuestionID(){
