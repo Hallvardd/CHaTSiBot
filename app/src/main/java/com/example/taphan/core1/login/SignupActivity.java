@@ -8,15 +8,15 @@ import com.example.taphan.core1.R;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.example.taphan.core1.chat.ChatActivity;
 import com.example.taphan.core1.course.InfoActivity;
+import com.example.taphan.core1.user.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -34,6 +34,9 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private DatabaseReference mDatabase;
     private FirebaseUser user;
+
+
+    private String userType;
 
 
     @Override
@@ -96,7 +99,8 @@ public class SignupActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(SignupActivity.this, "createUserWithEmail:onComplete:" + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-
+                                User localUser = new User();
+                                localUser.setUserType(userType);
                                 // Add user to 'user' child in firebase to store information about courses
                                 user = auth.getCurrentUser();
                                 String userID = user.getUid(); // Get userID from firebase, then put in database object
@@ -125,5 +129,21 @@ public class SignupActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         progressBar.setVisibility(View.GONE);
+    }
+
+    public void onRadioButtonClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch(view.getId()) {
+            case R.id.radio_stud:
+                if (checked)
+                    userType = "Student";
+                break;
+            case R.id.radio_prof:
+                if (checked)
+                    userType = "Professor";
+                    break;
+        }
+
     }
 }

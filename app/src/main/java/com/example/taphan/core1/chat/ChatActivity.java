@@ -258,6 +258,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     if (!snap.getAnswerID().equals("NA")){
                         String answerID = snap.getAnswerID();
                         sendBotMessage(answerID);
+
                     }
                     else if (!snap.getQuestionID().isEmpty()) {
                         sendBotMessage("The question has already been asked");

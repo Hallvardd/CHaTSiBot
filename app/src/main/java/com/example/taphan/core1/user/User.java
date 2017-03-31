@@ -1,41 +1,56 @@
 package com.example.taphan.core1.user;
 
-import java.util.ArrayList;
 
-/**
- * Created by taphan on 24.03.2017.
- */
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class User {
+
+    private String userID; // this is the key and must therefore be unique.
     private String userType;
-    private String userID;
-    private ArrayList<String> courses;
+    private HashMap<String, ArrayList<String>> questionsAsked;  //(fagkode, list of questions)
+    private String email;
 
     public User() {
-        courses = new ArrayList<>();
+
     }
 
-    public void setUserType(String userType) {
-        this.userType = userType;
-    }
 
-    public String getUserType() {
-        return userType;
+
+    public String getUserID() {
+        return userID;
     }
 
     public void setUserID(String userID) {
         this.userID = userID;
     }
 
-    public String getUserID() {
-        return userID;
+    public void setUserType(String type) {
+        userType = type;
     }
 
-    public void addCourse(String course) {
-        courses.add(course);
+    public String getUserType() {
+        return userType;
     }
 
-    public ArrayList<String> getCourses() {
-        return courses;
+    ArrayList<String> getQuestions(String courseCode) {
+        return questionsAsked.get(courseCode);
+    }
+
+    void addQuestion(String courseCode, String questionID) {
+        this.questionsAsked.get(courseCode).add(questionID);
+
+    }
+
+    void removeQuestion(String courseCode, String questionID) {
+        this.questionsAsked.get(courseCode).remove(questionID);
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

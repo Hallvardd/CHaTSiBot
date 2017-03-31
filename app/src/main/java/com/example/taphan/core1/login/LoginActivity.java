@@ -22,6 +22,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String TAG = "LoginActivity";
@@ -33,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseUser firebaseUser;
     public static User globalUser;
+    private DatabaseReference mUserDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         // A listener for when a user sign in and sign out
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -142,11 +148,21 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             {
-                                globalUser.setUserID(firebaseUser.getUid());
-                                // Log in successfully will lead to Info page
-                                Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
-                                startActivity(intent);
-                                finish();
+
+                                mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        globalUser = dataSnapshot.getValue(User.class);
+                                        Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
                             }
                         }
                     }

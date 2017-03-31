@@ -66,6 +66,28 @@
 
         </android.support.design.widget.TextInputLayout>
 
+
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_stud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:checked="true"
+                android:text="Student" />
+
+            <RadioButton
+                android:id="@+id/radio_prof"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="Professor" />
+        </RadioGroup>
+
         <Button
             android:id="@+id/sign_up_button"
             style="?android:textAppearanceSmall"
