@@ -11,10 +11,12 @@ public class User {
     private String userID; // this is the key and must therefore be unique.
     private String userType;
     private HashMap<String, ArrayList<String>> questionsAsked;
+    private ArrayList<String> uCourses;
     private String email;
 
     public User(){
         questionsAsked = new HashMap<>();
+        uCourses = new ArrayList<>();
     }
 
     public String getUserID() {
@@ -49,7 +51,33 @@ public class User {
         this.email = email;
     }
 
-    public String[] getCourses(){
-        return questionsAsked.keySet().toArray(new String[0]);
+
+    public ArrayList<String> getuCourses() {
+        return uCourses;
+    }
+
+    public void setuCourses(ArrayList<String> uCourses) {
+        this.uCourses = uCourses;
+    }
+
+    public void addCourse(String course){
+        uCourses.add(course);
+    }
+
+    public void putQuestion(String courseCode, String questionID){
+        // Checks if a entry already exists
+        if(questionsAsked.containsKey(courseCode)){
+            // If the question already is in the list it is not added
+            if(!questionsAsked.get(courseCode).contains(questionID)) {
+                questionsAsked.get(courseCode).add(questionID);
+            }
+        }
+        // If there is no entry corresponding to the courseCode, an new entry and ArrayList is made.
+        else{
+            ArrayList<String> questionIDList = new ArrayList<>();
+            questionIDList.add(questionID);
+            questionsAsked.put(courseCode,questionIDList);
+        }
+
     }
 }

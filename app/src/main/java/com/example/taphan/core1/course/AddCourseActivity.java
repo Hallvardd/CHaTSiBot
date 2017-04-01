@@ -32,6 +32,8 @@ public class AddCourseActivity extends AppCompatActivity {
     private EditText enterCourse;
     private Button addCourseButton;
     public static Course globalCourse;
+    private DatabaseReference mDatabase;
+    private final static String users = "users";
     ListView listView;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -47,9 +49,9 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setAdapter(adapter); // Use a default adapter
 
 
-//        for(String course:globalUser.getCourses()){
-//            adapter.add(new Course(course)); // Add to listView and show user their current courses
-//        }
+        for(String course:globalUser.getuCourses()){
+            adapter.add(new Course(course)); // Add to listView and show user their current courses
+        }
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
@@ -61,8 +63,10 @@ public class AddCourseActivity extends AppCompatActivity {
                 enterCourse.setText("");
 
                 // Add course to Firebase for current user
+                globalUser.addCourse(course);
+                String UID = globalUser.getUserID();
+                //mDatabase.child(users).child(UID).setValue(globalUser);
                 // TODO connect to IME Data API to search for course name in accordance to key for better database entry
-                // mDatabase.child("users").child(globalUser.getUserID()).child("courses").child(course).setValue(course);
             }
         });
 
@@ -72,7 +76,7 @@ public class AddCourseActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 globalCourse = (Course) parent.getItemAtPosition(position); // Find
                 Bundle courseCodeBundle = new Bundle();
-                courseCodeBundle.putString("courseCode", globalCourse.getCourseKey());
+                courseCodeBundle.putString("courseCode", globalCourse.getCourseKey()); // TODO determine is bundle or global variable is best fit for transferring chosen course to the next activity
                 Intent chat;// the course key that was chosen
                 if(globalUser.getUserType().equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);

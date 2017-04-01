@@ -63,6 +63,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private String course; // placeholder for variable deciding which questions to read from and answer.
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
+    private final static String users = "users";
 
 
     @Override
@@ -239,7 +240,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         for(String s:pathArray){ // for each list in the
             d = d.child(s);
         }
-        final String courseCode = pathArray[0];
+        final String courseCode = currentCourse;
         final DatabaseReference dbQuestionPath = d.child("state");
         dbQuestionPath.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -248,8 +249,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
+                    globalUser.putQuestion(courseCode,key);
+                    mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                     sendBotMessage("The question has been sent to your professor.");
-                    //globalUser.addQuestion(currentCourse,key); // adds the unanswered question to the students map of unanswered questions
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
 
                     dbQuestionPath.setValue(new State("NA",key));
@@ -263,6 +265,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     }
                     else if (!snap.getQuestionID().isEmpty()){
                         // adds the question to the list of asked questions if the question has already been asked.
+                        globalUser.putQuestion(courseCode,snap.getQuestionID());
+                        mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                         sendBotMessage("The question has already been asked");
                         //globalUser.addQuestion(currentCourse, snap.getQuestionID());
                     }
