@@ -39,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     public static User globalUser;
     private DatabaseReference mUserDatabase;
+    static final String users = "users";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,26 +47,34 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child(users);
+
         // A listener for when a user sign in and sign out
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser = firebaseAuth.getCurrentUser();
+                // In case of user signed in, user is directed to info activity screen, and user data is gathered from database.
                 if (firebaseUser != null) {
-                    // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
+                    mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            globalUser = dataSnapshot.getValue(User.class);
+                            Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
             }
         };
-
-        if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, InfoActivity.class));
-            finish();
-        }
 
         setContentView(R.layout.activity_login);
 

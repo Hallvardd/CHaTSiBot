@@ -42,13 +42,12 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
 
-
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 if(!globalUser.getUserID().isEmpty()){
                     String uID = globalUser.getUserID();
-//                    mUserDatabase.child(uID).setValue(globalUser);
+                    mUserDatabase.child(uID).setValue(globalUser);
                 }
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(InfoActivity.this, LoginActivity.class);

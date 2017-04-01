@@ -249,7 +249,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
                     sendBotMessage("The question has been sent to your professor.");
-                    globalUser.addQuestion(currentCourse,key); // adds the unanswered question to the students map of unanswered questions
+                    //globalUser.addQuestion(currentCourse,key); // adds the unanswered question to the students map of unanswered questions
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
 
                     dbQuestionPath.setValue(new State("NA",key));
@@ -264,7 +264,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     else if (!snap.getQuestionID().isEmpty()){
                         // adds the question to the list of asked questions if the question has already been asked.
                         sendBotMessage("The question has already been asked");
-                        globalUser.addQuestion(currentCourse, snap.getQuestionID());
+                        //globalUser.addQuestion(currentCourse, snap.getQuestionID());
                     }
                 }
             }

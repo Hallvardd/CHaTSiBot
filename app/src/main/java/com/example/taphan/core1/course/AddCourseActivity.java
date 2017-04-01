@@ -47,9 +47,9 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setAdapter(adapter); // Use a default adapter
 
 
-        for(String course:globalUser.getCourses()){
-            adapter.add(new Course(course)); // Add to listView and show user their current courses
-        }
+//        for(String course:globalUser.getCourses()){
+//            adapter.add(new Course(course)); // Add to listView and show user their current courses
+//        }
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
