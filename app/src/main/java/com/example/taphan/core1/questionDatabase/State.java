@@ -7,7 +7,7 @@ package com.example.taphan.core1.questionDatabase;
  */
 
 public class State {
-    String answerID;
+    String answer;
     String questionID;
 
     public State(){
@@ -15,7 +15,7 @@ public class State {
     }
 
     public State(String answerID, String questionID){
-        this.answerID = answerID;
+        this.answer = answerID;
         this.questionID = questionID;
 
     }
@@ -29,12 +29,12 @@ public class State {
     }
 
 
-    public void setAnswerID(String answerID){
-        this.answerID = answerID;
+    public void setAnswer(String answer){
+        this.answer = answer;
     }
 
-    public String getAnswerID(){
-        return answerID;
+    public String getAnswer(){
+        return answer;
     }
 
 

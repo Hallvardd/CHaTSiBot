@@ -10,6 +10,9 @@ public class User {
     private String userID; // this is the key and must therefore be unique.
     private String userType;
     private HashMap<String, ArrayList<String>> unansweredQuestions;
+
+    private HashMap<String, ArrayList<String>> answeredQuestions;
+
     private ArrayList<String> uCourses;
     private String email;
 
@@ -42,6 +45,14 @@ public class User {
         this.unansweredQuestions = unansweredQuestions;
     }
 
+    public HashMap<String, ArrayList<String>> getAnsweredQuestions() {
+        return answeredQuestions;
+    }
+
+    public void setAnsweredQuestions(HashMap<String, ArrayList<String>> answeredQuestions) {
+        this.answeredQuestions = answeredQuestions;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -49,7 +60,6 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     public ArrayList<String> getuCourses() {
         return uCourses;
@@ -63,7 +73,7 @@ public class User {
         uCourses.add(course);
     }
 
-    public void putQuestion(String courseCode, String questionID){
+    public void putUnansweredQuestion(String courseCode, String questionID){
         // Checks if a entry already exists
         if(unansweredQuestions.containsKey(courseCode)){
             // If the question already is in the list it is not added
@@ -79,4 +89,42 @@ public class User {
         }
 
     }
+
+    public void putAnsweredQuestion(String courseCode, String questionID){
+        // Checks if a entry already exists
+        if(answeredQuestions.containsKey(courseCode)){
+            // If the question already is in the list it is not added
+            if(!answeredQuestions.get(courseCode).contains(questionID)) {
+                answeredQuestions.get(courseCode).add(questionID);
+            }
+        }
+        // If there is no entry corresponding to the courseCode, an new entry and ArrayList is made.
+        else{
+            ArrayList<String> questionIDList = new ArrayList<>();
+            questionIDList.add(questionID);
+            answeredQuestions.put(courseCode,questionIDList);
+        }
+
+    }
+
+    // if the question id is present in the Map it is removed
+    public void removeUnansweredQuestion(String courseCode, String qustionID){
+        if(unansweredQuestions.containsKey(courseCode)){
+            if(unansweredQuestions.get(courseCode).contains(qustionID)){
+                unansweredQuestions.get(courseCode).remove(qustionID);
+            }
+        }
+
+    }
+    // if the question id is present in the Map it is removed
+    public void removeAnsweredQuestion(String courseCode, String qustionID){
+        if(answeredQuestions.containsKey(courseCode)){
+            if(answeredQuestions.get(courseCode).contains(qustionID)){
+                answeredQuestions.get(courseCode).remove(qustionID);
+            }
+        }
+
+
+    }
+
 }

@@ -220,7 +220,7 @@ public class ProfActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) { // the DataSnapshot consists of one and only one State() object
                         State snap = dataSnapshot.getValue(State.class);
-                        snap.setAnswerID(answerTxt); // possible to use an answer object later.
+                        snap.setAnswer(answerTxt); // possible to use an answer object later.
                         snap.setQuestion(newQuestionID);
                         pathToQuestion.setValue(snap);
                     }

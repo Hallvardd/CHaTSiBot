@@ -9,6 +9,7 @@ import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
@@ -18,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
@@ -249,26 +249,49 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
-                    globalUser.putQuestion(courseCode,key);
+                    q.addSListener(globalUser.getUserID());
+                    globalUser.putUnansweredQuestion(courseCode,key);
                     mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                     sendBotMessage("The question has been sent to your professor.");
                     uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
-
                     dbQuestionPath.setValue(new State("NA",key));
                 }
                 else {
                     State snap = dataSnapshot.getValue(State.class);
-                    if (!snap.getAnswerID().equals("NA")){
-                        String answerID = snap.getAnswerID();
+                    if (!snap.getAnswer().equals("NA")){
+                        String answerID = snap.getAnswer();
                         sendBotMessage(answerID);
 
                     }
                     else if (!snap.getQuestionID().isEmpty()){
                         // adds the question to the list of asked questions if the question has already been asked.
-                        globalUser.putQuestion(courseCode,snap.getQuestionID());
+                        globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
-                        sendBotMessage("The question has already been asked");
-                        //globalUser.addQuestion(currentCourse, snap.getQuestionID());
+                        sendBotMessage("The question has already been asked. I'll add it to your personal question list");
+
+                        //Updating user
+                        globalUser.putUnansweredQuestion(currentCourse, snap.getQuestionID());
+                        mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+
+                        // Adding the user to the questions list of users listening.
+                        final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
+                        questionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Question unasweredQuestion = dataSnapshot.getValue(Question.class);
+                                if (!unasweredQuestion.getStudentsListeners().contains(globalUser.getUserID())){
+                                    unasweredQuestion.addSListener(globalUser.getUserID());
+                                    questionRef.setValue(unasweredQuestion);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.e(TAG,"Error upon reading database: searchDatabase() case: Question already answered");
+
+                            }
+                        });
+
                     }
                 }
             }
