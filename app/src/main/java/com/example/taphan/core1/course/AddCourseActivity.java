@@ -42,6 +42,7 @@ public class AddCourseActivity extends AppCompatActivity {
 
         enterCourse = (EditText) findViewById(R.id.enter_course);
         addCourseButton = (Button) findViewById(R.id.add_course_button);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // Add items to course list when initialized
         listView = (ListView) findViewById(R.id.courseview);
@@ -58,14 +59,15 @@ public class AddCourseActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
-                //globalUser.createCourseQAsked(course);
-                adapter.add(new Course(course));
+                // Add course to Firebase for current user
+                if(!globalUser.getuCourses().contains(course)) {
+                    adapter.add(new Course(course));
+                    globalUser.addCourse(course);
+                    String UID = globalUser.getUserID();
+                    mDatabase.child(users).child(UID).setValue(globalUser);
+                }
                 enterCourse.setText("");
 
-                // Add course to Firebase for current user
-                globalUser.addCourse(course);
-                String UID = globalUser.getUserID();
-                //mDatabase.child(users).child(UID).setValue(globalUser);
                 // TODO connect to IME Data API to search for course name in accordance to key for better database entry
             }
         });
