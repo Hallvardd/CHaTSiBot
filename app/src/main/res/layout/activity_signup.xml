@@ -27,7 +27,7 @@
         <ImageView
             android:layout_width="156dp"
             android:layout_height="146dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_marginBottom="30dp"
             android:src="@mipmap/chatsibot_logo" />
 
@@ -43,7 +43,7 @@
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/black" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -62,7 +62,7 @@
                 android:inputType="textPassword"
                 android:maxLines="1"
                 android:singleLine="true"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/black" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -76,8 +76,8 @@
                 android:id="@+id/radio_stud"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onRadioButtonClicked"
                 android:checked="true"
+                android:onClick="onRadioButtonClicked"
                 android:text="Student" />
 
             <RadioButton
