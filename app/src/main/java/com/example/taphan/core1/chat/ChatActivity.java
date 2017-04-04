@@ -195,14 +195,16 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                             parameterString += "(" + key + ", " + value + ") ";
                         }
                     }
+
                     // If the user is asking for the exam date, search in Data API for it
-                    if(value.substring(1,value.length()-1).equals("exam date")) {
+                    String searchKey = value.substring(1,value.length()-1);
+                    if(searchKey.equals("exam date")) {
                         Log.d(TAG, "The key and value sent from API.AI is: " +  value);
                         JSONTask task = new JSONTask();
                         task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
                     } else {
                         // Hvis returnert False, legg den inn i unansweredQuestions in database
-                        //searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
+                        searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
                     }
                 }
             }
