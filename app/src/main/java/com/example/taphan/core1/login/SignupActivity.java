@@ -24,9 +24,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SignupActivity extends AppCompatActivity {
     public static final String TAG = "SignUpActivity";
+    private static final String student = "Student";
+    private static final String professor = "Professor";
 
     private EditText inputEmail, inputPassword;
     private Button btnSignIn, btnSignUp, btnResetPassword;
@@ -34,10 +40,7 @@ public class SignupActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private DatabaseReference mDatabase;
     private FirebaseUser user;
-
-
     private String userType;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +51,13 @@ public class SignupActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
         btnSignIn = (Button) findViewById(R.id.sign_in_button);
         btnSignUp = (Button) findViewById(R.id.sign_up_button);
         inputEmail = (EditText) findViewById(R.id.email);
         inputPassword = (EditText) findViewById(R.id.password);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
-        userType = "Student";
-
+        userType = student;
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +102,7 @@ public class SignupActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 Toast.makeText(SignupActivity.this, "Created account complete: " + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-                                User localUser = new User();
+                                User localUser = new User();// creates a user object to store
                                 // Add user to 'user' child in firebase to store information about courses
                                 user = auth.getCurrentUser();
                                 String userID = user.getUid(); // Get userID from firebase, then put in database object
@@ -118,13 +119,12 @@ public class SignupActivity extends AppCompatActivity {
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
+                                    globalUser = localUser;
                                     startActivity(new Intent(SignupActivity.this, InfoActivity.class));
                                     finish();
                                 }
-
                             }
                         });
-
             }
         });
     }
@@ -141,11 +141,11 @@ public class SignupActivity extends AppCompatActivity {
         switch(view.getId()) {
             case R.id.radio_stud:
                 if (checked)
-                    userType = "Student";
+                    userType = student;
                 break;
             case R.id.radio_prof:
                 if (checked)
-                    userType = "Professor";
+                    userType = professor;
                     break;
         }
 

@@ -13,6 +13,8 @@ public class Question {
     private String questionTxt;
     private String refAnsID;
     private String questionPath;
+
+
     private ArrayList<String> studentsListeners; // A list of the students which have asked the question.
     // these are notified when the question is answered and moved to a new location.
 
@@ -39,6 +41,9 @@ public class Question {
         }
     }
 
+    public void setStudentsListeners(ArrayList<String> studentsListeners) {
+        this.studentsListeners = studentsListeners;
+    }
     public ArrayList<String> getStudentsListeners(){
         return studentsListeners;
     }

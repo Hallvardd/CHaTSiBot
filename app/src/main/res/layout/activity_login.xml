@@ -29,7 +29,7 @@
             android:id="@+id/imageView2"
             android:layout_width="186dp"
             android:layout_height="186dp"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center"
             android:src="@mipmap/chatsibot_logo" />
 
         <android.support.design.widget.TextInputLayout
@@ -64,27 +64,28 @@
 
         <!-- Login Button -->
 
-    <LinearLayout
-        android:layout_width="312dp"
-        android:layout_height="63dp"
-        android:background="@color/logIn_background"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="@dimen/activity_horizontal_margin"
-        android:weightSum="1">
+        <LinearLayout
+            android:layout_width="312dp"
+            android:layout_height="63dp"
+            android:background="@color/logIn_background"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/activity_horizontal_margin"
+            android:weightSum="1">
 
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginTop="0dip"
-            android:background="@color/primary_button"
-            android:text="Login"
-            android:textColor="@android:color/black"
-            android:layout_weight="0.56" />
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dip"
+                android:layout_marginTop="0dip"
+                android:layout_weight="0.56"
+                android:background="@color/primary_button"
+                android:text="Login"
+                android:textColor="@android:color/black" />
 
-    </LinearLayout>
+        </LinearLayout>
+
         <Button
             android:id="@+id/btn_reset_password"
             android:layout_width="fill_parent"

@@ -10,8 +10,8 @@
     <TextView
         android:id="@+id/chat_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="125dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="10dp"
         android:textSize="20sp"
         android:textStyle="bold"
         android:text="Course key"/>
@@ -20,7 +20,7 @@
         android:id="@+id/msgview"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.06"
+        android:layout_weight="1.01"
         android:background="@null"
         android:divider="@null"
         android:stackFromBottom="true"

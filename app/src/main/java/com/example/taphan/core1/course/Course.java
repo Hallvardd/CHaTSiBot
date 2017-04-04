@@ -18,6 +18,10 @@ public class Course {
         this.courseKey = courseKey;
         this.courseName = courseName;
     }
+    public Course(String courseKey, String courseName){
+        this.courseKey = courseKey;
+        this.courseName = courseName;
+    }
 
     public String getCourseKey() {
         return courseKey;
