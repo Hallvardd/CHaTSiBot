@@ -86,6 +86,13 @@
                 android:layout_height="wrap_content"
                 android:onClick="onRadioButtonClicked"
                 android:text="Professor" />
+
+            <RadioButton
+                android:id="@+id/radio_ta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onRadioButtonClicked"
+                android:text="TA" />
         </RadioGroup>
 
         <Button

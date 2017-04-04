@@ -33,6 +33,7 @@ public class SignupActivity extends AppCompatActivity {
     public static final String TAG = "SignUpActivity";
     private static final String student = "Student";
     private static final String professor = "Professor";
+    private static final String ta = "TA";
 
     private EditText inputEmail, inputPassword;
     private Button btnSignIn, btnSignUp, btnResetPassword;
@@ -41,6 +42,7 @@ public class SignupActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
     private FirebaseUser user;
     private String userType;
+    private EmailValidator emailValidator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,8 @@ public class SignupActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         btnResetPassword = (Button) findViewById(R.id.btn_reset_password);
         userType = student;
+
+        emailValidator = new EmailValidator();
 
         btnResetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +84,7 @@ public class SignupActivity extends AppCompatActivity {
                 final String email = inputEmail.getText().toString().trim();
                 String password = inputPassword.getText().toString().trim();
 
+                // Check for valid input
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
                     return;
@@ -92,6 +97,11 @@ public class SignupActivity extends AppCompatActivity {
 
                 if (password.length() < 6) {
                     Toast.makeText(getApplicationContext(), "Password too short, enter minimum 6 characters!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if(! emailValidator.validate(email)) {
+                    Toast.makeText(getApplicationContext(), "Invalid email format!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 

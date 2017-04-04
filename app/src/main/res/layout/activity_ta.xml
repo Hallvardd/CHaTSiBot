@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".login.TaActivity">
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/primary_background"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:weightSum="1">
+
+        <Button
+            android:id="@+id/ta_choose_prof"
+            android:layout_width="fill_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="-30dip"
+
+            android:background="@color/primary_button"
+            android:text="Login as TA"
+            android:textSize="25sp"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/ta_choose_student"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="40dip"
+            android:background="@color/primary_button"
+            android:text="Login as Student"
+            android:textSize="25sp"
+            android:textColor="@android:color/black" />
+
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

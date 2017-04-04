@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -16,11 +15,8 @@ import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
 import com.example.taphan.core1.user.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,6 +52,9 @@ public class AddCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
 
+        if(globalUser == null) {
+            globalUser = new User();
+        }
         enterCourse = (EditText) findViewById(R.id.enter_course);
         addCourseButton = (Button) findViewById(R.id.add_course_button);
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -230,7 +229,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 String courseName = courseKeyName[1];
                 Course course = new Course(courseKey, courseName);
                 adapter.add(course);
-                globalUser.addCourse(courseKey);
+                globalUser.adduCourse(courseKey);
             }
         }
 

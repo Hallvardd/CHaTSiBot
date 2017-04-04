@@ -14,11 +14,16 @@ public class User {
     private HashMap<String, ArrayList<String>> answeredQuestions;
 
     private ArrayList<String> uCourses;
+    private ArrayList<String> tCourses;
     private String email;
 
     public User(){
+        userID = "";
+        userType = "";
+        email = "";
         unansweredQuestions = new HashMap<>();
         uCourses = new ArrayList<>();
+        tCourses = new ArrayList<>();
     }
 
     public String getUserID() {
@@ -65,11 +70,17 @@ public class User {
         return uCourses;
     }
 
+    public ArrayList<String> gettCourses() {
+        return tCourses;
+    }
+
     public void setuCourses(ArrayList<String> uCourses) {
         this.uCourses = uCourses;
     }
 
-    public void addCourse(String course){
+    public void settCourses(ArrayList<String> tCourses) { this.tCourses = tCourses;}
+
+    public void adduCourse(String course){
         uCourses.add(course);
     }
 
