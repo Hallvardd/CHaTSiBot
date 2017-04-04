@@ -118,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = inputEmail.getText().toString();
         final String password = inputPassword.getText().toString();
 
+        // Validate user input
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Enter email address!", Toast.LENGTH_SHORT).show();
             return;
@@ -155,7 +156,14 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         globalUser = dataSnapshot.getValue(User.class);
-                                        Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                        // Start the right page in accordance to user type
+                                        Intent intent;
+                                        Log.d(TAG,globalUser.getUserType());
+                                        if(globalUser.getUserType().equals("TA")) {
+                                            intent = new Intent(LoginActivity.this, TaActivity.class);
+                                        } else {
+                                            intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                        }
                                         startActivity(intent);
                                         finish();
                                     }

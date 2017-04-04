@@ -130,7 +130,11 @@ public class SignupActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     globalUser = localUser;
-                                    startActivity(new Intent(SignupActivity.this, InfoActivity.class));
+                                    if(globalUser.getUserType().equals("TA")) {
+                                        startActivity(new Intent(SignupActivity.this, TaActivity.class));
+                                    } else {
+                                        startActivity(new Intent(SignupActivity.this, InfoActivity.class));
+                                    }
                                     finish();
                                 }
                             }
@@ -157,6 +161,10 @@ public class SignupActivity extends AppCompatActivity {
                 if (checked)
                     userType = professor;
                     break;
+            case R.id.radio_ta:
+                if (checked)
+                    userType = ta;
+                break;
         }
 
     }

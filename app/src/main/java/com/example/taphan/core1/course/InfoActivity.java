@@ -3,6 +3,7 @@ package com.example.taphan.core1.course;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,6 +19,7 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
  */
 
 public class InfoActivity extends AppCompatActivity{
+    public static final String TAG = "InfoActivity";
 
     private Button signOutButton;
     private Button addCourseButton;
@@ -28,6 +30,7 @@ public class InfoActivity extends AppCompatActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+        Log.d(TAG,"The usertype is " + globalUser.getUserType() + " and the isTA is " + String.valueOf(globalUser.getIsTa()));
 
         addCourseButton = (Button) findViewById(R.id.add_course);
         signOutButton = (Button) findViewById(R.id.sign_out);

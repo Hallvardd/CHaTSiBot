@@ -10,9 +10,14 @@ public class User {
     //TODO: make code more secure in case of invalid data entry/access.
     private String userID; // this is the key and must therefore be unique.
     private String userType;
+
+    // Used by a TA, true if TA is currently logged in as TA, false if TA is logged in as student
+    private boolean isTA;
+
     private HashMap<String, ArrayList<String>> unansweredQuestions;
     private HashMap<String, ArrayList<String>> answeredQuestions;
 
+    // uCourses contains a student's course, tCourses contains a professor or TA's teaching courses
     private ArrayList<Course> uCourses;
     private ArrayList<Course> tCourses;
 
@@ -22,6 +27,7 @@ public class User {
         userID = "";
         userType = "";
         email = "";
+        isTA = true;
         unansweredQuestions = new HashMap<>();
         answeredQuestions = new HashMap<>();
         uCourses = new ArrayList<>();
@@ -42,6 +48,14 @@ public class User {
 
     public void setUserType(String userType) {
         this.userType = userType;
+    }
+
+    public boolean getIsTa() {
+        return isTA;
+    }
+
+    public void setIsTa(boolean isTA) {
+        this.isTA = isTA;
     }
 
     public HashMap<String, ArrayList<String>> getUnansweredQuestions() {
@@ -73,7 +87,6 @@ public class User {
     }
 
     public void settCourses(ArrayList<Course> tCourses) { this.tCourses = tCourses;}
-
 
     public String getEmail() {
         return email;
@@ -107,8 +120,8 @@ public class User {
     }
 
     public void addtCourse(Course course){
-        if(!uCourses.contains(course)){
-            uCourses.add(course);
+        if(!tCourses.contains(course)){
+            tCourses.add(course);
         }
     }
 
@@ -119,8 +132,8 @@ public class User {
     }
 
     public void removetCourse(Course course){
-        if(uCourses.contains(course)){
-            uCourses.remove(course);
+        if(tCourses.contains(course)){
+            tCourses.remove(course);
         }
     }
 

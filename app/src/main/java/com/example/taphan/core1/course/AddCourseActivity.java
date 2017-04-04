@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,14 +49,17 @@ public class AddCourseActivity extends AppCompatActivity {
     private final static String users = "users";
     ListView listView;
     CourseAdapter adapter;
+    String userType;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
 
-        if(globalUser == null) {
+        // Prevent crash when doing unit test
+        if(globalUser == null)
             globalUser = new User();
-        }
+        userType = globalUser.getUserType();
+
         enterCourse = (EditText) findViewById(R.id.enter_course);
         addCourseButton = (Button) findViewById(R.id.add_course_button);
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -64,22 +69,28 @@ public class AddCourseActivity extends AppCompatActivity {
         adapter = new CourseAdapter(getApplicationContext(), R.layout.course);
         listView.setAdapter(adapter); // Use a default adapter
 
+        // Check for userType, and display the right list of courses
+        final ArrayList<Course> userCourse;
+        if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor"))
+            userCourse = globalUser.gettCourses();
+        else
+            userCourse = globalUser.getuCourses();
+        for(Course course : userCourse)
+            adapter.add(course);
 
-        for(Course course:globalUser.getuCourses()){
-            adapter.add(course); // Add to listView and show user their current courses
-        }
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String course = enterCourse.getText().toString();
+
                 // Add course to Firebase for current user
-                if(!globalUser.getuCourses().contains(course)) {
+                // Make sure that a user can only be associated with one course either as a Professor/TA or as a student
+                if(!globalUser.getuCourses().contains(course) && !globalUser.gettCourses().contains(course)) {
                     // Check if the course name is valid
                     JSONTask task = new JSONTask();
                     task.execute("http://www.ime.ntnu.no/api/course/en/", course, "name");
-                    mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                 }
                 enterCourse.setText("");
             }
@@ -91,9 +102,13 @@ public class AddCourseActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 globalCourse = (Course) parent.getItemAtPosition(position); // Find
                 Bundle courseCodeBundle = new Bundle();
+
+                // Transfer chosen course code to new activity (which will be set to title of page)
                 courseCodeBundle.putString("courseCode", globalCourse.getCourseKey()); // TODO determine is bundle or global variable is best fit for transferring chosen course to the next activity
                 Intent chat;// the course key that was chosen
-                if(globalUser.getUserType().equalsIgnoreCase("Professor")){
+
+                // Start the right activity according to user type
+                if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
                     chat.putExtras(courseCodeBundle);
 
@@ -229,7 +244,15 @@ public class AddCourseActivity extends AppCompatActivity {
                 String courseName = courseKeyName[1];
                 Course course = new Course(courseKey, courseName);
                 adapter.add(course);
-                globalUser.adduCourse(course);
+                Log.d(TAG, "Added to adapter");
+                if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor")) {
+                    globalUser.addtCourse(course);
+                    Log.d(TAG, "A teaching course was added");
+                } else {
+                    globalUser.adduCourse(course);
+                    Log.d(TAG, "A student course was added");
+                }
+                mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
             }
         }
 
