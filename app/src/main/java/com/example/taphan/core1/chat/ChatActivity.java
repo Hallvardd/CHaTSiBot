@@ -18,6 +18,7 @@ import android.widget.EditText;
 
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
@@ -30,8 +31,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ai.api.AIListener;
 import ai.api.AIServiceException;
@@ -47,12 +61,12 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
 public class ChatActivity extends AppCompatActivity implements AIListener{
     private static final String TAG = "ChatActivity";
 
+    private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
-    private TextView invisible;
     private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
@@ -75,9 +89,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         title = (TextView) findViewById(R.id.chat_title);
         currentCourse = AddCourseActivity.globalCourse.getCourseKey();
         title.setText(currentCourse.toUpperCase());
-
-        // Make an invisible TextView to store information from database, and send it to bot
-        invisible = (TextView) findViewById(R.id.invisible_text);
 
         buttonSend = (Button) findViewById(R.id.send);
 
@@ -124,7 +135,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // The necessary base code to connect and use API.AI
-        config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
+        config = new AIConfiguration(client_access_token,
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
@@ -179,13 +190,20 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
                             key = entry.getKey();
-                            value = entry.getValue() + "";
-                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                            value = String.valueOf(entry.getValue());
+                            // In format: (tdt4140-definition, semat)
+                            parameterString += "(" + key + ", " + value + ") ";
                         }
                     }
-
-                    // Hvis returnert False, legg den inn i unansweredQuestions in database
-                    searchDatabase(mDatabase, currentCourse+"-"+key, result.getResolvedQuery());
+                    // If the user is asking for the exam date, search in Data API for it
+                    if(value.substring(1,value.length()-1).equals("exam date")) {
+                        Log.d(TAG, "The key and value sent from API.AI is: " +  value);
+                        JSONTask task = new JSONTask();
+                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                    } else {
+                        // Hvis returnert False, legg den inn i unansweredQuestions in database
+                        //searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
+                    }
                 }
             }
         }.execute(aiRequest);
@@ -301,4 +319,124 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         });
     }
 
+
+    public class JSONTask extends AsyncTask<String, String,String> {
+        private String result; // variable to solve the problem of wrong return value in searchJson method
+
+        /**
+         * @param params = paramaters from execute(String... params)
+         * This method is called when method jsonTask.execute() is called
+         * The first parameter is URL of JSON, the following parameters are search keywords
+         * @return value (String) if search is successful, "Not found" if otherwise
+         */
+        @Override
+        public String doInBackground(String... params) {
+            HttpURLConnection connection = null;
+            BufferedReader br = null;
+            try {
+                // Connect to JSON
+                URL u = new URL(params[0] + params[1]);
+                connection = (HttpURLConnection) u.openConnection();
+                connection.connect();
+
+                // Use a buffer to store JSON info
+                br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder buffer = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null ) {
+                    buffer.append(line);
+                }
+                // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
+                String finalJson = buffer.toString();
+                JSONObject parentObject = new JSONObject(finalJson);
+                result = "Not found";
+                if(parentObject.getString("course").equals("null")){
+                    return result; // If user enters invalid course name, returns Not found
+                } else {
+                    // Else the name of course will be returned
+                    return searchJson(parentObject, null, "object", "course", params);
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                // Close connection, check for null objects in order to avoid error
+                if (connection != null) {
+                    try {
+                        connection.disconnect();
+                        if(br != null) {
+                            br.close();}
+                    } catch (Exception ex) {
+                        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Helper method for searching after simple information in JSON
+         * @param parentObject - can be either a JSONObject or null
+         * @param parentArray - can be either JSONArray or null
+         * @param parentType - variable to solve the problem of nested objects
+         * @param key - key to the JSONObject
+         * @param searchkey - a list of keywords to search, currently only support ONE keyword at index 2
+         * @return the result of search, null if unsuccessful
+         * @throws JSONException
+         */
+        private String searchJson(JSONObject parentObject, JSONArray parentArray, String parentType, String key, String... searchkey) throws JSONException {
+            // Choose to only handle information on courses, and not from cache or request
+            if(parentArray != null) {
+                int i = 0;
+                while (i < parentArray.length()) {
+                    JSONObject currentObject = parentArray.getJSONObject(i);
+                    Iterator iterator = currentObject.keys();
+                    while(iterator.hasNext()) {
+                        String nextKey = (String) iterator.next();
+                        if(currentObject.get(nextKey) instanceof JSONObject) {
+                            searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
+                        } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
+                            result = currentObject.getString(nextKey) ; // Return courseKey,courseName
+                            break;
+                        }
+                    }
+                    i++;
+                }
+            } else if(parentObject != null){
+                JSONObject currentObject = parentObject;
+                // In order to get past educationalRole-person, need to check for parent type
+                if(!parentType.equals("object")) {
+                    currentObject = parentObject.getJSONObject(key);
+                }
+                Iterator iterator = currentObject.keys();
+                while(iterator.hasNext()) {
+                    String nextKey = (String) iterator.next();
+                    if(currentObject.get(nextKey) instanceof JSONObject) {
+                        searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
+                    } else if(currentObject.get(nextKey) instanceof JSONArray) {
+                        searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkey);
+                    } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
+                        result = currentObject.getString(nextKey);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String newResult) {
+            // Execute our Json reader and store desired information in result
+            super.onPostExecute(newResult);
+            if(newResult.equalsIgnoreCase("Not found")) {
+                sendBotMessage("Exam date not found.");
+            } else {
+                sendBotMessage("The exam date is: " + result);
+            }
+        }
+    }
+
 }
+

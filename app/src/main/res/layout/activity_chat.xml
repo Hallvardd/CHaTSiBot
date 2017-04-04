@@ -26,12 +26,6 @@
         android:stackFromBottom="true"
         android:transcriptMode="alwaysScroll" />
 
-    <TextView
-        android:id="@+id/invisible_text"
-        android:layout_width="0dip"
-        android:layout_height="0dip"
-        android:layout_weight="0"
-        android:text="Invisible" />
 
     <LinearLayout
         android:layout_width="match_parent"
