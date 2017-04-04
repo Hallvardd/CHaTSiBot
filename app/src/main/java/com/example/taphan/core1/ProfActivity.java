@@ -11,17 +11,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
 import com.example.taphan.core1.layoutClass.ChatMessage;
 import com.example.taphan.core1.questionDatabase.Answer;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.example.taphan.core1.questionDatabase.State;
+import com.example.taphan.core1.user.User;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
 
 import java.util.ArrayList;
 
@@ -41,6 +45,7 @@ public class ProfActivity extends AppCompatActivity {
     private String lastQuestion; // used to check if the question has already been printed, to avoid duplicates
     private final static String questionBranchName ="questions";
     private final static String uaQuestionBranchName = "unansweredQuestions";
+    public final static String users = "users";
 
 
     @Override
@@ -56,30 +61,16 @@ public class ProfActivity extends AppCompatActivity {
         lastQuestion = ""; // Initial setup, no questions have been displayed.
 
         bundle = getIntent().getExtras(); //
-        courseCode = bundle.getString("courseCode");
+        //courseCode = bundle.getString("courseCode");
+        courseCode = AddCourseActivity.globalCourse.getCourseKey();
         mDatabase = FirebaseDatabase.getInstance().getReference();
         uaqDatabase = mDatabase.child(courseCode.toLowerCase()).child(uaQuestionBranchName);
-        dbc = new DatabaseController();
-
         qList = new ArrayList<>();
         tv = (TextView) findViewById(R.id.resulttv);
 
-
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
 
-        /*chatText.setOnKeyListener(new View.OnKeyListener() {
-        // User input is accepted by both pressing "Send" button and the "Enter" key
-        chatText = (EditText) findViewById(R.id.msg);
-
-
-        //ONLY FOR ADDING TEST VALUES
-        /*
-        dbc.searchDatabase(mDatabase,"TDT4140-Definition-Software-App","What is an application?", tv);
-        dbc.searchDatabase(mDatabase,"TDT4140-Definition-Software-Word","What is MS Word?", tv);
-        */
-
-        // fills the list with questions for the first time.
         fillQList(courseCode);
 
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -91,7 +82,6 @@ public class ProfActivity extends AppCompatActivity {
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-
                 answerQuestion();
             }
         });
@@ -122,7 +112,7 @@ public class ProfActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-               fillQList(courseCode);
+                fillQList(courseCode);
             }
 
             @Override
@@ -198,9 +188,9 @@ public class ProfActivity extends AppCompatActivity {
         return true;
     }
 
-    void addAnswerToDatabase(final DatabaseReference database, final String questionID, String courseCode, final String answerTxt){
+    void addAnswerToDatabase(final DatabaseReference database, final String questionID, final String courseCode, final String answerTxt){
         Answer answer = new Answer();
-        courseCode = courseCode.toLowerCase();
+        final String course = courseCode.toLowerCase();
         final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
         final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
         final String newQuestionID = qDatabase.push().getKey();
@@ -208,10 +198,15 @@ public class ProfActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Question q = dataSnapshot.getValue(Question.class);
+                final String qID = q.getQuestionID();
+                final ArrayList<String> studentListeners = q.getStudentsListeners();
                 String [] path = q.getQuestionPath().split("-");
                 q.setQuestionID(newQuestionID);
-                DatabaseReference pTQ = database;
-                for(String p:path){                             // Iterates over the questions keywords and "extends" the branch.
+                qDatabase.child(newQuestionID).setValue(q); // Adds the question to the answered question database
+                uaqDatabase.child(questionID).removeValue(); // Deletes the question so it won't appear in the professors feed.
+
+                DatabaseReference pTQ = database; // initialises the path To Question
+                for(String p:path){  // Iterates over the questions keywords and "extends" the branch.
                     pTQ = pTQ.child(p);
                 }
                 final DatabaseReference pathToQuestion = pTQ.child("state"); // adds state as the final branch of the database Reference,
@@ -223,6 +218,7 @@ public class ProfActivity extends AppCompatActivity {
                         snap.setAnswer(answerTxt); // possible to use an answer object later.
                         snap.setQuestion(newQuestionID);
                         pathToQuestion.setValue(snap);
+
                     }
 
                     @Override
@@ -230,10 +226,23 @@ public class ProfActivity extends AppCompatActivity {
 
                     }
                 });
-                //q.setRefAnsID(answerKey);
-                qDatabase.child(newQuestionID).setValue(q); // Adds the question to the answered question database
-                uaqDatabase.child(questionID).removeValue(); // Deletes the question so it won't appear in the professors feed.
-                // NB! as of now we don't keep the answered questions saved in the database. this should be implemented later, to allow bad answers and questions to be deleted
+
+                for(String userID:studentListeners){
+                    boolean b = false;
+                    mDatabase.child(users).child(userID).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User u = dataSnapshot.getValue(User.class);
+                            u.removeUnansweredQuestion(courseCode,qID);
+                            u.putAnsweredQuestion(courseCode,newQuestionID);
+                            mDatabase.child(users).child(u.getUserID()).setValue(u);
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {

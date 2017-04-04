@@ -60,7 +60,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private AIService aiService;
 
     private DatabaseReference mDatabase; //database reference to our firebase database.
-    private String course; // placeholder for variable deciding which questions to read from and answer.
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
     private final static String users = "users";
@@ -186,7 +185,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     }
 
                     // Hvis returnert False, legg den inn i unansweredQuestions in database
-                    searchDatabase(mDatabase, key, result.getResolvedQuery());
+                    searchDatabase(mDatabase, currentCourse+"-"+key, result.getResolvedQuery());
                 }
             }
         }.execute(aiRequest);

@@ -1,6 +1,7 @@
 package com.example.taphan.core1.user;
 
 
+import com.example.taphan.core1.course.Course;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,11 +11,11 @@ public class User {
     private String userID; // this is the key and must therefore be unique.
     private String userType;
     private HashMap<String, ArrayList<String>> unansweredQuestions;
-
     private HashMap<String, ArrayList<String>> answeredQuestions;
 
-    private ArrayList<String> uCourses;
-    private ArrayList<String> tCourses;
+    private ArrayList<Course> uCourses;
+    private ArrayList<Course> tCourses;
+
     private String email;
 
     public User(){
@@ -22,6 +23,7 @@ public class User {
         userType = "";
         email = "";
         unansweredQuestions = new HashMap<>();
+        answeredQuestions = new HashMap<>();
         uCourses = new ArrayList<>();
         tCourses = new ArrayList<>();
     }
@@ -58,30 +60,27 @@ public class User {
         this.answeredQuestions = answeredQuestions;
     }
 
+    public ArrayList<Course> getuCourses() {
+        return uCourses;
+    }
+
+    public ArrayList<Course> gettCourses() {
+        return tCourses;
+    }
+
+    public void setuCourses(ArrayList<Course> uCourses) {
+        this.uCourses = uCourses;
+    }
+
+    public void settCourses(ArrayList<Course> tCourses) { this.tCourses = tCourses;}
+
+
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public ArrayList<String> getuCourses() {
-        return uCourses;
-    }
-
-    public ArrayList<String> gettCourses() {
-        return tCourses;
-    }
-
-    public void setuCourses(ArrayList<String> uCourses) {
-        this.uCourses = uCourses;
-    }
-
-    public void settCourses(ArrayList<String> tCourses) { this.tCourses = tCourses;}
-
-    public void adduCourse(String course){
-        uCourses.add(course);
     }
 
     public void putUnansweredQuestion(String courseCode, String questionID){
@@ -100,6 +99,31 @@ public class User {
         }
 
     }
+
+    public void adduCourse(Course course){
+        if(!uCourses.contains(course)){
+            uCourses.add(course);
+        }
+    }
+
+    public void addtCourse(Course course){
+        if(!uCourses.contains(course)){
+            uCourses.add(course);
+        }
+    }
+
+    public void removeuCourse(Course course){
+        if(uCourses.contains(course)){
+            uCourses.remove(course);
+        }
+    }
+
+    public void removetCourse(Course course){
+        if(uCourses.contains(course)){
+            uCourses.remove(course);
+        }
+    }
+
 
     public void putAnsweredQuestion(String courseCode, String questionID){
         // Checks if a entry already exists

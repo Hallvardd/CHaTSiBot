@@ -14,13 +14,11 @@ public class Course {
     private String courseName;
 
     public Course() {}
-    public Course(String courseKey) {
-        this.courseKey = courseKey;
-    }
-    public Course(String courseKey, String courseName){
+    public Course(String courseKey, String courseName) {
         this.courseKey = courseKey;
         this.courseName = courseName;
     }
+
 
     public String getCourseKey() {
         return courseKey;
@@ -37,4 +35,5 @@ public class Course {
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
+
 }

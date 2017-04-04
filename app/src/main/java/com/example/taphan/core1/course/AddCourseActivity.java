@@ -65,8 +65,8 @@ public class AddCourseActivity extends AppCompatActivity {
         listView.setAdapter(adapter); // Use a default adapter
 
 
-        for(String course:globalUser.getuCourses()){
-            adapter.add(new Course(course)); // Add to listView and show user their current courses
+        for(Course course:globalUser.getuCourses()){
+            adapter.add(course); // Add to listView and show user their current courses
         }
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
@@ -229,7 +229,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 String courseName = courseKeyName[1];
                 Course course = new Course(courseKey, courseName);
                 adapter.add(course);
-                globalUser.adduCourse(courseKey);
+                globalUser.adduCourse(course);
             }
         }
 

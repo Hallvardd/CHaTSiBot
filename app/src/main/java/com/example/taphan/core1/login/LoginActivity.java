@@ -1,5 +1,6 @@
 package com.example.taphan.core1.login;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -39,7 +40,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     public static User globalUser;
     private DatabaseReference mUserDatabase;
-    static final String users = "users";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,16 +47,19 @@ public class LoginActivity extends AppCompatActivity {
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child(users);
-
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         // A listener for when a user sign in and sign out
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser = firebaseAuth.getCurrentUser();
-                // In case of user signed in, user is directed to info activity screen, and user data is gathered from database.
                 if (firebaseUser != null) {
+                    // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
+                    // Disable the loginbutton
+                    btnLogin.setBackgroundColor(Color.GRAY);
+                    btnLogin.setEnabled(false);
+                    // if the user is logged in user data is gathered from the database.
                     mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -69,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
                         public void onCancelled(DatabaseError databaseError) {
                         }
                     });
-
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -146,7 +148,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             {
-
+                                // If the login is successful disable the login button.
+                                btnLogin.setEnabled(false);
+                                btnLogin.setBackgroundColor(Color.GRAY);
                                 mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {

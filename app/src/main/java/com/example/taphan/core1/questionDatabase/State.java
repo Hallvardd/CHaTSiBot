@@ -14,8 +14,8 @@ public class State {
 
     }
 
-    public State(String answerID, String questionID){
-        this.answer = answerID;
+    public State(String answer, String questionID){
+        this.answer = answer;
         this.questionID = questionID;
 
     }
@@ -29,8 +29,8 @@ public class State {
     }
 
 
-    public void setAnswer(String answer){
-        this.answer = answer;
+    public void setAnswer(String answerID){
+        this.answer = answerID;
     }
 
     public String getAnswer(){
