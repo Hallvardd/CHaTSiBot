@@ -14,8 +14,9 @@ public class Course {
     private String courseName;
 
     public Course() {}
-    public Course(String courseKey) {
+    public Course(String courseKey, String courseName) {
         this.courseKey = courseKey;
+        this.courseName = courseName;
     }
 
     public String getCourseKey() {
@@ -33,4 +34,5 @@ public class Course {
     public void setCourseName(String courseName) {
         this.courseName = courseName;
     }
+
 }

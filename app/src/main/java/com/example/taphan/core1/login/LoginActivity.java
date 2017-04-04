@@ -1,5 +1,6 @@
 package com.example.taphan.core1.login;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -55,17 +56,28 @@ public class LoginActivity extends AppCompatActivity {
                 if (firebaseUser != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
+                    // Disable the loginbutton
+                    btnLogin.setBackgroundColor(Color.GRAY);
+                    btnLogin.setEnabled(false);
+                    // if the user is logged in user data is gathered from the database.
+                    mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            globalUser = dataSnapshot.getValue(User.class);
+                            Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
             }
         };
-
-        if (auth.getCurrentUser() != null) {
-            startActivity(new Intent(LoginActivity.this, InfoActivity.class));
-            finish();
-        }
 
         setContentView(R.layout.activity_login);
 
@@ -136,7 +148,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         } else {
                             {
-
+                                // If the login is successful disable the login button.
+                                btnLogin.setEnabled(false);
+                                btnLogin.setBackgroundColor(Color.GRAY);
                                 mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
