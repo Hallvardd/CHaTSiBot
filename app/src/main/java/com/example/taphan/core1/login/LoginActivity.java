@@ -63,10 +63,28 @@ public class LoginActivity extends AppCompatActivity {
                     mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            globalUser = dataSnapshot.getValue(User.class);
-                            Intent intent = new Intent(LoginActivity.this, InfoActivity.class);
-                            startActivity(intent);
-                            finish();
+                            if(dataSnapshot.exists()) {
+                                globalUser = dataSnapshot.getValue(User.class);
+                                // Start the right page in accordance to user type
+                                Intent intent;
+                                Log.d(TAG, globalUser.getUserType());
+                                if (globalUser.getUserType().equals("TA")) {
+                                    intent = new Intent(LoginActivity.this, TaActivity.class);
+                                } else {
+                                    intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                }
+                                startActivity(intent);
+                                finish();
+                            }
+                            else{
+                                // no userdata found in database, user is loged out. And new login is made posible
+                                Toast.makeText(getApplicationContext(), "Userdata compormised. Contact system admin", Toast.LENGTH_SHORT).show();
+                                FirebaseAuth.getInstance().signOut();
+                                btnLogin.setBackgroundColor(getResources().getColor(R.color.primary_button));
+                                btnLogin.setEnabled(true);
+
+
+                            }
                         }
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
@@ -156,17 +174,27 @@ public class LoginActivity extends AppCompatActivity {
                                 mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
-                                        globalUser = dataSnapshot.getValue(User.class);
-                                        // Start the right page in accordance to user type
-                                        Intent intent;
-                                        Log.d(TAG,globalUser.getUserType());
-                                        if(globalUser.getUserType().equals("TA")) {
-                                            intent = new Intent(LoginActivity.this, TaActivity.class);
-                                        } else {
-                                            intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                        // Checks if there is any user data in database.
+                                        if(dataSnapshot.exists()){
+                                            globalUser = dataSnapshot.getValue(User.class);
+                                            // Start the right page in accordance to user type
+                                            Intent intent;
+                                            Log.d(TAG, globalUser.getUserType());
+                                            if (globalUser.getUserType().equals("TA")) {
+                                                intent = new Intent(LoginActivity.this, TaActivity.class);
+                                            } else {
+                                                intent = new Intent(LoginActivity.this, InfoActivity.class);
+                                            }
+                                            startActivity(intent);
+                                            finish();
                                         }
-                                        startActivity(intent);
-                                        finish();
+                                        else{
+                                            // no userdata found in database, user is loged out. And new login is made posible
+                                            Toast.makeText(getApplicationContext(), "Userdata compormised. Contact system admin", Toast.LENGTH_SHORT).show();
+                                            FirebaseAuth.getInstance().signOut();
+                                            btnLogin.setBackgroundColor(getResources().getColor(R.color.primary_button));
+                                            btnLogin.setEnabled(true);
+                                        }
                                     }
                                     @Override
                                     public void onCancelled(DatabaseError databaseError) {

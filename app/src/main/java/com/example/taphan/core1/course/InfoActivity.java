@@ -45,6 +45,7 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
 
+
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -66,7 +67,4 @@ public class InfoActivity extends AppCompatActivity{
             }
         });
     }
-
-
-
 }
