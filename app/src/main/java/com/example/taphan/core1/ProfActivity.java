@@ -13,8 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.taphan.core1.course.AddCourseActivity;
-import com.example.taphan.core1.layoutClass.ChatArrayAdapter;
-import com.example.taphan.core1.layoutClass.ChatMessage;
+import com.example.taphan.core1.chat.ChatArrayAdapter;
+import com.example.taphan.core1.chat.ChatMessage;
 import com.example.taphan.core1.questionDatabase.Answer;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.example.taphan.core1.questionDatabase.State;

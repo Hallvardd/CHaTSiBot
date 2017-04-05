@@ -1,10 +1,12 @@
 package com.example.taphan.core1.chat;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
@@ -17,6 +19,7 @@ import java.util.List;
  */
 
 public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
+    private static final String TAG = "ChatArrayAdapter";
 
     private TextView chatText;
     private List<ChatMessage> chatMessageList = new ArrayList<ChatMessage>();
@@ -45,14 +48,31 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         ChatMessage chatMessageObj = getItem(position);
         View row = convertView;
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if (chatMessageObj.left) {
-            row = inflater.inflate(R.layout.right, parent, false);
-        }else{
-            row = inflater.inflate(R.layout.left, parent, false);
-        }
-        chatText = (TextView) row.findViewById(R.id.msgr);
-        chatText.setText(chatMessageObj.message);
+        if(chatMessageObj.feedback) {
+            row = inflater.inflate(R.layout.feedback, parent, false);
+            Button feedbackYesBtn = (Button) row.findViewById(R.id.feedbackYesButton);
+            Button feedbackNoBtn = (Button) row.findViewById(R.id.feedbackNoButton);
 
+            feedbackYesBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Log.d(TAG, "Funker så bra");
+                }
+            });
+            feedbackNoBtn.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Log.d(TAG, "Funker kanskje ikke så bra");
+                }
+            });
+
+        } else {
+            if (chatMessageObj.left) {
+                row = inflater.inflate(R.layout.right, parent, false);
+            } else {
+                row = inflater.inflate(R.layout.left, parent, false);
+            }
+            chatText = (TextView) row.findViewById(R.id.msgr);
+            chatText.setText(chatMessageObj.message);
+        }
         return row;
     }
 }

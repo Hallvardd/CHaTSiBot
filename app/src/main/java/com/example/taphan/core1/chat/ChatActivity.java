@@ -92,6 +92,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         buttonSend = (Button) findViewById(R.id.send);
 
+
+
         // The listview to show chat bubbles
         listView = (ListView) findViewById(R.id.msgview);
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.right);
@@ -160,6 +162,14 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     private void sendBotMessage(String message) {
         // Implement code for answer from bot here
         chatArrayAdapter.add(new ChatMessage(false, message));
+    }
+
+    private void sendBotFeedback(ChatMessage message) {
+        chatArrayAdapter.add(message);
+    }
+
+    private void feedbackYesClick() {
+        Log.d(TAG, "The feedback button was clicked");
     }
 
     // API.AI code
@@ -276,10 +286,17 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     dbQuestionPath.setValue(new State("NA",key));
                 }
                 else {
+                    // Found the answer in database
                     State snap = dataSnapshot.getValue(State.class);
                     if (!snap.getAnswer().equals("NA")){
                         String answerID = snap.getAnswer();
                         sendBotMessage(answerID);
+
+                        // Send also the feedback button to user
+                        ChatMessage message = new ChatMessage(true, "");
+                        message.setFeedbackTrue();
+                        sendBotFeedback(message);
+
 
                     }
                     else if (!snap.getQuestionID().isEmpty()){

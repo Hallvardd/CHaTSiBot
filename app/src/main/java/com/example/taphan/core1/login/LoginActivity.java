@@ -114,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    // When the login button is clicked
     private void clickButton() {
         String email = inputEmail.getText().toString();
         final String password = inputPassword.getText().toString();
