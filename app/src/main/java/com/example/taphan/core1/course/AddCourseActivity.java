@@ -252,7 +252,10 @@ public class AddCourseActivity extends AppCompatActivity {
                     globalUser.adduCourse(course);
                     Log.d(TAG, "A student course was added");
                 }
-                mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+                // writes the user back to the database, only if the userObject has a userID, and is not empty.
+                if (!globalUser.getUserID().isEmpty()) {
+                    mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+                }
             }
         }
 

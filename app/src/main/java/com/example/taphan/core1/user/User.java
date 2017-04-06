@@ -24,9 +24,6 @@ public class User {
     private String email;
 
     public User(){
-        userID = "";
-        userType = "";
-        email = "";
         isTA = true;
         unansweredQuestions = new HashMap<>();
         answeredQuestions = new HashMap<>();

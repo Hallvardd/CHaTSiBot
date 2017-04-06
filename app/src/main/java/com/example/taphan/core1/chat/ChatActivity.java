@@ -290,10 +290,16 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
                     q.addSListener(globalUser.getUserID());
+
+                    // updating and writing global user back to database
                     globalUser.putUnansweredQuestion(courseCode,key);
                     mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+
                     sendBotMessage("The question has been sent to your professor.");
-                    uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+
+                    // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+                    uaQuestionDB.child(key).setValue(q);
+                    // adds a State() to the last leaf of the unanswered question's tree in the database.
                     dbQuestionPath.setValue(new State("NA",key));
                 }
                 else {
@@ -315,10 +321,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                         globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                         sendBotMessage("The question has already been asked. I'll add it to your personal question list");
-
-                        //Updating user
-                        globalUser.putUnansweredQuestion(currentCourse, snap.getQuestionID());
-                        mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
 
                         // Adding the user to the questions list of users listening.
                         final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());

@@ -24,7 +24,7 @@
         <activity android:name=".login.TaActivity"/>
         <activity android:name=".chat.ChatActivity"/>
         <activity android:name=".login.SignupActivity"/>
-        <activity android:name=".course.AddCourseActivity"/>
+        <activity android:name=".course.AddCourseActivity" android:windowSoftInputMode ="adjustPan"/>
         <activity android:name=".course.AppInfoActivity"/>
         <activity android:name=".ProfActivity"/>
         <activity android:name=".course.InfoActivity"/>
