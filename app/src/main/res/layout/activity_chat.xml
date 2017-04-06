@@ -11,11 +11,11 @@
         android:id="@+id/chat_title"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Course key"
         android:textSize="20sp"
-        android:textStyle="bold"
-        android:text="Course key"/>
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/msgview"
