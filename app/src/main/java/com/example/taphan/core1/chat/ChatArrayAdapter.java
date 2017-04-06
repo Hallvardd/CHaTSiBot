@@ -55,7 +55,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
             feedbackYesBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.d(TAG, "Funker så bra");
+
                 }
             });
             feedbackNoBtn.setOnClickListener(new View.OnClickListener() {

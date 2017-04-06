@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.taphan.core1.MainActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
@@ -56,6 +57,8 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
+import ai.api.util.StringUtils;
+
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 public class ChatActivity extends AppCompatActivity implements AIListener{
@@ -91,8 +94,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         title.setText(currentCourse.toUpperCase());
 
         buttonSend = (Button) findViewById(R.id.send);
-
-
 
         // The listview to show chat bubbles
         listView = (ListView) findViewById(R.id.msgview);
@@ -168,9 +169,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         chatArrayAdapter.add(message);
     }
 
-    private void feedbackYesClick() {
-        Log.d(TAG, "The feedback button was clicked");
-    }
 
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
@@ -190,9 +188,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             }
             @Override
             protected void onPostExecute(AIResponse aiResponse) {
+                // Here comes response from API.AI server 
                 if (aiResponse != null) {
-                    //   process aiResponse here
-                    // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
                     String key = "";
@@ -206,12 +203,14 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                         }
                     }
 
-                    // If the user is asking for the exam date, search in Data API for it
+                    // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database
                     String searchKey = value.substring(1,value.length()-1);
                     if(searchKey.equals("exam date")) {
-                        Log.d(TAG, "The key and value sent from API.AI is: " +  value);
                         JSONTask task = new JSONTask();
                         task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                    } else if(searchKey.equals("professor")) {
+                        JSONTask task = new JSONTask();
+                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
                     } else {
                         // Hvis returnert False, legg den inn i unansweredQuestions in database
                         searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
@@ -251,6 +250,18 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     @Override
     public void onListeningFinished() {
 
+    }
+
+    // Check if the string contains only alphabetical characters
+    public boolean isAlpha(String name) {
+        char[] chars = name.toCharArray();
+
+        for (char c : chars) {
+            if(!Character.isLetter(c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
@@ -339,6 +350,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
     }
 
 
+    // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
     public class JSONTask extends AsyncTask<String, String,String> {
         private String result; // variable to solve the problem of wrong return value in searchJson method
 
@@ -447,12 +459,21 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         @Override
         protected void onPostExecute(String newResult) {
-            // Execute our Json reader and store desired information in result
             super.onPostExecute(newResult);
-            if(newResult.equalsIgnoreCase("Not found")) {
-                sendBotMessage("Exam date not found.");
+
+            // Send message to Bot, if result contains alphabetical characters, the task was to find lecturer, else exam date
+            if(isAlpha(newResult)) {
+                if (newResult.equalsIgnoreCase("Not found")) {
+                    sendBotMessage("Lecturer not found.");
+                } else {
+                    sendBotMessage("The lecturer of this subject is: " + result);
+                }
             } else {
-                sendBotMessage("The exam date is: " + result);
+                if (newResult.equalsIgnoreCase("Not found")) {
+                    sendBotMessage("Exam date not found.");
+                } else {
+                    sendBotMessage("The exam date is: " + result);
+                }
             }
         }
     }
