@@ -29,6 +29,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
+
 public class ProfActivity extends AppCompatActivity {
     private static final String TAG = "ProfActivity";
     Bundle bundle;
@@ -126,8 +128,8 @@ public class ProfActivity extends AppCompatActivity {
             }
         });
 
-        String welcomeMsg = "Hello professor, if there are unanswered questions from students they will" +
-                "come up under. Please answer in form: <category>: <answer>";
+        String welcomeMsg = "Hello " + globalUser.getUserType()+ " if there are unanswered questions from students they will" +
+                "come up under be displayed as messages below! Please Answer them.";
         sendStudentQuestion(welcomeMsg);
     }
 
@@ -218,7 +220,6 @@ public class ProfActivity extends AppCompatActivity {
                         snap.setAnswer(answerTxt); // possible to use an answer object later.
                         snap.setQuestion(newQuestionID);
                         pathToQuestion.setValue(snap);
-
                     }
 
                     @Override
