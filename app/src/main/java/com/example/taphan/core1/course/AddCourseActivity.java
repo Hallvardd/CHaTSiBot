@@ -56,8 +56,11 @@ public class AddCourseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_course);
 
         // Prevent crash when doing unit test
-        if(globalUser == null)
+        if(globalUser == null) {
             globalUser = new User();
+            globalUser.setUserType("Professor");
+            globalUser.setIsTa(false);
+        }
         userType = globalUser.getUserType();
 
         enterCourse = (EditText) findViewById(R.id.enter_course);

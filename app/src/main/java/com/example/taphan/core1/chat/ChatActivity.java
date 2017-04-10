@@ -7,20 +7,19 @@ package com.example.taphan.core1.chat;
 
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.taphan.core1.MainActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
@@ -42,7 +41,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -57,11 +55,10 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
-import ai.api.util.StringUtils;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-public class ChatActivity extends AppCompatActivity implements AIListener{
+public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener {
     private static final String TAG = "ChatActivity";
 
     private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
@@ -254,14 +251,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
     // Check if the string contains only alphabetical characters
     public boolean isAlpha(String name) {
-        char[] chars = name.toCharArray();
-
-        for (char c : chars) {
-            if(!Character.isLetter(c)) {
-                return false;
-            }
-        }
-        return true;
+        return name.matches("[a-zA-Z]+"); // TODO add whitespace
     }
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
@@ -350,6 +340,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             }
         });
     }
+
+
 
 
     // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
@@ -477,6 +469,18 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     sendBotMessage("The exam date is: " + result);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        long viewId = view.getId();
+
+        if (viewId == R.id.feedbackYesButton) {
+            Toast.makeText(this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Funkerrr");
+        } else if (viewId == R.id.feedbackNoButton) {
+            //Toast.makeText(this, "Button 2 clicked", Toast.LENGTH_SHORT).show();
         }
     }
 

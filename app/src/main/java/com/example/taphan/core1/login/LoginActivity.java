@@ -44,6 +44,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+
+        inputEmail = (EditText) findViewById(R.id.email);
+        inputPassword = (EditText) findViewById(R.id.password);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        btnSignup = (Button) findViewById(R.id.btn_signup);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnReset = (Button) findViewById(R.id.btn_reset_password);
+
+        btnLogin.setBackgroundColor(getResources().getColor(R.color.primary_button));
+        btnLogin.setEnabled(true);
 
         //Get Firebase auth instance
         auth = FirebaseAuth.getInstance();
@@ -57,8 +68,8 @@ public class LoginActivity extends AppCompatActivity {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
                     // Disable the loginbutton
-                    btnLogin.setBackgroundColor(Color.GRAY);
-                    btnLogin.setEnabled(false);
+                    /*btnLogin.setBackgroundColor(Color.GRAY);
+                    btnLogin.setEnabled(false);*/
                     // if the user is logged in user data is gathered from the database.
                     mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -97,14 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        setContentView(R.layout.activity_login);
 
-        inputEmail = (EditText) findViewById(R.id.email);
-        inputPassword = (EditText) findViewById(R.id.password);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        btnSignup = (Button) findViewById(R.id.btn_signup);
-        btnLogin = (Button) findViewById(R.id.btn_login);
-        btnReset = (Button) findViewById(R.id.btn_reset_password);
 
 
         btnSignup.setOnClickListener(new View.OnClickListener() {

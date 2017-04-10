@@ -16,21 +16,21 @@
 
 package com.example.taphan.core1;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
 import android.app.Activity;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.test.filters.LargeTest;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.user.User;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -71,6 +71,7 @@ public class AddCourseChangeTextBehaviorTest {
     public ActivityTestRule<AddCourseActivity> mActivityRule = new ActivityTestRule<>(
             AddCourseActivity.class);
 
+    // Check that when user add a course, the text field for user input will be emptied
     @Test
     public void changeText_sameActivity() {
         globalUser = new User();
@@ -83,6 +84,7 @@ public class AddCourseChangeTextBehaviorTest {
         onView(withId(R.id.enter_course)).check(matches(withText("")));
     }
 
+    // By clicking on an item in the course listView, the title of next chat page corresponds to the clicked item in list
     @Test
     public void changeText_newActivity() {
         // Type text and then press the button.

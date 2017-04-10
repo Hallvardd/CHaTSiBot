@@ -9,6 +9,7 @@ import android.widget.Button;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.login.LoginActivity;
+import com.example.taphan.core1.user.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,6 +31,9 @@ public class InfoActivity extends AppCompatActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_info);
+        // Prevent crash when doing unit test
+        if(globalUser == null)
+            globalUser = new User();
         Log.d(TAG,"The usertype is " + globalUser.getUserType() + " and the isTA is " + String.valueOf(globalUser.getIsTa()));
 
         addCourseButton = (Button) findViewById(R.id.add_course);

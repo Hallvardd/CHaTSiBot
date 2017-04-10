@@ -1,13 +1,13 @@
 package com.example.taphan.core1.chat;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.taphan.core1.R;
 
@@ -44,7 +44,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         return this.chatMessageList.get(index);
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         ChatMessage chatMessageObj = getItem(position);
         View row = convertView;
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -55,12 +55,14 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
 
             feedbackYesBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-
+                    Toast.makeText(context, "Awesome, is there anything more I can do for you?", Toast.LENGTH_SHORT).show();
                 }
             });
             feedbackNoBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Log.d(TAG, "Funker kanskje ikke så bra");
+                    Toast.makeText(context, "Ok, the question has been sent to your professor.", Toast.LENGTH_SHORT).show();
+                    // TODO Implement sending question to professor here
+
                 }
             });
 
@@ -75,4 +77,6 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         }
         return row;
     }
+
+
 }
