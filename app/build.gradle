@@ -15,6 +15,7 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,6 +26,12 @@ android {
     }
 }
 
+ext {
+    supportLibraryVersion = '24.2.1'
+    googleApiClientVersion = '1.22.0'
+}
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
@@ -34,6 +41,30 @@ dependencies {
     androidTestCompile ('com.android.support.test.espresso:espresso-intents:2.2', {
         exclude module: 'support-annotations'
     })
+
+
+    // cloud natural language processing
+
+    // Support libraries
+    compile "com.android.support:design:$supportLibraryVersion"
+    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
+
+    // FlexboxLayout
+    compile 'com.google.android:flexbox:0.2.3'
+
+    // Dependencies for Google API Client Libraries
+    compile("com.google.http-client:google-http-client:$googleApiClientVersion") {
+        exclude module: 'httpclient'
+        exclude module: 'jsr305'
+    }
+    compile("com.google.api-client:google-api-client-android:$googleApiClientVersion"){
+        exclude module: 'httpclient'
+        exclude module: 'jsr305'
+    }
+    compile("com.google.apis:google-api-services-language:v1beta1-rev5-$googleApiClientVersion") {
+        exclude module: 'httpclient'
+        exclude module: 'jsr305'
+    }
 
     // api.ai SDK dependencies
     compile 'com.android.support:appcompat-v7:25.1.1'
@@ -48,7 +79,6 @@ dependencies {
     compile 'com.android.support:design:25.2.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
-
 
     //compile group: 'com.google.cloud', name: 'google-cloud-language', version: '0.11.0-alpha'
 }
