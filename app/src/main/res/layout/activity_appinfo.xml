@@ -3,11 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/course_main">
+    android:background="@color/primary_background">
+
+    <TextView
+        android:id="@+id/info_title"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Info about the CHaTSiBot app" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        app:srcCompat="@mipmap/chatsibot_logo" />
 
     <TextView
         android:id="@+id/Info"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="info" />
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+
+        android:text = "@string/app_info"
+        android:textColor="@android:color/black"
+       />
 </LinearLayout>

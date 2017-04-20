@@ -7,18 +7,19 @@ package com.example.taphan.core1.chat;
 
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.taphan.core1.DatabaseController;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.questionDatabase.Question;
@@ -30,8 +31,20 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.JsonElement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import ai.api.AIListener;
 import ai.api.AIServiceException;
@@ -45,28 +58,26 @@ import ai.api.model.Result;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-public class ChatActivity extends AppCompatActivity implements AIListener{
+public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener {
     private static final String TAG = "ChatActivity";
 
+    private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
-    private TextView invisible;
     private String currentCourse; // The current course for this chat activity
 
     private AIConfiguration config;
     private AIDataService aiDataService;
     private AIService aiService;
 
-    public DatabaseController dbc; // creates a databaseController to access firebase data.
     private DatabaseReference mDatabase; //database reference to our firebase database.
-    private final String course = "TAC101"; // placeholder for variable deciding which questions to read from and answer.
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
+    private final static String users = "users";
 
-    // TODO decide on whether there will be 2 ChatActivity classes separately for prof and stud
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,11 +87,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
-        currentCourse = AddCourseActivity.globalCourse.getCourse();
+        currentCourse = AddCourseActivity.globalCourse.getCourseKey();
         title.setText(currentCourse.toUpperCase());
-
-        // Make an invisible TextView to store information from database, and send it to bot
-        invisible = (TextView) findViewById(R.id.invisible_text);
 
         buttonSend = (Button) findViewById(R.id.send);
 
@@ -125,10 +133,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
         // Database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        dbc = new DatabaseController();
 
         // The necessary base code to connect and use API.AI
-        config = new AIConfiguration("be12980a15414ff0a8726764bb4edd79",
+        config = new AIConfiguration(client_access_token,
                 AIConfiguration.SupportedLanguages.English,
                 AIConfiguration.RecognitionEngine.System);
         aiService = AIService.getService(this, config);
@@ -155,6 +162,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         chatArrayAdapter.add(new ChatMessage(false, message));
     }
 
+    private void sendBotFeedback(ChatMessage message) {
+        chatArrayAdapter.add(message);
+    }
+
+
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
         final AIRequest aiRequest = new AIRequest();
@@ -173,9 +185,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
             }
             @Override
             protected void onPostExecute(AIResponse aiResponse) {
+                // Here comes response from API.AI server 
                 if (aiResponse != null) {
-                    //   process aiResponse here
-                    // Get parameters
                     Result result = aiResponse.getResult();
                     String parameterString = "";
                     String key = "";
@@ -183,13 +194,24 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                         for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
                             key = entry.getKey();
-                            value = entry.getValue() + "";
-                            parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+                            value = String.valueOf(entry.getValue());
+                            // In format: (tdt4140-definition, semat)
+                            parameterString += "(" + key + ", " + value + ") ";
                         }
                     }
 
-                    // Hvis returnert False, legg den inn i unansweredQuestions in database
-                    searchDatabase(mDatabase, key, result.getResolvedQuery());
+                    // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database
+                    String searchKey = value.substring(1,value.length()-1);
+                    if(searchKey.equals("exam date")) {
+                        JSONTask task = new JSONTask();
+                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                    } else if(searchKey.equals("professor")) {
+                        JSONTask task = new JSONTask();
+                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                    } else {
+                        // Hvis returnert False, legg den inn i unansweredQuestions in database
+                        searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
+                    }
                 }
             }
         }.execute(aiRequest);
@@ -227,6 +249,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
 
     }
 
+    // Check if the string contains only alphabetical characters
+    public boolean isAlpha(String name) {
+        return name.matches("[a-zA-Z]+"); // TODO add whitespace
+    }
+
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
         /*
         searchDatabase() uses the returned keywords from API-AI to find if a question has an answer or not. If the
@@ -243,7 +270,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         for(String s:pathArray){ // for each list in the
             d = d.child(s);
         }
-        final String courseCode = pathArray[0];
+        final String courseCode = currentCourse;
         final DatabaseReference dbQuestionPath = d.child("state");
         dbQuestionPath.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -252,18 +279,58 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
                     DatabaseReference uaQuestionDB = database.child(courseCode).child(uaQuestionBranchName);
                     String key = uaQuestionDB.push().getKey();
                     Question q = new Question(key,questionTxt,lcPath); // a question object is created with reference to the path.
+                    q.addSListener(globalUser.getUserID());
+
+                    // updating and writing global user back to database
+                    globalUser.putUnansweredQuestion(courseCode,key);
+                    mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+
                     sendBotMessage("The question has been sent to your professor.");
-                    uaQuestionDB.child(key).setValue(q); // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+
+                    // The question is added to the unanswered question branch of the database, allowing the professor to read it.
+                    uaQuestionDB.child(key).setValue(q);
+                    // adds a State() to the last leaf of the unanswered question's tree in the database.
                     dbQuestionPath.setValue(new State("NA",key));
                 }
                 else {
+                    // Found the answer in database
                     State snap = dataSnapshot.getValue(State.class);
-                    if (!snap.getAnswerID().equals("NA")){
-                        String answerID = snap.getAnswerID();
+                    if (!snap.getAnswer().equals("NA")){
+                        String answerID = snap.getAnswer();
                         sendBotMessage(answerID);
+
+                        // Send also the feedback button to user
+                        ChatMessage message = new ChatMessage(true, "");
+                        message.setFeedbackTrue();
+                        sendBotFeedback(message);
+
+
                     }
-                    else if (!snap.getQuestionID().isEmpty()) {
-                        sendBotMessage("The question has already been asked");
+                    else if (!snap.getQuestionID().isEmpty()){
+                        // adds the question to the list of asked questions if the question has already been asked.
+                        globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
+                        mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
+                        sendBotMessage("The question has already been asked. I'll add it to your personal question list");
+
+                        // Adding the user to the questions list of users listening.
+                        final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
+                        questionRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Question unasweredQuestion = dataSnapshot.getValue(Question.class);
+                                if (!unasweredQuestion.getStudentsListeners().contains(globalUser.getUserID())){
+                                    unasweredQuestion.addSListener(globalUser.getUserID());
+                                    questionRef.setValue(unasweredQuestion);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.e(TAG,"Error upon reading database: searchDatabase() case: Question already answered");
+
+                            }
+                        });
+
                     }
                 }
             }
@@ -274,4 +341,148 @@ public class ChatActivity extends AppCompatActivity implements AIListener{
         });
     }
 
+
+
+
+    // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
+    public class JSONTask extends AsyncTask<String, String,String> {
+        private String result; // variable to solve the problem of wrong return value in searchJson method
+
+        /**
+         * @param params = paramaters from execute(String... params)
+         * This method is called when method jsonTask.execute() is called
+         * The first parameter is URL of JSON, the following parameters are search keywords
+         * @return value (String) if search is successful, "Not found" if otherwise
+         */
+        @Override
+        public String doInBackground(String... params) {
+            HttpURLConnection connection = null;
+            BufferedReader br = null;
+            try {
+                // Connect to JSON
+                URL u = new URL(params[0] + params[1]);
+                connection = (HttpURLConnection) u.openConnection();
+                connection.connect();
+
+                // Use a buffer to store JSON info
+                br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder buffer = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null ) {
+                    buffer.append(line);
+                }
+                // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
+                String finalJson = buffer.toString();
+                JSONObject parentObject = new JSONObject(finalJson);
+                result = "Not found";
+                if(parentObject.getString("course").equals("null")){
+                    return result; // If user enters invalid course name, returns Not found
+                } else {
+                    // Else the name of course will be returned
+                    return searchJson(parentObject, null, "object", "course", params);
+                }
+
+            } catch (IOException ex) {
+                Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } finally {
+                // Close connection, check for null objects in order to avoid error
+                if (connection != null) {
+                    try {
+                        connection.disconnect();
+                        if(br != null) {
+                            br.close();}
+                    } catch (Exception ex) {
+                        Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Helper method for searching after simple information in JSON
+         * @param parentObject - can be either a JSONObject or null
+         * @param parentArray - can be either JSONArray or null
+         * @param parentType - variable to solve the problem of nested objects
+         * @param key - key to the JSONObject
+         * @param searchkey - a list of keywords to search, currently only support ONE keyword at index 2
+         * @return the result of search, null if unsuccessful
+         * @throws JSONException
+         */
+        private String searchJson(JSONObject parentObject, JSONArray parentArray, String parentType, String key, String... searchkey) throws JSONException {
+            // Choose to only handle information on courses, and not from cache or request
+            if(parentArray != null) {
+                int i = 0;
+                while (i < parentArray.length()) {
+                    JSONObject currentObject = parentArray.getJSONObject(i);
+                    Iterator iterator = currentObject.keys();
+                    while(iterator.hasNext()) {
+                        String nextKey = (String) iterator.next();
+                        if(currentObject.get(nextKey) instanceof JSONObject) {
+                            searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
+                        } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
+                            result = currentObject.getString(nextKey) ; // Return courseKey,courseName
+                            break;
+                        }
+                    }
+                    i++;
+                }
+            } else if(parentObject != null){
+                JSONObject currentObject = parentObject;
+                // In order to get past educationalRole-person, need to check for parent type
+                if(!parentType.equals("object")) {
+                    currentObject = parentObject.getJSONObject(key);
+                }
+                Iterator iterator = currentObject.keys();
+                while(iterator.hasNext()) {
+                    String nextKey = (String) iterator.next();
+                    if(currentObject.get(nextKey) instanceof JSONObject) {
+                        searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
+                    } else if(currentObject.get(nextKey) instanceof JSONArray) {
+                        searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkey);
+                    } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
+                        result = currentObject.getString(nextKey);
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(String newResult) {
+            super.onPostExecute(newResult);
+
+            // Send message to Bot, if result contains alphabetical characters, the task was to find lecturer, else exam date
+            if(isAlpha(newResult)) {
+                if (newResult.equalsIgnoreCase("Not found")) {
+                    sendBotMessage("Lecturer not found.");
+                } else {
+                    sendBotMessage("The lecturer of this subject is: " + result);
+                }
+            } else {
+                if (newResult.equalsIgnoreCase("Not found")) {
+                    sendBotMessage("Exam date not found.");
+                } else {
+                    sendBotMessage("The exam date is: " + result);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        long viewId = view.getId();
+
+        if (viewId == R.id.feedbackYesButton) {
+            Toast.makeText(this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "Funkerrr");
+        } else if (viewId == R.id.feedbackNoButton) {
+            //Toast.makeText(this, "Button 2 clicked", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
+

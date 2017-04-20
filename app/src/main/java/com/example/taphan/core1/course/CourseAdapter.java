@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
@@ -49,7 +48,7 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         row = inflater.inflate(R.layout.course, parent, false);
         courseTextView = (TextView) row.findViewById(R.id.course_object);
-        courseTextView.setText(courseObj.getCourse());
+        courseTextView.setText(courseObj.getCourseKey());
         return row;
     }
 }

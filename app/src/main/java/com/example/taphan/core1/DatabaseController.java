@@ -12,8 +12,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 
 public class DatabaseController {
     private final static String questionBranchName ="questions";
@@ -52,9 +50,9 @@ public class DatabaseController {
                 }
                 else {
                     State snap = dataSnapshot.getValue(State.class);
-                    textView.setText(snap.getAnswerID());
-                    if (!snap.getAnswerID().equals("NA")){
-                        String answerID = snap.getAnswerID();
+                    textView.setText(snap.getAnswer());
+                    if (!snap.getAnswer().equals("NA")){
+                        String answerID = snap.getAnswer();
                         textView.setText(answerID);
                     }
                     else if (!snap.getQuestionID().isEmpty()) {
@@ -92,7 +90,7 @@ public class DatabaseController {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) { // the DataSnapshot consists of one and only one State() object
                         State snap = dataSnapshot.getValue(State.class);
-                        snap.setAnswerID(answerTxt); // possible to use an answer object later.
+                        snap.setAnswer(answerTxt); // possible to use an answer object later.
                         snap.setQuestion(newQuestionID);
                         pathToQuestion.setValue(snap);
                     }

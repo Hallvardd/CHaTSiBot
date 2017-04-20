@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00a6ff</color>
+    <color name="primary_background">#E6E6FA</color> <!-- Lavender Mist -->
+
+    <color name="signOut_button">#FF1010</color> <!-- SASQUATCH SOCKS -->
+
+    <color name="signIn_button">#069E2D</color> <!-- North Texas Green -->
+    <color name="signUp_background">#D1EDD8</color> <!-- Tea Green -->
+    <color name="logIn_background">#D2D2E4</color> <!-- Grey -->
+
+    <color name="primary_button">#4251CD</color> <!-- Medium Blue -->
+    <color name="course_name">#88C0E1</color> <!-- Dark Sky Blue -->
+
+    <color name="colorPrimaryDark">#D8DBE2</color>
+
+    <color name="label_background">#00a6ff</color>  <!-- VIVID CERULEAN -->
+
+    <!--
+    <color name="primary_bgd">#00a6ff</color>
     <color name="colorPrimaryDark">#D8DBE2</color>
     <color name="colorAccent">#4251CD</color>
     <color name="signinbutton">#FF4081</color>
-    <color name="course_main">#D8DBE2</color>
+    <color name="primary_background">#D8DBE2</color>
     <color name="bg_login">#26ae90</color>
     <color name="bg_register">#2e3237</color>
     <color name="bg_main">#428bca</color>
-    <color name="white">#ffffff</color>
     <color name="course_name">#88C0E1</color>
     <color name="input_login">#222222</color>
     <color name="input_login_hint">#999999</color>
@@ -19,4 +34,5 @@
     <color name="btn_login_bg">#eceef1</color>
     <color name="lbl_name">#333333</color>
     <color name="btn_logut_bg">#ff6861</color>
+    -->
 </resources>

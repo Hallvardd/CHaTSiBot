@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".course.InfoActivity">
+    tools:context=".login.TaActivity">
 
 
     <LinearLayout
@@ -17,36 +17,26 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:weightSum="1">
 
-
         <Button
-            android:id="@+id/add_course"
+            android:id="@+id/ta_choose_prof"
             android:layout_width="fill_parent"
             android:layout_height="80dp"
             android:layout_marginTop="-30dip"
 
             android:background="@color/primary_button"
-            android:text="Add/Choose course"
+            android:text="Login as TA"
             android:textSize="25sp"
             android:textColor="@android:color/black" />
 
         <Button
-            android:id="@+id/app_info"
+            android:id="@+id/ta_choose_student"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:layout_marginTop="40dip"
             android:background="@color/primary_button"
-            android:text="About CHaTSiBot"
+            android:text="Login as Student"
             android:textSize="25sp"
             android:textColor="@android:color/black" />
 
-        <Button
-            android:id="@+id/sign_out"
-            android:layout_width="fill_parent"
-            android:layout_height="80dp"
-            android:layout_marginTop="40dip"
-            android:background="@color/primary_button"
-            android:textSize="25sp"
-            android:text="Sign out"
-            android:textColor="@android:color/black" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

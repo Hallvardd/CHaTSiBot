@@ -31,6 +31,18 @@
     <string name="btn_send">Send</string>
     <string name="btn_remove">Remove</string>
     <string name="btn_sign_out">Sign Out</string>
-    <string name="lbl_forgot_password">Forgot password?</string>
-    <string name="forgot_password_msg">We just need your registered Email Id to sent you password reset instructions.</string>
+    <string name="lbl_forgot_password">Forgot your password?</string>
+    <string name="forgot_password_msg">We just need your registered Email-Id to send you instructions on how to reset your password. </string>
+    <string name="add_course_failed">Invalid course key, please try again.</string>
+    <!-- Strings related to appinfo -->
+    <string name="app_info">
+        Professors often receive questions that they have already answered or
+        where the answers can easily be found. ChaTSiBot is a communication tool that innovates
+        communication in a teaching environment by automatically linking the answers of already
+        answered questions to similar new questions.
+        \n\n\nThe team is:
+        \nCharles Sørbø Edvardsen,\nHallvard Stemshaug, \nTruc Anh Nguyen Phan, \nSiren Johansen
+
+
+    </string>
 </resources>
