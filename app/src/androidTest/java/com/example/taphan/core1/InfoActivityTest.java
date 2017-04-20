@@ -7,7 +7,9 @@ import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.course.AppInfoActivity;
 import com.example.taphan.core1.course.InfoActivity;
+import com.example.taphan.core1.login.LoginActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,16 +39,22 @@ public class InfoActivityTest {
     };
 
     // Test button click will lead to correct activity
-    /*@Test
-    public void appInfoNext() {
-        onView(withId(R.id.app_info)).perform(click());
-        intended(hasComponent(AppInfoActivity.class.getName()));
-    }*/
-    // NullPointerException hvorfor :(
     @Test
     public void addCourseNext() {
         onView(withId(R.id.add_course)).perform(click());
         intended(hasComponent(AddCourseActivity.class.getName()));
+    }
+
+    @Test
+    public void appInfoNext() {
+        onView(withId(R.id.app_info)).perform(click());
+        intended(hasComponent(AppInfoActivity.class.getName()));
+    }
+
+    @Test
+    public void signOutNext() {
+        onView(withId(R.id.sign_out)).perform(click());
+        intended(hasComponent(LoginActivity.class.getName()));
     }
 
 }

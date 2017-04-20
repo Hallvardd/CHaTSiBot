@@ -68,7 +68,7 @@ public class ProfActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         uaqDatabase = mDatabase.child(courseCode.toLowerCase()).child(uaQuestionBranchName);
         qList = new ArrayList<>();
-        tv = (TextView) findViewById(R.id.resulttv);
+        tv = (TextView) findViewById(R.id.chat_title);
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
@@ -162,7 +162,7 @@ public class ProfActivity extends AppCompatActivity {
                             lastQuestion = q.getQuestionTxt();
                             sendStudentQuestion(q.getQuestionTxt());
                         }
-                        tv.setText(q.getQuestionTxt());
+                        //tv.setText(q.getQuestionTxt());
                         firstItem = false;
                     }
                 }

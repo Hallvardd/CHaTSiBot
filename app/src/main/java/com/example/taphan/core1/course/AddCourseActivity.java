@@ -58,7 +58,7 @@ public class AddCourseActivity extends AppCompatActivity {
         // Prevent crash when doing unit test
         if(globalUser == null) {
             globalUser = new User();
-            globalUser.setUserType("Professor");
+            globalUser.setUserType("TA");
             globalUser.setIsTa(false);
         }
         userType = globalUser.getUserType();
@@ -74,13 +74,12 @@ public class AddCourseActivity extends AppCompatActivity {
 
         // Check for userType, and display the right list of courses
         final ArrayList<Course> userCourse;
-        if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor"))
+        if((userType.equalsIgnoreCase("TA")&& globalUser.getIsTa())|| userType.equalsIgnoreCase("Professor"))
             userCourse = globalUser.gettCourses();
         else
             userCourse = globalUser.getuCourses();
         for(Course course : userCourse)
             adapter.add(course);
-
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
         addCourseButton.setOnClickListener(new View.OnClickListener() {
@@ -248,7 +247,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 Course course = new Course(courseKey, courseName);
                 adapter.add(course);
                 Log.d(TAG, "Added to adapter");
-                if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor")) {
+                if((userType.equals("TA")&& globalUser.getIsTa())|| userType.equalsIgnoreCase("Professor")) {
                     globalUser.addtCourse(course);
                     Log.d(TAG, "A teaching course was added");
                 } else {
@@ -256,7 +255,7 @@ public class AddCourseActivity extends AppCompatActivity {
                     Log.d(TAG, "A student course was added");
                 }
                 // writes the user back to the database, only if the userObject has a userID, and is not empty.
-                if (!globalUser.getUserID().isEmpty()) {
+                if (!globalUser.getUserID().equals("")) {
                     mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
                 }
             }
