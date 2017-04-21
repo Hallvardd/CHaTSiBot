@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.taphan.core1.model;
+package com.example.taphan.core1.languageProcessing.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
