@@ -69,7 +69,7 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
 public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener, ApiFragment.Callback {
     private static final String TAG = "ChatActivity";
 
-    private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
+    private String client_access_token = "854903e0917e42c384b1e59d1b99af42";
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
@@ -169,10 +169,12 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
 
     private boolean sendChatMessage() throws AIServiceException{
         // Implement code to handle answer input from bot after globalUser input here
-        chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
-        listenButtonOnClick();
-        chatText.setText("");
-        //sendBotMessage();
+        if(!chatText.getText().toString().isEmpty()) {
+            chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
+            listenButtonOnClick();
+            chatText.setText("");
+            //sendBotMessage();
+        }
         return true;
     }
 
@@ -230,7 +232,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
         if(nouns.length() > 0){
             nouns = nouns.substring(0, nouns.length() - 1);
         }
-        Log.d("STUFF", nouns );
+        Log.d("API", nouns );
     }
     // End of language processing!!
 
@@ -238,54 +240,64 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
         final AIRequest aiRequest = new AIRequest();
-        aiRequest.setQuery(chatText.getText().toString());
-        startAnalyze();
+        if (!chatText.getText().toString().isEmpty()) {
+            aiRequest.setQuery(chatText.getText().toString());
+            startAnalyze();
 
-        new AsyncTask<AIRequest, Void, AIResponse>() {
-            @Override
-            protected AIResponse doInBackground(AIRequest... requests) {
-                final AIRequest request = requests[0];
-                try {
-                    final AIResponse response = aiDataService.request(aiRequest);
-                    return response;
-                } catch (AIServiceException e) {
+            new AsyncTask<AIRequest, Void, AIResponse>() {
+                @Override
+                protected AIResponse doInBackground(AIRequest... requests) {
+                    final AIRequest request = requests[0];
+                    try {
+                        final AIResponse response = aiDataService.request(aiRequest);
+                        return response;
+                    } catch (AIServiceException e) {
+                    }
+                    return null;
                 }
-                return null;
-            }
-            @Override
-            protected void onPostExecute(AIResponse aiResponse) {
-                // Here comes response from API.AI server 
-                if (aiResponse != null) {
-                    Result result = aiResponse.getResult();
-                    String parameterString = "";
-                    String key = "";
-                    String value = "";
-                    if (result.getParameters() != null && !result.getParameters().isEmpty()) {
-                        for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
-                            key = entry.getKey();
-                            value = String.valueOf(entry.getValue());
-                            // In format: (tdt4140-definition, semat)
-                            parameterString += "(" + key + ", " + value + ") ";
+
+                @Override
+                protected void onPostExecute(AIResponse aiResponse) {
+                    // Here comes response from API.AI server
+                    if (aiResponse != null) {
+                        Result result = aiResponse.getResult();
+                        String parameterString = "";
+                        String key = "";
+                        String value = "";
+                        String searchKey = "unknown";
+                        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+                            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                                //key = entry.getKey();
+                                value = String.valueOf(entry.getValue());
+                                // In format: (tdt4140-definition, semat)
+                                // parameterString += "(" + key + ", " + value + ") ";
+                            }
+                        }
+
+                        // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database
+
+                        if (value.length() > 2) {
+                            value = value.replace("\",\"", "-");
+                            searchKey = value.substring(2, value.length() - 2);
+                            Log.d("API", value);
+                        }
+
+                        if (searchKey.equals("exam date")) {
+                            JSONTask task = new JSONTask();
+                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                        } else if (searchKey.equals("professor")) {
+                            JSONTask task = new JSONTask();
+                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                        } else {
+                            // Hvis returnert False, legg den inn i unansweredQuestions in database [""]
+                            searchKey = currentCourse + "-" + searchKey + "-" + nouns;
+                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
                         }
                     }
-
-                    // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database
-                    String searchKey = value.substring(1,value.length()-1);
-                    if(searchKey.equals("exam date")) {
-                        JSONTask task = new JSONTask();
-                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
-                    } else if(searchKey.equals("professor")) {
-                        JSONTask task = new JSONTask();
-                        task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
-                    } else {
-                        // Hvis returnert False, legg den inn i unansweredQuestions in database
-
-                        Log.d("STUFF",currentCourse + "-" + key + "-" + nouns );
-                        searchDatabase(mDatabase, currentCourse + "-" + key + "-" + nouns, result.getResolvedQuery());
-                    }
                 }
-            }
-        }.execute(aiRequest);
+            }.execute(aiRequest);
+        }
+
     }
 
     @Override
@@ -334,6 +346,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
+        Log.d("API-AI TEST3", path);
 
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");
@@ -374,8 +387,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         ChatMessage message = new ChatMessage(true, "");
                         message.setFeedbackTrue();
                         sendBotFeedback(message);
-
-
                     }
                     else if (!snap.getQuestionID().isEmpty()){
                         // adds the question to the list of asked questions if the question has already been asked.
@@ -411,8 +422,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
             }
         });
     }
-
-
 
 
     // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
