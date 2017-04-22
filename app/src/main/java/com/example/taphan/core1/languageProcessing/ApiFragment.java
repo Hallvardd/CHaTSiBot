@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import ai.api.AIServiceException;
+
 
 /**
  * Handles all the API requests of Cloud Natural Language API.
@@ -64,7 +66,7 @@ public class ApiFragment extends Fragment {
          *
          * @param tokens The tokens.
          */
-        void onSyntaxReady(TokenInfo[] tokens);
+        void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException;
     }
 
     private static final String TAG = "ApiFragment";
@@ -170,7 +172,11 @@ public class ApiFragment extends Fragment {
                 @Override
                 public void run() {
                     if (mCallback != null) {
-                        mCallback.onSyntaxReady(array);
+                        try {
+                            mCallback.onSyntaxReady(array);
+                        } catch (AIServiceException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             });

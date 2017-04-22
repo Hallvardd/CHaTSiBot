@@ -169,11 +169,13 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
 
     private boolean sendChatMessage() throws AIServiceException{
         // Implement code to handle answer input from bot after globalUser input here
-        if(!chatText.getText().toString().isEmpty()) {
+        // checks for empty strings, and for strings containing only white spaces.
+        Log.d("TAG",chatText.getText().toString().length() + "");
+        if(!chatText.getText().toString().isEmpty() && (chatText.getText().toString().trim().length() > 0)) {
+            Log.d("TAG inside",chatText.getText().toString().trim().length() + "");
             chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
-            listenButtonOnClick();
-            chatText.setText("");
-            //sendBotMessage();
+            startAnalyze();
+
         }
         return true;
     }
@@ -220,7 +222,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
 
 
     @Override
-    public void onSyntaxReady(TokenInfo[] tokens) {
+    public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
         //TODO: Where the tokens are stored, this needs to in sync with API AI request
 
         nouns = "";
@@ -232,18 +234,17 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
         if(nouns.length() > 0){
             nouns = nouns.substring(0, nouns.length() - 1);
         }
-        Log.d("API", nouns );
+        listenButtonOnClick(nouns);
+        Log.d("TAG", nouns );
     }
     // End of language processing!!
 
 
     // API.AI code
-    public void listenButtonOnClick() throws AIServiceException {
+    public void listenButtonOnClick(final String nouns) throws AIServiceException {
         final AIRequest aiRequest = new AIRequest();
         if (!chatText.getText().toString().isEmpty()) {
             aiRequest.setQuery(chatText.getText().toString());
-            startAnalyze();
-
             new AsyncTask<AIRequest, Void, AIResponse>() {
                 @Override
                 protected AIResponse doInBackground(AIRequest... requests) {
@@ -267,10 +268,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         String searchKey = "unknown";
                         if (result.getParameters() != null && !result.getParameters().isEmpty()) {
                             for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
-                                //key = entry.getKey();
                                 value = String.valueOf(entry.getValue());
-                                // In format: (tdt4140-definition, semat)
-                                // parameterString += "(" + key + ", " + value + ") ";
                             }
                         }
 
@@ -279,7 +277,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         if (value.length() > 2) {
                             value = value.replace("\",\"", "-");
                             searchKey = value.substring(2, value.length() - 2);
-                            Log.d("API", value);
+                            Log.d("TAG", value);
                         }
 
                         if (searchKey.equals("exam date")) {
@@ -291,7 +289,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         } else {
                             // Hvis returnert False, legg den inn i unansweredQuestions in database [""]
                             searchKey = currentCourse + "-" + searchKey + "-" + nouns;
-                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                            Log.d("TAG", searchKey);
+                            //searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                            chatText.setText("");
                         }
                     }
                 }
