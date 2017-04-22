@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.languageProcessing.AccessTokenLoader;
+import com.example.taphan.core1.languageProcessing.ApiFragment;
+import com.example.taphan.core1.languageProcessing.model.TokenInfo;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.example.taphan.core1.questionDatabase.State;
 import com.google.firebase.database.DataSnapshot;
@@ -56,9 +59,14 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+
+
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener {
+public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener, ApiFragment.Callback {
     private static final String TAG = "ChatActivity";
 
     private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
@@ -77,6 +85,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
     private ArrayList<Question> qList;
     private final static String uaQuestionBranchName = "unansweredQuestions"; // path to unanswered questions.
     private final static String users = "users";
+
+    //Cloud API
+    private static final String FRAGMENT_API = "api";
+    private static final int LOADER_ACCESS_TOKEN = 1;
+    private String nouns;
 
 
     @Override
@@ -130,8 +143,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
             }
         });
 
-
-        // Database
+        // Database reference.
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         // The necessary base code to connect and use API.AI
@@ -141,6 +153,13 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
         aiService = AIService.getService(this, config);
         aiDataService = new AIDataService(this,config);
         aiService.setListener(this);
+
+        final FragmentManager fm = getSupportFragmentManager();
+        // Prepare the API
+        if (getApiFragment() == null) {
+            fm.beginTransaction().add(new ApiFragment(), FRAGMENT_API).commit();
+        }
+        prepareApi();
 
         // Send a welcome message
         String welcomeMsg = "Welcome! I am CHaTSiBot, here at your service. Please ask a question " +
@@ -167,10 +186,60 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
     }
 
 
+    // Language processing
+    private ApiFragment getApiFragment() {
+        return (ApiFragment) getSupportFragmentManager().findFragmentByTag(FRAGMENT_API);
+    }
+
+    private void prepareApi() {
+        // Initiate token refresh
+        getSupportLoaderManager().initLoader(LOADER_ACCESS_TOKEN, null,
+                new LoaderManager.LoaderCallbacks<String>() {
+                    @Override
+                    public Loader<String> onCreateLoader(int id, Bundle args) {
+                        return new AccessTokenLoader(ChatActivity.this);
+                    }
+
+                    @Override
+                    public void onLoadFinished(Loader<String> loader, String token) {
+                        getApiFragment().setAccessToken(token);
+                    }
+
+                    @Override
+                    public void onLoaderReset(Loader<String> loader) {
+                    }
+                });
+    }
+
+    private void startAnalyze() {
+        final String text = chatText.getText().toString();
+        getApiFragment().analyzeSyntax(text);
+    }
+
+
+    @Override
+    public void onSyntaxReady(TokenInfo[] tokens) {
+        //TODO: Where the tokens are stored, this needs to in sync with API AI request
+
+        nouns = "";
+        for(TokenInfo t : tokens){
+            if(t.partOfSpeech.equals("NOUN")){
+                nouns += t.lemma + "-";
+            }
+        }
+        if(nouns.length() > 0){
+            nouns = nouns.substring(0, nouns.length() - 1);
+        }
+        Log.d("STUFF", nouns );
+    }
+    // End of language processing!!
+
+
     // API.AI code
     public void listenButtonOnClick() throws AIServiceException {
         final AIRequest aiRequest = new AIRequest();
         aiRequest.setQuery(chatText.getText().toString());
+        startAnalyze();
 
         new AsyncTask<AIRequest, Void, AIResponse>() {
             @Override
@@ -210,7 +279,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
                     } else {
                         // Hvis returnert False, legg den inn i unansweredQuestions in database
-                        searchDatabase(mDatabase, currentCourse + "-" + key, result.getResolvedQuery());
+
+                        Log.d("STUFF",currentCourse + "-" + key + "-" + nouns );
+                        searchDatabase(mDatabase, currentCourse + "-" + key + "-" + nouns, result.getResolvedQuery());
                     }
                 }
             }

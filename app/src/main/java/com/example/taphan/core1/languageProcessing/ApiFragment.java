@@ -1,3 +1,5 @@
+// NOTE: THIS IS MODIFIED CODE TAKEN FROM GOOGLE CLOUD NLP GITHUB EXAMPLE
+
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  *
