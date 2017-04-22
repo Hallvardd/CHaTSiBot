@@ -170,9 +170,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
     private boolean sendChatMessage() throws AIServiceException{
         // Implement code to handle answer input from bot after globalUser input here
         // checks for empty strings, and for strings containing only white spaces.
-        Log.d("TAG",chatText.getText().toString().length() + "");
         if(!chatText.getText().toString().isEmpty() && (chatText.getText().toString().trim().length() > 0)) {
-            Log.d("TAG inside",chatText.getText().toString().trim().length() + "");
             chatArrayAdapter.add(new ChatMessage(true, chatText.getText().toString()));
             startAnalyze();
 
@@ -223,7 +221,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
 
     @Override
     public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
-        //TODO: Where the tokens are stored, this needs to in sync with API AI request
 
         nouns = "";
         for(TokenInfo t : tokens){
@@ -272,12 +269,13 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                             }
                         }
 
-                        // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database
+                        // If the user is asking for the exam date or course lecturer, search in Data API for it, else search database\
 
+
+                        // if the length of the response from API-AI is only two characters, it is empty.
                         if (value.length() > 2) {
                             value = value.replace("\",\"", "-");
                             searchKey = value.substring(2, value.length() - 2);
-                            Log.d("TAG", value);
                         }
 
                         if (searchKey.equals("exam date")) {
@@ -287,10 +285,10 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                             JSONTask task = new JSONTask();
                             task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
                         } else {
-                            // Hvis returnert False, legg den inn i unansweredQuestions in database [""]
+                            // Creates the string path for database search.
                             searchKey = currentCourse + "-" + searchKey + "-" + nouns;
-                            Log.d("TAG", searchKey);
-                            //searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                            // Calls database search.
+                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
                             chatText.setText("");
                         }
                     }
