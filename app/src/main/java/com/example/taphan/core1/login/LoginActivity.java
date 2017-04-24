@@ -1,13 +1,10 @@
 package com.example.taphan.core1.login;
 
-import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
-import com.example.taphan.core1.R;
-
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.InfoActivity;
 import com.example.taphan.core1.user.User;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -107,8 +105,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
-
-
 
 
         btnSignup.setOnClickListener(new View.OnClickListener() {
@@ -225,4 +221,3 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 }
-

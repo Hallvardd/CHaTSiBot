@@ -13,12 +13,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
@@ -58,7 +56,7 @@ import ai.api.model.Result;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener {
+public class ChatActivity extends AppCompatActivity implements AIListener {
     private static final String TAG = "ChatActivity";
 
     private String client_access_token = "a7ccbd15c0db40bfb729a72c12efc15f";
@@ -472,17 +470,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        long viewId = view.getId();
-
-        if (viewId == R.id.feedbackYesButton) {
-            Toast.makeText(this, "Button 1 clicked", Toast.LENGTH_SHORT).show();
-            Log.d(TAG, "Funkerrr");
-        } else if (viewId == R.id.feedbackNoButton) {
-            //Toast.makeText(this, "Button 2 clicked", Toast.LENGTH_SHORT).show();
-        }
-    }
 
 }
 

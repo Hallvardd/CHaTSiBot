@@ -50,17 +50,22 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
         LayoutInflater inflater = (LayoutInflater) this.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if(chatMessageObj.feedback) {
             row = inflater.inflate(R.layout.feedback, parent, false);
-            Button feedbackYesBtn = (Button) row.findViewById(R.id.feedbackYesButton);
-            Button feedbackNoBtn = (Button) row.findViewById(R.id.feedbackNoButton);
+            final Button feedbackYesBtn = (Button) row.findViewById(R.id.feedbackYesButton);
+            final Button feedbackNoBtn = (Button) row.findViewById(R.id.feedbackNoButton);
 
             feedbackYesBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Toast.makeText(context, "Awesome, is there anything more I can do for you?", Toast.LENGTH_SHORT).show();
+                    // Disable buttons after click
+                    feedbackYesBtn.setEnabled(false);
+                    feedbackNoBtn.setEnabled(false);
                 }
             });
             feedbackNoBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Toast.makeText(context, "Ok, the question has been sent to your professor.", Toast.LENGTH_SHORT).show();
+                    feedbackYesBtn.setEnabled(false);
+                    feedbackNoBtn.setEnabled(false);
                     // TODO Implement sending question to professor here
 
                 }
