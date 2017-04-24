@@ -3,7 +3,6 @@ package com.example.taphan.core1;
 import com.example.taphan.core1.login.EmailValidator;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**

@@ -12,14 +12,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:layout_marginTop="20dp"
         android:text="Info about the CHaTSiBot app" />
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:id="@+id/imageView2"
+        android:layout_width="186dp"
+        android:layout_height="186dp"
         android:layout_gravity="center"
-        app:srcCompat="@mipmap/chatsibot_logo" />
+        android:layout_marginTop="0dp"
+        android:src="@mipmap/chatsibot_logo" />
 
     <TextView
         android:id="@+id/Info"

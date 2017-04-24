@@ -22,5 +22,6 @@
         android:layout_marginTop="5dp"
         android:background="@color/primary_button"
         android:layout_marginRight="20dp"
-        android:text="Send"/>
+        android:text="Send"
+        android:textStyle="bold"/>
 </LinearLayout>

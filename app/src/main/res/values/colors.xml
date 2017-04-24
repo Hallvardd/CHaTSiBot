@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_background">#E6E6FA</color> <!-- Lavender Mist -->
-
-    <color name="signOut_button">#FF1010</color> <!-- SASQUATCH SOCKS -->
-
+    <color name="primary_background">#ECECFB</color> <!-- Lavender Mist -->
     <color name="signIn_button">#069E2D</color> <!-- North Texas Green -->
     <color name="signUp_background">#D1EDD8</color> <!-- Tea Green -->
-    <color name="logIn_background">#D2D2E4</color> <!-- Grey -->
+    <color name="logIn_background">#E7F6FF</color> <!-- Bubbles -->
 
     <color name="primary_button">#4251CD</color> <!-- Medium Blue -->
     <color name="course_name">#88C0E1</color> <!-- Dark Sky Blue -->
@@ -14,6 +11,7 @@
     <color name="colorPrimaryDark">#D8DBE2</color>
 
     <color name="label_background">#00a6ff</color>  <!-- VIVID CERULEAN -->
+    <color name="label_top">#D0EEFF</color> <!-- Dimand blue -->
 
     <!--
     <color name="primary_bgd">#00a6ff</color>
