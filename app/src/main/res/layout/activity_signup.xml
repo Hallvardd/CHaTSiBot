@@ -95,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="onRadioButtonClicked"
-                android:text="TA and Student" />
+                android:text="TA" />
         </RadioGroup>
 
         <Button
