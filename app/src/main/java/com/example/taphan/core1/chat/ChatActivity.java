@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,7 +66,7 @@ import android.support.v4.content.Loader;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 
-public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener, ApiFragment.Callback {
+public class ChatActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
     private static final String TAG = "ChatActivity";
 
     private String client_access_token = "854903e0917e42c384b1e59d1b99af42";
