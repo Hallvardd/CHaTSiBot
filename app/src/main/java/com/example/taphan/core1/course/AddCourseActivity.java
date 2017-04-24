@@ -85,7 +85,7 @@ public class AddCourseActivity extends AppCompatActivity {
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String course = enterCourse.getText().toString();
+                String course = enterCourse.getText().toString().toLowerCase();
 
                 // Add course to Firebase for current user
                 // Make sure that a user can only be associated with one course either as a Professor/TA or as a student
