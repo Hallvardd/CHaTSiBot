@@ -8,6 +8,9 @@ package com.example.taphan.core1.chat;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -57,15 +60,10 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-
-
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 
-public class ChatActivity extends AppCompatActivity implements AIListener, AdapterView.OnItemClickListener, ApiFragment.Callback {
+public class ChatActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
     private static final String TAG = "ChatActivity";
 
     private String client_access_token = "854903e0917e42c384b1e59d1b99af42";
