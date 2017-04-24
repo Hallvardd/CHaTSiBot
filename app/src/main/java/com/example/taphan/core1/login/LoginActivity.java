@@ -60,16 +60,15 @@ public class LoginActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         // A listener for when a user sign in and sign out
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 firebaseUser = firebaseAuth.getCurrentUser();
+                /*
                 if (firebaseUser != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + firebaseUser.getUid());
-                    // Disable the loginbutton
-                    /*btnLogin.setBackgroundColor(Color.GRAY);
-                    btnLogin.setEnabled(false);*/
                     // if the user is logged in user data is gathered from the database.
                     mUserDatabase.child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -88,13 +87,11 @@ public class LoginActivity extends AppCompatActivity {
                                 finish();
                             }
                             else{
-                                // no userdata found in database, user is loged out. And new login is made posible
+                                // no userdata found in database, user is signed out. And new login is made posible
                                 Toast.makeText(getApplicationContext(), "Userdata compormised. Contact system admin", Toast.LENGTH_SHORT).show();
                                 FirebaseAuth.getInstance().signOut();
                                 btnLogin.setBackgroundColor(getResources().getColor(R.color.primary_button));
                                 btnLogin.setEnabled(true);
-
-
                             }
                         }
                         @Override
@@ -105,8 +102,10 @@ public class LoginActivity extends AppCompatActivity {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
+                */
             }
         };
+
 
 
 

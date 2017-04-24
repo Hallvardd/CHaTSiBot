@@ -390,7 +390,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, Adapt
                         // adds the question to the list of asked questions if the question has already been asked.
                         globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
-                        sendBotMessage("The question has already been asked. I'll add it to your personal question list");
+                        sendBotMessage("The question has already been asked. Try again later!");
 
                         // Adding the user to the questions list of users listening.
                         final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
