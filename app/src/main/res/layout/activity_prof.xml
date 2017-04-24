@@ -44,7 +44,8 @@
             android:layout_weight="1"
             android:onClick="sendMsg"
             android:background="@color/primary_button"
-            android:text="Send" />
+            android:text="Send"
+            android:textStyle="bold"/>
 
 
     </LinearLayout>

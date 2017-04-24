@@ -5,8 +5,9 @@
 
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/label_background</item>
-        <item name="colorPrimaryDark">@color/primary_background</item>
+        <item name="colorPrimaryDark">@color/label_top</item>
         <item name="colorAccent">@color/primary_button</item>
+
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
