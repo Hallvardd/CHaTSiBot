@@ -105,7 +105,6 @@ public class SignupActivity extends AppCompatActivity {
                     return;
                 }
 
-                progressBar.setVisibility(View.VISIBLE);
                 //create user
                 auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(SignupActivity.this, new OnCompleteListener<AuthResult>() {
@@ -121,7 +120,6 @@ public class SignupActivity extends AppCompatActivity {
                                 localUser.setEmail(email);
                                 mDatabase.child("users").child(userID).setValue(localUser);
 
-                                progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
@@ -146,7 +144,6 @@ public class SignupActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        progressBar.setVisibility(View.GONE);
     }
 
     public void onRadioButtonClicked(View view) {
