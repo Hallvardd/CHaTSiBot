@@ -12,12 +12,22 @@ public class QuestionTest {
     private String questionID = "123abc";
     private String questionTxt = "what is a broom?";
     private String questionPath = "SUB101-definition-broom";
-/*
+
     @Test
-    public void testQuestionConstructor(){
-        Question testConstructorQuestion = new Question();
+    public void testQuestionConstructor() throws NoSuchFieldException, IllegalAccessException {
+        final Question testConstructorQuestion = new Question(questionID, questionTxt, questionPath);
+        final Field questionIDField = testConstructorQuestion.getClass().getDeclaredField("questionID");
+        final Field questionTxtField = testConstructorQuestion.getClass().getDeclaredField("questionTxt");
+        final Field questionPathField = testConstructorQuestion.getClass().getDeclaredField("questionPath");
+        questionIDField.setAccessible(true);
+        questionTxtField.setAccessible(true);
+        questionPathField.setAccessible(true);
+        Assert.assertEquals(questionIDField.get(testConstructorQuestion), questionID);
+        Assert.assertEquals(questionTxtField.get(testConstructorQuestion), questionTxt);
+        Assert.assertEquals(questionPathField.get(testConstructorQuestion), questionPath);
     }
-*/
+
+
     @Test
     public void testSetQuestionID() throws NoSuchFieldException, IllegalAccessException{
         final Question testSettersQuestion = new Question();
