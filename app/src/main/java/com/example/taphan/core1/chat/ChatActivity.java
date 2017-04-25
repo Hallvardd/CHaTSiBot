@@ -74,7 +74,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
-    private String currentCourse; // The current course for this chat activity
+
+    //keeps track of the current question, for use in ChatArrayAdapter
+    //where question can be sent back to the professor.
+    public static String currentCourse; // The current course for this chat activity
+    public static String currentQuestion;
 
     private AIConfiguration config;
     private AIDataService aiDataService;
@@ -254,6 +258,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         final AIResponse response = aiDataService.request(aiRequest);
                         return response;
                     } catch (AIServiceException e) {
+                        Log.e(TAG,e.getMessage());
                     }
                     return null;
                 }
@@ -284,18 +289,24 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                         }
 
-                        if (searchKey.equals("exam date")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
-                        } else if (searchKey.equals("professor")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
-                        } else {
-                            // Creates the string path for database search.
-                            searchKey = currentCourse + "-" + searchKey + "-" + nlpSyntax;
-                            // Calls database search.
-                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
-                            chatText.setText("");
+                        switch (searchKey) {
+                            case "exam date": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                                break;
+                            }
+                            case "professor": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                                break;
+                            }
+                            default:
+                                // Creates the string path for database search.
+                                searchKey = currentCourse + "-" + searchKey + "-" + nlpSyntax;
+                                // Calls database search.
+                                searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                                chatText.setText("");
+                                break;
                         }
                     }
                 }
@@ -386,6 +397,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     if (!snap.getAnswer().equals("NA")){
                         String answerID = snap.getAnswer();
                         sendBotMessage(answerID);
+                        setCurrentQuestion(snap.getQuestionID());
 
                         // Send also the feedback button to user
                         ChatMessage message = new ChatMessage(true, "");
@@ -396,7 +408,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         // adds the question to the list of asked questions if the question has already been asked.
                         globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
-                        sendBotMessage("The question has already been asked. Try again later!");
+                        sendBotMessage("Waiting for the professor to answer this question. Try again later!");
 
                         // Adding the user to the questions list of users listening.
                         final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
@@ -556,6 +568,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         }
     }
 
+    public void setCurrentQuestion(String questionID){
+        this.currentQuestion = questionID;
+    }
 
 }
 
