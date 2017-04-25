@@ -8,12 +8,14 @@ package com.example.taphan.core1.chat;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -43,7 +45,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -57,11 +61,6 @@ import ai.api.model.AIError;
 import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
-
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
@@ -89,7 +88,12 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     //Cloud API
     private static final String FRAGMENT_API = "api";
     private static final int LOADER_ACCESS_TOKEN = 1;
-    private String nouns;
+    //Cloud API syntax analysis
+    private static final List<String> FILL_VERBS = Arrays.asList("be", "is", "are");
+    private static final String AUX = "AUX";
+    private static final String VERB = "VERB";
+    private static final String NOUN = "NOUN";
+    private String nlpSyntax;
 
 
     @Override
@@ -222,17 +226,17 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     @Override
     public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
 
-        nouns = "";
+        nlpSyntax = "";
         for(TokenInfo t : tokens){
-            if(t.partOfSpeech.equals("NOUN")){
-                nouns += t.lemma + "-";
+            if(t.partOfSpeech.equals(NOUN) || ((t.partOfSpeech.equals(VERB) && !t.label.equals(AUX) && !FILL_VERBS.contains(t.lemma)))){
+                nlpSyntax += t.lemma.toLowerCase() + "-";
             }
         }
-        if(nouns.length() > 0){
-            nouns = nouns.substring(0, nouns.length() - 1);
+        if(nlpSyntax.length() > 0){
+            nlpSyntax = nlpSyntax.substring(0, nlpSyntax.length() - 1);
         }
-        listenButtonOnClick(nouns);
-        Log.d("TAG", nouns );
+        listenButtonOnClick(nlpSyntax);
+        Log.d(TAG, nlpSyntax);
     }
     // End of language processing!!
 
@@ -274,8 +278,10 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                         // if the length of the response from API-AI is only two characters, it is empty.
                         if (value.length() > 2) {
-                            value = value.replace("\",\"", "-");
-                            searchKey = value.substring(2, value.length() - 2);
+
+                            searchKey = value.replace(",", "-").replace("\"","").replace("[","").replace("]","");
+                            Log.d(TAG,searchKey);
+
                         }
 
                         if (searchKey.equals("exam date")) {
@@ -286,7 +292,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                             task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
                         } else {
                             // Creates the string path for database search.
-                            searchKey = currentCourse + "-" + searchKey + "-" + nouns;
+                            searchKey = currentCourse + "-" + searchKey + "-" + nlpSyntax;
                             // Calls database search.
                             searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
                             chatText.setText("");
@@ -344,7 +350,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
-        Log.d("API-AI TEST3", path);
+        Log.d(TAG, path);
 
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");
