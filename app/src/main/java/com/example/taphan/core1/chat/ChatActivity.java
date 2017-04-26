@@ -97,6 +97,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private static final String AUX = "AUX";
     private static final String VERB = "VERB";
     private static final String NOUN = "NOUN";
+    private static final String ROOT = "ROOT";
     private String nlpSyntax;
 
 
@@ -232,7 +233,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
         nlpSyntax = "";
         for(TokenInfo t : tokens){
-            if(t.partOfSpeech.equals(NOUN) || ((t.partOfSpeech.equals(VERB) && !t.label.equals(AUX) && !FILL_VERBS.contains(t.lemma)))){
+            if(t.partOfSpeech.equals(NOUN) || ((t.partOfSpeech.equals(VERB) && !t.label.equals(ROOT) && !FILL_VERBS.contains(t.lemma)))){
                 nlpSyntax += t.lemma.toLowerCase() + "-";
             }
         }
@@ -396,6 +397,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     State snap = dataSnapshot.getValue(State.class);
                     if (!snap.getAnswer().equals("NA")){
                         String answerID = snap.getAnswer();
+                        String questionID = snap.getQuestionID();
                         sendBotMessage(answerID);
                         setCurrentQuestion(snap.getQuestionID());
 

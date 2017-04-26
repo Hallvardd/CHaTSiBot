@@ -89,7 +89,7 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
             });
             feedbackNoBtn.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Toast.makeText(context, "Ok, the question has been sent to your professor.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Ok, the question has been sent back to your professor.", Toast.LENGTH_SHORT).show();
                     feedbackYesBtn.setEnabled(false);
                     feedbackNoBtn.setEnabled(false);
                     sendQuestionBack(mDatabase,currentQuestion,currentCourse);

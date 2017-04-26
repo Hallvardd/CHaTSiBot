@@ -147,7 +147,6 @@ public class UserTest{
 
     }
 
-
     /*Functionality tests:
      *
      * !NB these tests are reliant on the objects getter and setter methods. Please assure that the
