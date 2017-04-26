@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.login.LoginActivity;
@@ -25,6 +26,7 @@ public class InfoActivity extends AppCompatActivity{
     private Button signOutButton;
     private Button addCourseButton;
     private Button infoAppButton;
+    private TextView user_name;
     private DatabaseReference mUserDatabase;
     private static final String usersBranch =  "users";
 
@@ -38,7 +40,11 @@ public class InfoActivity extends AppCompatActivity{
         addCourseButton = (Button) findViewById(R.id.add_course);
         signOutButton = (Button) findViewById(R.id.sign_out);
         infoAppButton = (Button) findViewById(R.id.app_info);
+        user_name = (TextView) findViewById(R.id.email_name);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child(usersBranch);
+
+        String email_name = globalUser.getEmail();
+        user_name.setText("Logged in as: " + email_name);
 
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override

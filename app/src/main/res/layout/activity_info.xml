@@ -17,17 +17,26 @@
         android:padding="@dimen/activity_horizontal_margin"
         android:weightSum="1">
 
+        <TextView
+            android:id="@+id/email_name"
+            android:layout_width="376dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-90dp"
+            android:textSize="19sp"
+            android:text="TextView"
+            android:textColor="@android:color/black" />
+
 
         <Button
             android:id="@+id/add_course"
             android:layout_width="fill_parent"
             android:layout_height="80dp"
-            android:layout_marginTop="-30dip"
+            android:layout_marginTop="70dp"
 
             android:background="@color/primary_button"
             android:text="Add/Choose course"
-            android:textSize="25sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="25sp" />
 
         <Button
             android:id="@+id/app_info"
@@ -36,8 +45,8 @@
             android:layout_marginTop="40dip"
             android:background="@color/primary_button"
             android:text="About CHaTSiBot"
-            android:textSize="25sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="25sp" />
 
         <Button
             android:id="@+id/sign_out"
@@ -45,8 +54,9 @@
             android:layout_height="80dp"
             android:layout_marginTop="40dip"
             android:background="@color/primary_button"
-            android:textSize="25sp"
             android:text="Sign out"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textSize="25sp" />
     </LinearLayout>
+
 </android.support.design.widget.CoordinatorLayout>
