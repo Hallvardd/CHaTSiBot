@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
+import com.example.taphan.core1.course.Course;
 import com.example.taphan.core1.languageProcessing.AccessTokenLoader;
 import com.example.taphan.core1.languageProcessing.ApiFragment;
 import com.example.taphan.core1.languageProcessing.model.TokenInfo;
@@ -105,8 +106,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_chat);
+        if(AddCourseActivity.globalCourse == null) {
+            AddCourseActivity.globalCourse = new Course();
+            AddCourseActivity.globalCourse.setCourseKey("tdt4140");
+        }
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
@@ -357,7 +361,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
     // Check if the string contains only alphabetical characters
     public boolean isAlpha(String name) {
-        return name.matches("[a-zA-Z]+"); // TODO add whitespace
+        return name.matches("[a-zA-Z]+");
     }
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
