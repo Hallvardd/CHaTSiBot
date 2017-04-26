@@ -74,6 +74,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
+    private Button micButton;
     private TextView title;
 
     //keeps track of the current question, for use in ChatArrayAdapter
@@ -118,6 +119,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         title.setText(currentCourse.toUpperCase());
 
         buttonSend = (Button) findViewById(R.id.send);
+        micButton = (Button) findViewById(R.id.micButton);
 
         // The listview to show chat bubbles
         listView = (ListView) findViewById(R.id.msgview);
@@ -264,6 +266,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         if (!chatText.getText().toString().isEmpty()) {
             aiRequest.setQuery(chatText.getText().toString());
             new AsyncTask<AIRequest, Void, AIResponse>() {
+
                 @Override
                 protected AIResponse doInBackground(AIRequest... requests) {
                     final AIRequest request = requests[0];
@@ -327,8 +330,24 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
     }
 
+    public void listenMicButtonOnClick(final View view) throws AIServiceException{
+        Log.d(TAG,"Mic button is clicked");
+        aiService.startListening();
+    }
+
     @Override
     public void onResult(final AIResponse response) {
+        Log.d(TAG, "onResult ayyy");
+        Result result = response.getResult();
+        String parameterString = "";
+        if (result.getParameters() != null && !result.getParameters().isEmpty()) {
+            for (final Map.Entry<String, JsonElement> entry : result.getParameters().entrySet()) {
+                parameterString += "(" + entry.getKey() + ", " + entry.getValue() + ") ";
+            }
+        }
+        Log.d("MicTest", "Query:" + result.getResolvedQuery() +
+        "\nAction: " + result.getAction() +
+        "\nParameters: " + parameterString);
 
     }
 
@@ -336,6 +355,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     @Override
     public void onError(AIError error) {
         //resultTextView.setText(error.toString());
+        Log.d(TAG, "onError worked");
     }
 
 
