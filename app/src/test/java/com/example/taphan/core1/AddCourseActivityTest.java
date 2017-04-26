@@ -1,6 +1,4 @@
-package com.example.taphan.core1.ProfActivtyTest;
-
-import com.example.taphan.core1.user.User;
+package com.example.taphan.core1;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,15 +6,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-/**
- * Created by hallvard on 26.04.17.
- */
-public class ProfActivityTest {
-
+public class AddCourseActivityTest {
 
 
     @Mock
-    User globalUser;
 
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -25,5 +18,6 @@ public class ProfActivityTest {
     public void testAddAnswerToDatabase(){
 
     }
+
 
 }

@@ -35,10 +35,6 @@ import java.util.logging.Logger;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-/**
- * Created by taphan on 23.03.2017.
- */
-
 public class AddCourseActivity extends AppCompatActivity {
     public static final String TAG = "AddCourseActivity";
 

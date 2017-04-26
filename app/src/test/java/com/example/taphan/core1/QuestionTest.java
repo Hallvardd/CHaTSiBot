@@ -105,4 +105,46 @@ public class QuestionTest {
         Assert.assertEquals(testGetStudentListeners.getStudentsListeners(),studentListeners);
     }
 
+    @Test
+    public void testAddStudentListener(){
+        Question testQuestion = new Question();
+        String stud1 = "stud1";
+        String stud2 = "stud2";
+        String stud3 = "stud3";
+        ArrayList<String> testList = new ArrayList<>((List<String>) Arrays.asList(stud1, stud2));
+        ArrayList<String> assignList = new ArrayList<>((List<String>) Arrays.asList(stud1, stud2));
+        // assigns list to testUser
+        testQuestion.setStudentsListeners(assignList);
+        // Attempts to add course already in list
+        testQuestion.addSListener(stud1);
+        Assert.assertEquals(testQuestion.getStudentsListeners(),testList);
+        // Attempts to add new course not in list
+        testQuestion.addSListener(stud3);
+        Assert.assertNotSame(testQuestion.getStudentsListeners(),testList);
+        Assert.assertTrue(testQuestion.getStudentsListeners().contains(stud3));
+
+    }
+
+
+    @Test
+    public void testRemoveStudentListener(){
+        Question testQuestion = new Question();
+        String stud1 = "stud1";
+        String stud2 = "stud2";
+        String stud3 = "stud3";
+        ArrayList<String> testList = new ArrayList<>((List<String>) Arrays.asList(stud1, stud2));
+        ArrayList<String> assignList = new ArrayList<>((List<String>) Arrays.asList(stud1, stud2));
+        // assigns list to testUser
+        testQuestion.setStudentsListeners(assignList);
+        // Attempts to remove course not in list
+        testQuestion.removeSListener(stud3);
+        Assert.assertEquals(testQuestion.getStudentsListeners(),testList);
+        // Attempts to remove course in list
+        testQuestion.removeSListener(stud2);
+        Assert.assertNotSame(testQuestion.getStudentsListeners(),testList);
+        Assert.assertFalse(testQuestion.getStudentsListeners().contains(stud2));
+
+    }
+
+
 }

@@ -57,4 +57,5 @@ public class InfoActivityTest {
         intended(hasComponent(LoginActivity.class.getName()));
     }
 
+
 }
