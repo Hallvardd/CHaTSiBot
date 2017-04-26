@@ -141,7 +141,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-
         //authenticate globalUser
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
