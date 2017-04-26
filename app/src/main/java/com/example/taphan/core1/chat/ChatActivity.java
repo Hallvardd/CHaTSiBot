@@ -45,7 +45,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -72,7 +74,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
-    private String currentCourse; // The current course for this chat activity
+
+    //keeps track of the current question, for use in ChatArrayAdapter
+    //where question can be sent back to the professor.
+    public static String currentCourse; // The current course for this chat activity
+    public static String currentQuestion;
 
     private AIConfiguration config;
     private AIDataService aiDataService;
@@ -86,7 +92,13 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     //Cloud API
     private static final String FRAGMENT_API = "api";
     private static final int LOADER_ACCESS_TOKEN = 1;
-    private String nouns;
+    //Cloud API syntax analysis
+    private static final List<String> FILL_VERBS = Arrays.asList("be", "is", "are");
+    private static final String AUX = "AUX";
+    private static final String VERB = "VERB";
+    private static final String NOUN = "NOUN";
+    private static final String ROOT = "ROOT";
+    private String nlpSyntax;
 
 
     @Override
@@ -219,17 +231,17 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     @Override
     public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
 
-        nouns = "";
+        nlpSyntax = "";
         for(TokenInfo t : tokens){
-            if(t.partOfSpeech.equals("NOUN")){
-                nouns += t.lemma + "-";
+            if(t.partOfSpeech.equals(NOUN) || ((t.partOfSpeech.equals(VERB) && !t.label.equals(ROOT) && !FILL_VERBS.contains(t.lemma)))){
+                nlpSyntax += t.lemma.toLowerCase() + "-";
             }
         }
-        if(nouns.length() > 0){
-            nouns = nouns.substring(0, nouns.length() - 1);
+        if(nlpSyntax.length() > 0){
+            nlpSyntax = nlpSyntax.substring(0, nlpSyntax.length() - 1);
         }
-        listenButtonOnClick(nouns);
-        Log.d("TAG", nouns );
+        listenButtonOnClick(nlpSyntax);
+        Log.d(TAG, nlpSyntax);
     }
     // End of language processing!!
 
@@ -247,6 +259,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         final AIResponse response = aiDataService.request(aiRequest);
                         return response;
                     } catch (AIServiceException e) {
+                        Log.e(TAG,e.getMessage());
                     }
                     return null;
                 }
@@ -271,22 +284,30 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                         // if the length of the response from API-AI is only two characters, it is empty.
                         if (value.length() > 2) {
-                            value = value.replace("\",\"", "-");
-                            searchKey = value.substring(2, value.length() - 2);
+
+                            searchKey = value.replace(",", "-").replace("\"","").replace("[","").replace("]","");
+                            Log.d(TAG,searchKey);
+
                         }
 
-                        if (searchKey.equals("exam date")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
-                        } else if (searchKey.equals("professor")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
-                        } else {
-                            // Creates the string path for database search.
-                            searchKey = currentCourse + "-" + searchKey + "-" + nouns;
-                            // Calls database search.
-                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
-                            chatText.setText("");
+                        switch (searchKey) {
+                            case "exam date": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                                break;
+                            }
+                            case "professor": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                                break;
+                            }
+                            default:
+                                // Creates the string path for database search.
+                                searchKey = currentCourse + "-" + searchKey + "-" + nlpSyntax;
+                                // Calls database search.
+                                searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                                chatText.setText("");
+                                break;
                         }
                     }
                 }
@@ -341,7 +362,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
-        Log.d("API-AI TEST3", path);
+        Log.d(TAG, path);
 
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");
@@ -376,7 +397,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     State snap = dataSnapshot.getValue(State.class);
                     if (!snap.getAnswer().equals("NA")){
                         String answerID = snap.getAnswer();
+                        String questionID = snap.getQuestionID();
                         sendBotMessage(answerID);
+                        setCurrentQuestion(snap.getQuestionID());
 
                         // Send also the feedback button to user
                         ChatMessage message = new ChatMessage(true, "");
@@ -387,7 +410,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         // adds the question to the list of asked questions if the question has already been asked.
                         globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
-                        sendBotMessage("The question has already been asked. Try again later!");
+                        sendBotMessage("Waiting for the professor to answer this question. Try again later!");
 
                         // Adding the user to the questions list of users listening.
                         final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
@@ -547,6 +570,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         }
     }
 
+    public void setCurrentQuestion(String questionID){
+        this.currentQuestion = questionID;
+    }
 
 }
 

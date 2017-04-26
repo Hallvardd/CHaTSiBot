@@ -20,7 +20,7 @@ public class State {
 
     }
 
-    public void setQuestion(String questionID){
+    public void setQuestionID(String questionID){
         this.questionID = questionID;
 
     }

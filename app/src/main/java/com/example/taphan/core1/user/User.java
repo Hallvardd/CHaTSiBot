@@ -100,14 +100,14 @@ public class User {
         if(unansweredQuestions.containsKey(courseCode)){
             // If the question already is in the list it is not added
             if(!unansweredQuestions.get(courseCode).contains(questionID)) {
-                unansweredQuestions.get(courseCode).add(questionID);
+                this.unansweredQuestions.get(courseCode).add(questionID);
             }
         }
         // If there is no entry corresponding to the courseCode, an new entry and ArrayList is made.
         else{
             ArrayList<String> questionIDList = new ArrayList<>();
             questionIDList.add(questionID);
-            unansweredQuestions.put(courseCode,questionIDList);
+            this.unansweredQuestions.put(courseCode,questionIDList);
         }
 
     }

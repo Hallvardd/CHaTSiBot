@@ -110,7 +110,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 Intent chat;// the course key that was chosen
 
                 // Start the right activity according to user type
-                if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor")){
+                if((userType.equals("TA")&& globalUser.getIsTa())|| userType.equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
                     chat.putExtras(courseCodeBundle);
 
