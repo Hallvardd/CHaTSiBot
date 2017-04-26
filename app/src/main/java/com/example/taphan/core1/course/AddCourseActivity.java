@@ -82,14 +82,25 @@ public class AddCourseActivity extends AppCompatActivity {
             adapter.add(course);
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
+
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ArrayList<String> uCourses = new ArrayList<String>();
+                ArrayList<String> tCourses = new ArrayList<String>();
+
                 String course = enterCourse.getText().toString().toLowerCase();
+                for(Course c : globalUser.getuCourses()){
+                    uCourses.add(c.getCourseKey().toLowerCase());
+                }
+                for(Course c : globalUser.gettCourses()){
+                    tCourses.add(c.getCourseKey().toLowerCase());
+                }
+
 
                 // Add course to Firebase for current user
                 // Make sure that a user can only be associated with one course either as a Professor/TA or as a student
-                if(!globalUser.getuCourses().contains(course) && !globalUser.gettCourses().contains(course)) {
+                if(!uCourses.contains(course.toLowerCase()) && !tCourses.contains(course.toLowerCase()) ) {
                     // Check if the course name is valid
                     JSONTask task = new JSONTask();
                     task.execute("http://www.ime.ntnu.no/api/course/en/", course, "name");
@@ -97,6 +108,7 @@ public class AddCourseActivity extends AppCompatActivity {
                 enterCourse.setText("");
             }
         });
+
 
         // When an item in the list of courses is chosen, redirect user to ChatActivity with the corresponding course
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -260,7 +272,5 @@ public class AddCourseActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
-
 }

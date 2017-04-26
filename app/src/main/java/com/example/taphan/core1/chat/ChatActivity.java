@@ -287,7 +287,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                             searchKey = value.replace(",", "-").replace("\"","").replace("[","").replace("]","");
                             Log.d(TAG,searchKey);
-
                         }
 
                         switch (searchKey) {
