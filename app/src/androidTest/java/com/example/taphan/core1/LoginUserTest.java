@@ -13,25 +13,23 @@ import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
 import com.example.taphan.core1.login.LoginActivity;
-import com.google.firebase.auth.FirebaseAuth;
 
 import org.hamcrest.Matcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-
-
-
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -53,10 +51,11 @@ public class LoginUserTest {
     };
 
     // When a student or professor email is used to log in, the next page will be InfoActivity
+    /*
     @Test
     public void studentLogin() throws InterruptedException {
-        //logs out if user is present:
         FirebaseAuth.getInstance().signOut();
+        //logs out if user is present:
         onView(withId(R.id.email)).perform(typeText(TEST_STUDENT_EMAIL), closeSoftKeyboard());
         onView(withId(R.id.password)).perform(typeText(TEST_PW), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).perform(click());
@@ -66,9 +65,9 @@ public class LoginUserTest {
 
     }
 
-
+    */
     // Checking for toast message when invalid email/password
-/*
+
     @Test
     public void emptyPasswordTest() {
         onView(withId(R.id.email)).perform(typeText(TEST_STUDENT_EMAIL), closeSoftKeyboard());
@@ -77,7 +76,7 @@ public class LoginUserTest {
         onView(withText("Enter password!")).inRoot(new ToastMatcher())
                 .check(matches(isDisplayed()));
     }
-*/
+
     public static ViewAction waitId(final int viewId, final long millis) {
         return new ViewAction() {
             @Override

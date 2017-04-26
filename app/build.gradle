@@ -30,6 +30,10 @@ android {
     jacoco {
         version "0.7.1.201405082137"
     }
+    testOptions{
+        reportDir "rootDir/test-reports"
+        resultsDir "rootDir/test-results"
+    }
 }
 
 ext {

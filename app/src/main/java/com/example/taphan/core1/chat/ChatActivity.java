@@ -369,7 +369,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
-        Log.d(TAG, path);
 
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");

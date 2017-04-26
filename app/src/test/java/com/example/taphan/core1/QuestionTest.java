@@ -6,6 +6,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class QuestionTest {
 
@@ -80,6 +83,26 @@ public class QuestionTest {
         pathGetterField.setAccessible(true);
         pathGetterField.set(testGettersQuestion, questionPath);
         Assert.assertEquals(testGettersQuestion.getQuestionPath(), questionPath);
+    }
+
+    @Test
+    public void testSetStudentListeners() throws NoSuchFieldException, IllegalAccessException {
+        ArrayList<String> studentListeners = new ArrayList<>((List<String>) Arrays.asList("stud1","stud2"));
+        final Question testSetStudentListeners = new Question();
+        testSetStudentListeners.setStudentsListeners(studentListeners);
+        final Field setStudentField = testSetStudentListeners.getClass().getDeclaredField("studentsListeners");
+        setStudentField.setAccessible(true);
+        Assert.assertEquals(setStudentField.get(testSetStudentListeners),studentListeners);
+    }
+
+    @Test
+    public void testGetStudentListeners() throws NoSuchFieldException, IllegalAccessException {
+        ArrayList<String> studentListeners = new ArrayList<>((List<String>) Arrays.asList("stud1","stud2"));
+        final Question testGetStudentListeners = new Question();
+        final Field getStudentField = testGetStudentListeners.getClass().getDeclaredField("studentsListeners");
+        getStudentField.setAccessible(true);
+        getStudentField.set(testGetStudentListeners,studentListeners);
+        Assert.assertEquals(testGetStudentListeners.getStudentsListeners(),studentListeners);
     }
 
 }
