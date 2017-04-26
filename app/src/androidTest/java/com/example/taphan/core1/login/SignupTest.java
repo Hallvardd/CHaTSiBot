@@ -21,9 +21,11 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class SignupTest {
@@ -78,4 +80,48 @@ public class SignupTest {
                 .check(matches(isDisplayed()));
     }
 
+    // Test radio button
+    @Test
+    public void radioButtonStudTest() {
+        onView(withId(R.id.radio_stud))
+                .perform(click());
+
+        onView(withId(R.id.radio_stud))
+                .check(matches(isChecked()));
+
+        onView(withId(R.id.radio_prof))
+                .check(matches(not(isChecked())));
+
+        onView(withId(R.id.radio_ta))
+                .check(matches(not(isChecked())));
+    }
+
+    @Test
+    public void radioButtonProfTest() {
+        onView(withId(R.id.radio_prof))
+                .perform(click());
+
+        onView(withId(R.id.radio_prof))
+                .check(matches(isChecked()));
+
+        onView(withId(R.id.radio_stud))
+                .check(matches(not(isChecked())));
+
+        onView(withId(R.id.radio_ta))
+                .check(matches(not(isChecked())));
+    }
+    @Test
+    public void radioButtonTaTest() {
+        onView(withId(R.id.radio_ta))
+                .perform(click());
+
+        onView(withId(R.id.radio_ta))
+                .check(matches(isChecked()));
+
+        onView(withId(R.id.radio_prof))
+                .check(matches(not(isChecked())));
+
+        onView(withId(R.id.radio_stud))
+                .check(matches(not(isChecked())));
+    }
 }
