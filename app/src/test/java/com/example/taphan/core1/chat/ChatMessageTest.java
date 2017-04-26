@@ -28,4 +28,13 @@ public class ChatMessageTest {
         Assert.assertEquals(feedbackField.get(testConstructorCourse), feedback);
 
     }
+
+    @Test
+    public void testSetFeedbackTrue() throws NoSuchFieldException, IllegalAccessException{
+        final ChatMessage testSettersCourse = new ChatMessage(left, message);
+        final Field feedbackField = testSettersCourse.getClass().getDeclaredField("feedback");
+        testSettersCourse.setFeedbackTrue();
+        Assert.assertEquals(feedbackField.get(testSettersCourse), true);
+    }
+
 }
