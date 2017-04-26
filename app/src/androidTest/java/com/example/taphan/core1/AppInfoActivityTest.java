@@ -20,12 +20,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
  */
 
 public class AppInfoActivityTest {
-    private static final String info = "  Professors often receive questions that they have already answered or\n" +
-            "        where the answers can easily be found. ChaTSiBot is a communication tool that innovates\n" +
-            "        communication in a teaching environment by automatically linking the answers of already\n" +
-            "        answered questions to similar new questions.\n" +
-            "        \\n\\n\\nThe team is:\n" +
-            "        \\nCharles Sørbø Edvardsen,\\nHallvard Stemshaug, \\nTruc Anh Nguyen Phan, \\nSiren Johansen\n";
     @Rule
     public IntentsTestRule<AppInfoActivity> mActivity = new IntentsTestRule<AppInfoActivity>(AppInfoActivity.class) {
         @Override
@@ -38,9 +32,13 @@ public class AppInfoActivityTest {
 
     @Test
     public void textIsEqualTest(){
+        String info = getResourceString(R.string.app_info);
         onView(withId(R.id.Info)).check(matches(withText(info)));
     }
 
 
-
+    private String getResourceString(int id) {
+        Context targetContext = InstrumentationRegistry.getTargetContext();
+        return targetContext.getResources().getString(id);
+    }
 }
