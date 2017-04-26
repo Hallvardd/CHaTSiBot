@@ -45,7 +45,7 @@ public class TaActivityTest {
     @Test
     public void chooseProfActivity() {
         globalUser = new User();
-        onView(withId(R.id.ta_choose_student)).perform(click());
+        onView(withId(R.id.ta_choose_prof)).perform(click());
         intended(hasComponent(InfoActivity.class.getName()));
         Assert.assertTrue(globalUser.getIsTa());
     }
