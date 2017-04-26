@@ -1,3 +1,4 @@
+// This modified code from google NLP's android example on github.
 /*
  * Copyright 2016 Google Inc. All Rights Reserved.
  *
@@ -63,11 +64,7 @@ public class AccessTokenLoader extends AsyncTaskLoader<String> {
             }
         }
 
-        // ***** WARNING *****
-        // In this sample, we load the credential from a JSON file stored in a raw resource folder
-        // of this client app. You should never do this in your app. Instead, store the file in your
-        // server and obtain an access token from there.
-        // *******************
+
         final InputStream stream = getContext().getResources().openRawResource(R.raw.credential);
         try {
             final GoogleCredential credential = GoogleCredential.fromStream(stream)

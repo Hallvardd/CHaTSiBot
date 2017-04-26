@@ -98,6 +98,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private static final String VERB = "VERB";
     private static final String NOUN = "NOUN";
     private static final String ROOT = "ROOT";
+    private static final String XCOMP = "XCOMP";
     private String nlpSyntax;
 
 
@@ -232,14 +233,21 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
 
         nlpSyntax = "";
+        String root = "";
         for(TokenInfo t : tokens){
-            if(t.partOfSpeech.equals(NOUN) || ((t.partOfSpeech.equals(VERB) && !t.label.equals(ROOT) && !FILL_VERBS.contains(t.lemma)))){
-                nlpSyntax += t.lemma.toLowerCase() + "-";
+            if(t.partOfSpeech.equals(NOUN) || ((t.label.equals(ROOT) && !t.label.equals(AUX) && !FILL_VERBS.contains(t.lemma)))|| t.label.equals(XCOMP) ){
+                if(t.label.equals(ROOT)){
+                    root = t.lemma.toLowerCase() +"-";
+                }
+                else{
+                    nlpSyntax += t.lemma.toLowerCase() + "-";
+                }
             }
         }
         if(nlpSyntax.length() > 0){
             nlpSyntax = nlpSyntax.substring(0, nlpSyntax.length() - 1);
         }
+        nlpSyntax = root + nlpSyntax;
         listenButtonOnClick(nlpSyntax);
         Log.d(TAG, nlpSyntax);
     }
@@ -287,7 +295,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                             searchKey = value.replace(",", "-").replace("\"","").replace("[","").replace("]","");
                             Log.d(TAG,searchKey);
-
                         }
 
                         switch (searchKey) {
