@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.login;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,12 +7,14 @@ import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.espresso.util.HumanReadables;
 import android.support.test.espresso.util.TreeIterables;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
 
-import com.example.taphan.core1.login.LoginActivity;
+import com.example.taphan.core1.R;
+import com.example.taphan.core1.ToastMatcher;
 
 import org.hamcrest.Matcher;
 import org.junit.Rule;
@@ -70,7 +72,7 @@ public class LoginUserTest {
 
     @Test
     public void emptyPasswordTest() {
-        onView(withId(R.id.email)).perform(typeText(TEST_STUDENT_EMAIL), closeSoftKeyboard());
+        onView(ViewMatchers.withId(R.id.email)).perform(typeText(TEST_STUDENT_EMAIL), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).perform(click());
 
         onView(withText("Enter password!")).inRoot(new ToastMatcher())

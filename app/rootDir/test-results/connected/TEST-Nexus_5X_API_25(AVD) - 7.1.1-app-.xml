@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.example.taphan.core1.AddCourseChangeTextBehaviorTest" tests="14" failures="0" errors="0" skipped="0" time="22.197" timestamp="2017-04-26T18:00:33" hostname="localhost">
+  <properties>
+    <property name="device" value="Nexus_5X_API_25(AVD) - 7.1.1" />
+    <property name="flavor" value="" />
+    <property name="project" value="app" />
+  </properties>
+  <testcase name="changeText_newActivity" classname="com.example.taphan.core1.AddCourseChangeTextBehaviorTest" time="3.377" />
+  <testcase name="changeText_sameActivity" classname="com.example.taphan.core1.AddCourseChangeTextBehaviorTest" time="1.781" />
+  <testcase name="signOutNext" classname="com.example.taphan.core1.InfoActivityTest" time="1.133" />
+  <testcase name="addCourseNext" classname="com.example.taphan.core1.InfoActivityTest" time="0.885" />
+  <testcase name="appInfoNext" classname="com.example.taphan.core1.InfoActivityTest" time="1.131" />
+  <testcase name="parcel" classname="com.example.taphan.core1.TokenInfoTest" time="0.152" />
+  <testcase name="newFromToken" classname="com.example.taphan.core1.TokenInfoTest" time="0.0" />
+  <testcase name="forgotPasswordNextIntent" classname="com.example.taphan.core1.login.LoginIntentTest" time="1.018" />
+  <testcase name="signupNextIntent" classname="com.example.taphan.core1.login.LoginIntentTest" time="1.164" />
+  <testcase name="emptyPasswordTest" classname="com.example.taphan.core1.login.LoginUserTest" time="2.099" />
+  <testcase name="shortPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="2.915" />
+  <testcase name="forgotPasswordNextIntent" classname="com.example.taphan.core1.login.SignupTest" time="1.095" />
+  <testcase name="invalidPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="3.073" />
+  <testcase name="emptyPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="2.001" />
+</testsuite>
