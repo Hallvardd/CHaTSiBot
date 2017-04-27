@@ -2,8 +2,6 @@ package com.example.taphan.core1.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -12,10 +10,6 @@ import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.InfoActivity;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
-
-/**
- * Created by taphan on 04.04.2017.
- */
 
 public class TaActivity extends AppCompatActivity {
 

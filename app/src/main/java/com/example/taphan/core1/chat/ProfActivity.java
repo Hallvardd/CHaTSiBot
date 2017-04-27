@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.chat;
 
 
 import android.database.DataSetObserver;
@@ -12,10 +12,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.chat.ChatArrayAdapter;
 import com.example.taphan.core1.chat.ChatMessage;
-import com.example.taphan.core1.questionDatabase.Answer;
 import com.example.taphan.core1.questionDatabase.Question;
 import com.example.taphan.core1.questionDatabase.State;
 import com.example.taphan.core1.user.User;
@@ -34,12 +34,11 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
 public class ProfActivity extends AppCompatActivity {
     private static final String TAG = "ProfActivity";
     Bundle bundle;
-    private TextView tv; // this variable is only here to use for adding test values to the database. And should be deleted
+    private TextView title; // this variable is only here to use for adding test values to the database. And should be deleted
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
     private Button buttonSend;
-    private DatabaseController dbc; // creates a databaseController to access firebase data.
     private DatabaseReference mDatabase; //database reference to our firebase database.
     private DatabaseReference uaqDatabase;
     private String courseCode; // placeholder for variable deciding which questions to read from and answer.
@@ -68,7 +67,9 @@ public class ProfActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         uaqDatabase = mDatabase.child(courseCode.toLowerCase()).child(uaQuestionBranchName);
         qList = new ArrayList<>();
-        tv = (TextView) findViewById(R.id.chat_title);
+        title = (TextView) findViewById(R.id.chat_title);
+        String currentCourse = AddCourseActivity.globalCourse.getCourseKey();
+        title.setText(currentCourse.toUpperCase());
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
@@ -162,7 +163,7 @@ public class ProfActivity extends AppCompatActivity {
                             lastQuestion = q.getQuestionTxt();
                             sendStudentQuestion(q.getQuestionTxt());
                         }
-                        //tv.setText(q.getQuestionTxt());
+                        //title.setText(q.getQuestionTxt());
                         firstItem = false;
                     }
                 }
@@ -191,7 +192,6 @@ public class ProfActivity extends AppCompatActivity {
     }
 
     void addAnswerToDatabase(final DatabaseReference database, final String questionID, final String courseCode, final String answerTxt){
-        Answer answer = new Answer();
         final String course = courseCode.toLowerCase();
         final DatabaseReference uaqDatabase = database.child(courseCode).child(uaQuestionBranchName);
         final DatabaseReference qDatabase = database.child(courseCode).child(questionBranchName);
@@ -218,7 +218,7 @@ public class ProfActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) { // the DataSnapshot consists of one and only one State() object
                         State snap = dataSnapshot.getValue(State.class);
                         snap.setAnswer(answerTxt); // possible to use an answer object later.
-                        snap.setQuestion(newQuestionID);
+                        snap.setQuestionID(newQuestionID);
                         pathToQuestion.setValue(snap);
                     }
 
@@ -249,6 +249,5 @@ public class ProfActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        //    aDatabase.child(answerKey).setValue(answer); not used for now!
     }
 }

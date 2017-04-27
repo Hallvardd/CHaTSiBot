@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="com.example.taphan.core1.TokenInfoTest" tests="31" failures="0" errors="0" skipped="0" time="72.571" timestamp="2017-04-27T04:35:17" hostname="localhost">
+  <properties>
+    <property name="device" value="Nexus_5X_API_25(AVD) - 7.1.1" />
+    <property name="flavor" value="" />
+    <property name="project" value="app" />
+  </properties>
+  <testcase name="parcel" classname="com.example.taphan.core1.TokenInfoTest" time="0.0" />
+  <testcase name="newFromToken" classname="com.example.taphan.core1.TokenInfoTest" time="0.0" />
+  <testcase name="testJsonExamNotFound" classname="com.example.taphan.core1.chat.StudActivityJSONExamNotFoundTest" time="5.166" />
+  <testcase name="testJsonLecturerNotFound" classname="com.example.taphan.core1.chat.StudActivityJSONLecturerNotFoundTest" time="5.856" />
+  <testcase name="testJsonExam" classname="com.example.taphan.core1.chat.StudActivityTest" time="5.067" />
+  <testcase name="testDb" classname="com.example.taphan.core1.chat.StudActivityTest" time="5.161" />
+  <testcase name="testAlreadyAsked" classname="com.example.taphan.core1.chat.StudActivityTest" time="5.044" />
+  <testcase name="testJsonLecturer" classname="com.example.taphan.core1.chat.StudActivityTest" time="5.324" />
+  <testcase name="invalidCourseTest" classname="com.example.taphan.core1.course.AddCourseProfTest" time="1.764" />
+  <testcase name="changeText_newActivity" classname="com.example.taphan.core1.course.AddCourseProfTest" time="2.515" />
+  <testcase name="changeText_sameActivity" classname="com.example.taphan.core1.course.AddCourseProfTest" time="1.822" />
+  <testcase name="invalidCourseTest" classname="com.example.taphan.core1.course.AddCourseStudentTest" time="2.162" />
+  <testcase name="changeText_newActivity" classname="com.example.taphan.core1.course.AddCourseStudentTest" time="2.892" />
+  <testcase name="changeText_sameActivity" classname="com.example.taphan.core1.course.AddCourseStudentTest" time="1.817" />
+  <testcase name="addSeveralCourseClickTest" classname="com.example.taphan.core1.course.AddCourseStudentTest" time="3.597" />
+  <testcase name="textIsEqualTest" classname="com.example.taphan.core1.course.AppInfoActivityTest" time="0.597" />
+  <testcase name="signOutNext" classname="com.example.taphan.core1.course.InfoActivityTest" time="1.064" />
+  <testcase name="addCourseNext" classname="com.example.taphan.core1.course.InfoActivityTest" time="1.01" />
+  <testcase name="appInfoNext" classname="com.example.taphan.core1.course.InfoActivityTest" time="1.284" />
+  <testcase name="forgotPasswordNextIntent" classname="com.example.taphan.core1.login.LoginIntentTest" time="1.173" />
+  <testcase name="signupNextIntent" classname="com.example.taphan.core1.login.LoginIntentTest" time="1.089" />
+  <testcase name="emptyPasswordToastTest" classname="com.example.taphan.core1.login.LoginUserTest" time="2.09" />
+  <testcase name="radioButtonProfTest" classname="com.example.taphan.core1.login.SignupTest" time="0.936" />
+  <testcase name="shortPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="2.919" />
+  <testcase name="radioButtonTaTest" classname="com.example.taphan.core1.login.SignupTest" time="0.959" />
+  <testcase name="forgotPasswordNextIntent" classname="com.example.taphan.core1.login.SignupTest" time="1.153" />
+  <testcase name="radioButtonStudTest" classname="com.example.taphan.core1.login.SignupTest" time="0.992" />
+  <testcase name="invalidPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="2.935" />
+  <testcase name="emptyPasswordTest" classname="com.example.taphan.core1.login.SignupTest" time="2.108" />
+  <testcase name="chooseStudentActivity" classname="com.example.taphan.core1.login.TaActivityTest" time="1.245" />
+  <testcase name="chooseProfActivity" classname="com.example.taphan.core1.login.TaActivityTest" time="1.17" />
+</testsuite>

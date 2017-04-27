@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.languageProcessing.AccessTokenLoader;
 import com.example.taphan.core1.languageProcessing.ApiFragment;
 import com.example.taphan.core1.languageProcessing.model.TokenInfo;
@@ -45,7 +44,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,11 +61,12 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import static com.example.taphan.core1.course.AddCourseActivity.globalCourse;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 
-public class ChatActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
-    private static final String TAG = "ChatActivity";
+public class StudActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
+    private static final String TAG = "StudActivity";
 
     private String client_access_token = "854903e0917e42c384b1e59d1b99af42";
     private ChatArrayAdapter chatArrayAdapter;
@@ -72,7 +74,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     private EditText chatText;
     private Button buttonSend;
     private TextView title;
-    private String currentCourse; // The current course for this chat activity
+
+    //keeps track of the current question, for use in ChatArrayAdapter
+    //where question can be sent back to the professor.
+    public static String currentCourse; // The current course for this chat activity
+    public static String currentQuestion;
 
     private AIConfiguration config;
     private AIDataService aiDataService;
@@ -86,18 +92,24 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     //Cloud API
     private static final String FRAGMENT_API = "api";
     private static final int LOADER_ACCESS_TOKEN = 1;
-    private String nouns;
+    //Cloud API syntax analysis
+    private static final List<String> FILL_VERBS = Arrays.asList("be", "is", "are");
+    private static final String AUX = "AUX";
+    private static final String VERB = "VERB";
+    private static final String NOUN = "NOUN";
+    private static final String ROOT = "ROOT";
+    private static final String XCOMP = "XCOMP";
+    private String nlpSyntax;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_chat);
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
-        currentCourse = AddCourseActivity.globalCourse.getCourseKey();
+        currentCourse = globalCourse.getCourseKey();
         title.setText(currentCourse.toUpperCase());
 
         buttonSend = (Button) findViewById(R.id.send);
@@ -196,7 +208,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                 new LoaderManager.LoaderCallbacks<String>() {
                     @Override
                     public Loader<String> onCreateLoader(int id, Bundle args) {
-                        return new AccessTokenLoader(ChatActivity.this);
+                        return new AccessTokenLoader(StudActivity.this);
                     }
 
                     @Override
@@ -219,17 +231,24 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     @Override
     public void onSyntaxReady(TokenInfo[] tokens) throws AIServiceException {
 
-        nouns = "";
+        nlpSyntax = "";
+        String root = "";
         for(TokenInfo t : tokens){
-            if(t.partOfSpeech.equals("NOUN")){
-                nouns += t.lemma + "-";
+            if(t.partOfSpeech.equals(NOUN) || ((t.label.equals(ROOT) && !t.label.equals(AUX) && !FILL_VERBS.contains(t.lemma)))|| t.label.equals(XCOMP) ){
+                if(t.label.equals(ROOT)){
+                    root = t.lemma.toLowerCase() +"-";
+                }
+                else{
+                    nlpSyntax += t.lemma.toLowerCase() + "-";
+                }
             }
         }
-        if(nouns.length() > 0){
-            nouns = nouns.substring(0, nouns.length() - 1);
+        if(nlpSyntax.length() > 0){
+            nlpSyntax = nlpSyntax.substring(0, nlpSyntax.length() - 1);
         }
-        listenButtonOnClick(nouns);
-        Log.d("TAG", nouns );
+        nlpSyntax = root + nlpSyntax;
+        listenButtonOnClick(nlpSyntax);
+        Log.d(TAG, nlpSyntax);
     }
     // End of language processing!!
 
@@ -247,6 +266,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         final AIResponse response = aiDataService.request(aiRequest);
                         return response;
                     } catch (AIServiceException e) {
+                        Log.e(TAG,e.getMessage());
                     }
                     return null;
                 }
@@ -271,22 +291,31 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
                         // if the length of the response from API-AI is only two characters, it is empty.
                         if (value.length() > 2) {
-                            value = value.replace("\",\"", "-");
-                            searchKey = value.substring(2, value.length() - 2);
+
+                            searchKey = value.replace(",", "-").replace("\"","").replace("[","").replace("]","");
+                            Log.d(TAG,searchKey);
                         }
 
-                        if (searchKey.equals("exam date")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
-                        } else if (searchKey.equals("professor")) {
-                            JSONTask task = new JSONTask();
-                            task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
-                        } else {
-                            // Creates the string path for database search.
-                            searchKey = currentCourse + "-" + searchKey + "-" + nouns;
-                            // Calls database search.
-                            searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
-                            chatText.setText("");
+                        switch (searchKey) {
+                            case "exam date": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", globalCourse.getCourseKey(), "date");
+                                chatText.setText("");
+                                break;
+                            }
+                            case "professor": {
+                                JSONTask task = new JSONTask();
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", globalCourse.getCourseKey(), "displayName");
+                                chatText.setText("");
+                                break;
+                            }
+                            default:
+                                // Creates the string path for database search.
+                                searchKey = currentCourse + "-" + searchKey + "-" + nlpSyntax;
+                                // Calls database search.
+                                searchDatabase(mDatabase, searchKey, result.getResolvedQuery());
+                                chatText.setText("");
+                                break;
                         }
                     }
                 }
@@ -329,7 +358,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
     // Check if the string contains only alphabetical characters
     public boolean isAlpha(String name) {
-        return name.matches("[a-zA-Z]+"); // TODO add whitespace
+        return name.matches("^[\\p{L} .'-]+$");
     }
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
@@ -341,7 +370,6 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
         be added to the database. The to avoid duplicates a reference to the question will also be
         added to the path.
         */
-        Log.d("API-AI TEST3", path);
 
         final String lcPath = path.toLowerCase(); // sets path to lowercase
         final String[] pathArray = lcPath.split("-");
@@ -376,7 +404,9 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     State snap = dataSnapshot.getValue(State.class);
                     if (!snap.getAnswer().equals("NA")){
                         String answerID = snap.getAnswer();
+                        String questionID = snap.getQuestionID();
                         sendBotMessage(answerID);
+                        setCurrentQuestion(snap.getQuestionID());
 
                         // Send also the feedback button to user
                         ChatMessage message = new ChatMessage(true, "");
@@ -387,7 +417,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         // adds the question to the list of asked questions if the question has already been asked.
                         globalUser.putUnansweredQuestion(courseCode,snap.getQuestionID());
                         mDatabase.child(users).child(globalUser.getUserID()).setValue(globalUser);
-                        sendBotMessage("The question has already been asked. Try again later!");
+                        sendBotMessage("Waiting for the professor to answer this question. Try again later!");
 
                         // Adding the user to the questions list of users listening.
                         final DatabaseReference questionRef = mDatabase.child(courseCode).child(uaQuestionBranchName).child(snap.getQuestionID());
@@ -421,7 +451,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
 
     // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
     public class JSONTask extends AsyncTask<String, String,String> {
-        private String result; // variable to solve the problem of wrong return value in searchJson method
+        private List<String> result; // variable to solve the problem of wrong return value in searchJson method
 
         /**
          * @param params = paramaters from execute(String... params)
@@ -449,9 +479,11 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                 // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-                result = "Not found";
+                result = new ArrayList<String>();
+                result.add("Not found");
+                result.add(params[2]);
                 if(parentObject.getString("course").equals("null")){
-                    return result; // If user enters invalid course name, returns Not found
+                    return result.get(0); // If user enters invalid course name, returns Not found
                 } else {
                     // Else the name of course will be returned
                     return searchJson(parentObject, null, "object", "course", params);
@@ -473,7 +505,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     }
                 }
             }
-            return result;
+            return result.get(0);
         }
 
         /**
@@ -498,7 +530,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                         if(currentObject.get(nextKey) instanceof JSONObject) {
                             searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
                         } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
-                            result = currentObject.getString(nextKey) ; // Return courseKey,courseName
+                            result.add(0,currentObject.getString(nextKey)); // Return courseKey,courseName
                             break;
                         }
                     }
@@ -518,35 +550,39 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                     } else if(currentObject.get(nextKey) instanceof JSONArray) {
                         searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkey);
                     } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
-                        result = currentObject.getString(nextKey);
+                        result.add(0,currentObject.getString(nextKey));
                         break;
                     }
                 }
             }
-            return result;
+            return result.get(0);
         }
 
         @Override
         protected void onPostExecute(String newResult) {
             super.onPostExecute(newResult);
+            Log.d("jsonTest",result.toString());
 
             // Send message to Bot, if result contains alphabetical characters, the task was to find lecturer, else exam date
-            if(isAlpha(newResult)) {
+            if(isAlpha(newResult) && result.get(result.size()-1).equals("displayName")) {
                 if (newResult.equalsIgnoreCase("Not found")) {
                     sendBotMessage("Lecturer not found.");
                 } else {
-                    sendBotMessage("The lecturer of this subject is: " + result);
+                    sendBotMessage("The lecturer of this subject is: " + result.get(0));
                 }
             } else {
                 if (newResult.equalsIgnoreCase("Not found")) {
                     sendBotMessage("Exam date not found.");
                 } else {
-                    sendBotMessage("The exam date is: " + result);
+                    sendBotMessage("The exam date is: " + result.get(0));
                 }
             }
         }
     }
 
+    public void setCurrentQuestion(String questionID){
+        this.currentQuestion = questionID;
+    }
 
 }
 

@@ -51,4 +51,6 @@ public class CourseAdapter extends ArrayAdapter<Course> {
         courseTextView.setText(courseObj.getCourseKey());
         return row;
     }
+
+   
 }

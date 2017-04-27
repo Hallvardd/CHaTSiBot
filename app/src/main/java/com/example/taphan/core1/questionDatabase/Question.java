@@ -1,8 +1,6 @@
 package com.example.taphan.core1.questionDatabase;
 
 
-import com.google.firebase.database.DatabaseReference;
-
 import java.util.ArrayList;
 
 public class Question {
@@ -11,7 +9,6 @@ public class Question {
 
     private String questionID; //key
     private String questionTxt;
-    private String refAnsID;
     private String questionPath;
 
 
@@ -54,14 +51,6 @@ public class Question {
 
     public void setQuestionID(String questionID) {
         this.questionID = questionID;
-    }
-
-    public String getRefAnsID() {
-        return refAnsID;
-    }
-
-    public void setRefAnsID(String refAnsID) {
-        this.refAnsID = refAnsID;
     }
 
     public String getQuestionTxt() {

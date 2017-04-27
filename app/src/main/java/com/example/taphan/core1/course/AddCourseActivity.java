@@ -12,10 +12,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.taphan.core1.ProfActivity;
+import com.example.taphan.core1.chat.ProfActivity;
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.chat.ChatActivity;
-import com.example.taphan.core1.user.User;
+import com.example.taphan.core1.chat.StudActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,10 +34,6 @@ import java.util.logging.Logger;
 
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
-/**
- * Created by taphan on 23.03.2017.
- */
-
 public class AddCourseActivity extends AppCompatActivity {
     public static final String TAG = "AddCourseActivity";
 
@@ -50,17 +45,13 @@ public class AddCourseActivity extends AppCompatActivity {
     ListView listView;
     CourseAdapter adapter;
     String userType;
+    private String apiURL = "http://www.ime.ntnu.no/api/course/en/";
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
 
-        // Prevent crash when doing unit test
-        if(globalUser == null) {
-            globalUser = new User();
-            globalUser.setUserType("TA");
-            globalUser.setIsTa(false);
-        }
         userType = globalUser.getUserType();
 
         enterCourse = (EditText) findViewById(R.id.enter_course);
@@ -82,23 +73,35 @@ public class AddCourseActivity extends AppCompatActivity {
             adapter.add(course);
 
         // Add a course to the Course object containing all courses globalCourse.getCourseKey()
+
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ArrayList<String> uCourses = new ArrayList<String>();
+                ArrayList<String> tCourses = new ArrayList<String>();
+
                 String course = enterCourse.getText().toString().toLowerCase();
+                for(Course c : globalUser.getuCourses()){
+                    uCourses.add(c.getCourseKey().toLowerCase());
+                }
+                for(Course c : globalUser.gettCourses()){
+                    tCourses.add(c.getCourseKey().toLowerCase());
+                }
+
 
                 // Add course to Firebase for current user
                 // Make sure that a user can only be associated with one course either as a Professor/TA or as a student
-                if(!globalUser.getuCourses().contains(course) && !globalUser.gettCourses().contains(course)) {
+                if(!uCourses.contains(course.toLowerCase()) && !tCourses.contains(course.toLowerCase()) ) {
                     // Check if the course name is valid
                     JSONTask task = new JSONTask();
-                    task.execute("http://www.ime.ntnu.no/api/course/en/", course, "name");
+                    task.execute(apiURL, course, "name");
                 }
                 enterCourse.setText("");
             }
         });
 
-        // When an item in the list of courses is chosen, redirect user to ChatActivity with the corresponding course
+
+        // When an item in the list of courses is chosen, redirect user to StudActivity with the corresponding course
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,12 +113,12 @@ public class AddCourseActivity extends AppCompatActivity {
                 Intent chat;// the course key that was chosen
 
                 // Start the right activity according to user type
-                if((userType.equals("TA")&& globalUser.getIsTa() == true)|| userType.equalsIgnoreCase("Professor")){
+                if((userType.equals("TA")&& globalUser.getIsTa())|| userType.equalsIgnoreCase("Professor")){
                     chat = new Intent(getApplicationContext(), ProfActivity.class);
                     chat.putExtras(courseCodeBundle);
 
                 } else {
-                    chat = new Intent(getApplicationContext(), ChatActivity.class);
+                    chat = new Intent(getApplicationContext(), StudActivity.class);
                     chat.putExtras(courseCodeBundle);
                 }
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
@@ -123,6 +126,10 @@ public class AddCourseActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void setApiURL(String apiURL) {
+        this.apiURL = apiURL;
     }
 
     // JSON Task to check whether the added course is in correct format
@@ -260,7 +267,5 @@ public class AddCourseActivity extends AppCompatActivity {
                 }
             }
         }
-
     }
-
 }
