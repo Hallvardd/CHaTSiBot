@@ -1,5 +1,6 @@
 package com.example.taphan.core1.chat;
 
+
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -22,13 +23,9 @@ import static com.example.taphan.core1.course.AddCourseActivity.globalCourse;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 @RunWith(AndroidJUnit4.class)
-public class StudActivityTest {
-    private static final String COURSE_KEY = "tdt4100";
-    private static final String QUESTION_DB = "What is eclipse?";
-    private static final String QUESTION_DB_ALREADY_ASKED = "What is an object?";
-    private static final String QUESTION_JSON_EXAM = "When is my exam?";
+public class StudActivityJSONLecturerNotFoundTest {
+    private static final String COURSE_KEY_NO_LECTURER = "AE511712";
     private static final String QUESTION_JSON_LECTURER = "Who is my lecturer?";
-    private static final Integer millis = 3000;
 
     @Rule
     public ActivityTestRule<StudActivity> mActivityRule = new ActivityTestRule<StudActivity>(
@@ -39,42 +36,16 @@ public class StudActivityTest {
             globalUser.setUserType("Student");
             globalUser.setUserID("dz264R8jyTdspRLKTuSDDMl0MG23");
             globalCourse = new Course();
-            globalCourse.setCourseKey(COURSE_KEY);
+            globalCourse.setCourseKey(COURSE_KEY_NO_LECTURER);
         }
     };
 
     @Test
-    public void testDb() throws InterruptedException {
-        // Have to delete "eclipse" from database in order for this to work
-        onView(withId(R.id.msg)).perform(typeText(QUESTION_DB),
-                closeSoftKeyboard());
-        onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(millis));
-
-    }
-    @Test
-    public void testAlreadyAsked() {
-        onView(withId(R.id.msg)).perform(typeText(QUESTION_DB_ALREADY_ASKED),
-                closeSoftKeyboard());
-        onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(millis));
-
-    }
-    @Test
-    public void testJsonExam() {
-        onView(withId(R.id.msg)).perform(typeText(QUESTION_JSON_EXAM),
-                closeSoftKeyboard());
-        onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(millis));
-    }
-
-    @Test
-    public void testJsonLecturer() {
+    public void testJsonLecturerNotFound() {
         onView(withId(R.id.msg)).perform(typeText(QUESTION_JSON_LECTURER),
                 closeSoftKeyboard());
         onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(millis));
+        onView(isRoot()).perform(waitFor(3500));
     }
-
 
 }
