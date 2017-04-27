@@ -49,4 +49,12 @@
             android:text="Sign out"
             android:textColor="@android:color/black" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/email_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:text="TextView" />
 </android.support.design.widget.CoordinatorLayout>
