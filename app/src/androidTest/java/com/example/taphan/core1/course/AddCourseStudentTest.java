@@ -2,6 +2,7 @@ package com.example.taphan.core1.course;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
@@ -12,6 +13,8 @@ import com.example.taphan.core1.R;
 import com.example.taphan.core1.ToastMatcher;
 import com.example.taphan.core1.user.User;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,14 +30,17 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.equalTo;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class AddCourseStudentTest {
 
-    public static final String TEST_COURSE = "TDT4100";
-    public static final String INVALID_TEST_COURSE = "TDT41111";
+    private static final String TEST_COURSE = "TDT4100";
+    private static final String TEST_COURSE2 = "TDT4140";
+    private static final String INVALID_TEST_COURSE = "TDT41111";
     /**
      * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement
      * for {@link ActivityInstrumentationTestCase2}.
@@ -82,6 +88,20 @@ public class AddCourseStudentTest {
     }
 
     @Test
+    public void addSeveralCourseClickTest() {
+        onView(withId(R.id.enter_course)).perform(typeText(TEST_COURSE),
+                closeSoftKeyboard());
+        onView(withId(R.id.add_course_button)).perform(click());
+        onView(withId(R.id.enter_course)).perform(typeText(TEST_COURSE2),
+                closeSoftKeyboard());
+        onView(withId(R.id.add_course_button)).perform(click());
+        onData(anything()).inAdapterView(withId(R.id.courseview)).atPosition(0).perform(click());
+
+        onView(withId(R.id.chat_title)).check(matches(withText(TEST_COURSE)));
+
+    }
+
+    @Test
     public void invalidCourseTest() {
         onView(withId(R.id.enter_course)).perform(typeText(INVALID_TEST_COURSE),
                 closeSoftKeyboard());
@@ -95,5 +115,35 @@ public class AddCourseStudentTest {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         return targetContext.getResources().getString(id);
     }
+/*
+    @Test
+    public void adapterTest() {
+        onView(withId(R.id.enter_course)).perform(typeText(TEST_COURSE),
+                closeSoftKeyboard());
+        onView(withId(R.id.add_course_button)).perform(click());
 
+        onData(is(instanceOf(Course.class)))
+                .atPosition(0)
+                .check(matches(withItemContent(TEST_COURSE)));
+    }*/
+
+    public static Matcher<Object> withItemContent(String expectedText) {
+        checkNotNull(expectedText);
+        return withItemContent(equalTo(expectedText));
+    }
+
+    public static Matcher<Object> withItemContent(final Matcher itemTextMatcher) {
+        checkNotNull(itemTextMatcher);
+        return new BoundedMatcher<Object, Course>(Course.class) {
+            @Override
+            public boolean matchesSafely(Course course) {
+                return itemTextMatcher.matches(course.getCourseKey());
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                itemTextMatcher.describeTo(description);
+            }
+        };
+    }
 }

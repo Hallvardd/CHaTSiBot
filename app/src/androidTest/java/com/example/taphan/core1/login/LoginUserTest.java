@@ -36,10 +36,10 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 public class LoginUserTest {
-    public static final String TEST_STUDENT_EMAIL = "test@test.test";
-    public static final String TEST_PROF_EMAIL = "test@test.test";
-    public static final String TEST_TA_EMAIL = "test@test.test";
-    public static final String TEST_PW = "test123";
+    private static final String TEST_STUDENT_EMAIL = "test@test.test";
+    private static final String TEST_PROF_EMAIL = "test@test.test";
+    private static final String TEST_TA_EMAIL = "test@test.test";
+    private static final String TEST_PW = "test123";
 
 
     @Rule

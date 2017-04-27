@@ -27,8 +27,8 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
 import static org.hamcrest.Matchers.anything;
 
 public class AddCourseProfTest {
-    public static final String TEST_COURSE = "TDT4100";
-    public static final String INVALID_TEST_COURSE = "TDT41111";
+    private static final String TEST_COURSE = "TDT4100";
+    private static final String INVALID_TEST_COURSE = "TDT41111";
 
     /**
      * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement

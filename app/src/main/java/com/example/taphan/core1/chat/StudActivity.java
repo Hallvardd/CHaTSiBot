@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.course.Course;
 import com.example.taphan.core1.languageProcessing.AccessTokenLoader;
 import com.example.taphan.core1.languageProcessing.ApiFragment;
 import com.example.taphan.core1.languageProcessing.model.TokenInfo;
@@ -107,11 +106,6 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        // For testing
-        if(globalCourse == null) {
-            globalCourse = new Course();
-            globalCourse.setCourseKey("tdt4140");
-        }
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
@@ -306,11 +300,13 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                             case "exam date": {
                                 JSONTask task = new JSONTask();
                                 task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                                chatText.setText("");
                                 break;
                             }
                             case "professor": {
                                 JSONTask task = new JSONTask();
                                 task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                                chatText.setText("");
                                 break;
                             }
                             default:

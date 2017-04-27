@@ -180,7 +180,7 @@ public class LoginActivity extends AppCompatActivity {
                                         }
                                         else{
                                             // no userdata found in database, user is loged out. And new login is made posible
-                                            Toast.makeText(getApplicationContext(), "Userdata compormised. Contact system admin", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Userdata compromised. Contact system admin", Toast.LENGTH_SHORT).show();
                                             FirebaseAuth.getInstance().signOut();
                                             btnLogin.setBackgroundColor(getResources().getColor(R.color.primary_button));
                                             btnLogin.setEnabled(true);
