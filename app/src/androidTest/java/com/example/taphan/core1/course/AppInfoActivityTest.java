@@ -1,10 +1,11 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.course;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AppInfoActivity;
 
 import org.junit.Rule;
@@ -15,9 +16,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-/**
- * Created by hallvard on 26.04.17.
- */
+
 
 public class AppInfoActivityTest {
     @Rule

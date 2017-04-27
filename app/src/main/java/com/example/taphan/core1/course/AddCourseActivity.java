@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.taphan.core1.ProfActivity;
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.chat.ChatActivity;
-import com.example.taphan.core1.user.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -51,12 +50,6 @@ public class AddCourseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_course);
 
-        // Prevent crash when doing unit test
-        if(globalUser == null) {
-            globalUser = new User();
-            globalUser.setUserType("TA");
-            globalUser.setIsTa(false);
-        }
         userType = globalUser.getUserType();
 
         enterCourse = (EditText) findViewById(R.id.enter_course);

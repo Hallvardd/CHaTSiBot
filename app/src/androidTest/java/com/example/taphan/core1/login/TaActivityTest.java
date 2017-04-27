@@ -1,10 +1,12 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.login;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.intent.rule.IntentsTestRule;
+import android.support.test.espresso.matcher.ViewMatchers;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.InfoActivity;
 import com.example.taphan.core1.login.TaActivity;
 import com.example.taphan.core1.user.User;
@@ -37,7 +39,7 @@ public class TaActivityTest {
     @Test
     public void chooseStudentActivity() {
         globalUser = new User();
-        onView(withId(R.id.ta_choose_student)).perform(click());
+        onView(ViewMatchers.withId(R.id.ta_choose_student)).perform(click());
         intended(hasComponent(InfoActivity.class.getName()));
         Assert.assertFalse(globalUser.getIsTa());
     }

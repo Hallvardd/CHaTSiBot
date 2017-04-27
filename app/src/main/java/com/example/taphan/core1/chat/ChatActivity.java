@@ -107,6 +107,8 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        // For testing
         if(AddCourseActivity.globalCourse == null) {
             AddCourseActivity.globalCourse = new Course();
             AddCourseActivity.globalCourse.setCourseKey("tdt4140");

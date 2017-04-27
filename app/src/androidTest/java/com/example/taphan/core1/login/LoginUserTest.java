@@ -71,10 +71,10 @@ public class LoginUserTest {
     // Checking for toast message when invalid email/password
 
     @Test
-    public void emptyPasswordTest() {
+    public void emptyPasswordToastTest() {
         onView(ViewMatchers.withId(R.id.email)).perform(typeText(TEST_STUDENT_EMAIL), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).perform(click());
-
+        // Toast message test
         onView(withText("Enter password!")).inRoot(new ToastMatcher())
                 .check(matches(isDisplayed()));
     }

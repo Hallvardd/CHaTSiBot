@@ -1,7 +1,6 @@
 package com.example.taphan.core1.chat;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,15 +19,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import static com.example.taphan.core1.login.LoginActivity.globalUser;
-import static com.example.taphan.core1.chat.ChatActivity.currentQuestion;
-import static com.example.taphan.core1.chat.ChatActivity.currentCourse;
-
-
-
-
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.taphan.core1.chat.ChatActivity.currentCourse;
+import static com.example.taphan.core1.chat.ChatActivity.currentQuestion;
+import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 
 /**
@@ -58,8 +54,10 @@ public class ChatArrayAdapter extends ArrayAdapter<ChatMessage> {
     public ChatArrayAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.context = context;
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        uaqDatabase = mDatabase.child(currentCourse.toLowerCase()).child(uaQuestionBranchName);
+        if(globalUser.getUserType().equals("Student") || (globalUser.getUserType().equals("TA") && !globalUser.getIsTa())) {
+            mDatabase = FirebaseDatabase.getInstance().getReference();
+            uaqDatabase = mDatabase.child(currentCourse.toLowerCase()).child(uaQuestionBranchName);
+        }
     }
 
     public int getCount() {
