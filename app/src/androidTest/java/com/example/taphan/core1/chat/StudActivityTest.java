@@ -28,6 +28,7 @@ public class StudActivityTest {
     private static final String QUESTION_DB_ALREADY_ASKED = "What is an object?";
     private static final String QUESTION_JSON_EXAM = "When is my exam?";
     private static final String QUESTION_JSON_LECTURER = "Who is my lecturer?";
+    private static final Integer millis = 3000;
 
     @Rule
     public ActivityTestRule<StudActivity> mActivityRule = new ActivityTestRule<StudActivity>(
@@ -43,12 +44,12 @@ public class StudActivityTest {
     };
 
     @Test
-    public void test() throws InterruptedException {
+    public void testDb() throws InterruptedException {
         // Have to delete "eclipse" from database in order for this to work
         onView(withId(R.id.msg)).perform(typeText(QUESTION_DB),
                 closeSoftKeyboard());
         onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(3500));
+        onView(isRoot()).perform(waitFor(millis));
 
     }
     @Test
@@ -56,7 +57,7 @@ public class StudActivityTest {
         onView(withId(R.id.msg)).perform(typeText(QUESTION_DB_ALREADY_ASKED),
                 closeSoftKeyboard());
         onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(3500));
+        onView(isRoot()).perform(waitFor(millis));
 
     }
     @Test
@@ -64,8 +65,7 @@ public class StudActivityTest {
         onView(withId(R.id.msg)).perform(typeText(QUESTION_JSON_EXAM),
                 closeSoftKeyboard());
         onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(3500));
-
+        onView(isRoot()).perform(waitFor(millis));
     }
 
     @Test
@@ -73,7 +73,7 @@ public class StudActivityTest {
         onView(withId(R.id.msg)).perform(typeText(QUESTION_JSON_LECTURER),
                 closeSoftKeyboard());
         onView(withId(R.id.send)).perform(click());
-        onView(isRoot()).perform(waitFor(3500));
+        onView(isRoot()).perform(waitFor(millis));
     }
 
 

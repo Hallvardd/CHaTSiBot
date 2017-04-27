@@ -299,13 +299,13 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                         switch (searchKey) {
                             case "exam date": {
                                 JSONTask task = new JSONTask();
-                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "date");
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", globalCourse.getCourseKey(), "date");
                                 chatText.setText("");
                                 break;
                             }
                             case "professor": {
                                 JSONTask task = new JSONTask();
-                                task.execute("http://www.ime.ntnu.no/api/course/en/", currentCourse, "displayName");
+                                task.execute("http://www.ime.ntnu.no/api/course/en/", globalCourse.getCourseKey(), "displayName");
                                 chatText.setText("");
                                 break;
                             }
@@ -451,7 +451,7 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
 
     // This JSONTask currently support two tasks: search for exam date of a subject and its lecturer
     public class JSONTask extends AsyncTask<String, String,String> {
-        private String result; // variable to solve the problem of wrong return value in searchJson method
+        private List<String> result; // variable to solve the problem of wrong return value in searchJson method
 
         /**
          * @param params = paramaters from execute(String... params)
@@ -479,9 +479,11 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                 // Begin parsing JSON, choose JSON objects and arrays to get hold of correct info
                 String finalJson = buffer.toString();
                 JSONObject parentObject = new JSONObject(finalJson);
-                result = "Not found";
+                result = new ArrayList<String>();
+                result.add("Not found");
+                result.add(params[2]);
                 if(parentObject.getString("course").equals("null")){
-                    return result; // If user enters invalid course name, returns Not found
+                    return result.get(0); // If user enters invalid course name, returns Not found
                 } else {
                     // Else the name of course will be returned
                     return searchJson(parentObject, null, "object", "course", params);
@@ -503,7 +505,7 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                     }
                 }
             }
-            return result;
+            return result.get(0);
         }
 
         /**
@@ -528,7 +530,7 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                         if(currentObject.get(nextKey) instanceof JSONObject) {
                             searchJson(currentObject.getJSONObject(nextKey), null,"object", nextKey, searchkey);
                         } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
-                            result = currentObject.getString(nextKey) ; // Return courseKey,courseName
+                            result.add(0,currentObject.getString(nextKey)); // Return courseKey,courseName
                             break;
                         }
                     }
@@ -548,30 +550,31 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
                     } else if(currentObject.get(nextKey) instanceof JSONArray) {
                         searchJson(null, currentObject.getJSONArray(nextKey),"array", nextKey, searchkey);
                     } else if(currentObject.get(nextKey) instanceof String && nextKey.equals(searchkey[2])) {
-                        result = currentObject.getString(nextKey);
+                        result.add(0,currentObject.getString(nextKey));
                         break;
                     }
                 }
             }
-            return result;
+            return result.get(0);
         }
 
         @Override
         protected void onPostExecute(String newResult) {
             super.onPostExecute(newResult);
+            Log.d("jsonTest",result.toString());
 
             // Send message to Bot, if result contains alphabetical characters, the task was to find lecturer, else exam date
-            if(isAlpha(newResult)) {
+            if(isAlpha(newResult) && result.get(result.size()-1).equals("displayName")) {
                 if (newResult.equalsIgnoreCase("Not found")) {
                     sendBotMessage("Lecturer not found.");
                 } else {
-                    sendBotMessage("The lecturer of this subject is: " + result);
+                    sendBotMessage("The lecturer of this subject is: " + result.get(0));
                 }
             } else {
                 if (newResult.equalsIgnoreCase("Not found")) {
                     sendBotMessage("Exam date not found.");
                 } else {
-                    sendBotMessage("The exam date is: " + result);
+                    sendBotMessage("The exam date is: " + result.get(0));
                 }
             }
         }
