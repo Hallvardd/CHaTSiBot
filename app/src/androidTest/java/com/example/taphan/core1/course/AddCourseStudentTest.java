@@ -2,12 +2,14 @@ package com.example.taphan.core1.course;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.base.FinalizablePhantomReference;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
+import android.util.Log;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.ToastMatcher;
@@ -29,10 +31,13 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.example.taphan.core1.login.LoginActivity.TAG;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.core.Is.is;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -115,7 +120,7 @@ public class AddCourseStudentTest {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         return targetContext.getResources().getString(id);
     }
-/*
+
     @Test
     public void adapterTest() {
         onView(withId(R.id.enter_course)).perform(typeText(TEST_COURSE),
@@ -125,25 +130,45 @@ public class AddCourseStudentTest {
         onData(is(instanceOf(Course.class)))
                 .atPosition(0)
                 .check(matches(withItemContent(TEST_COURSE)));
-    }*/
+    }
 
-    public static Matcher<Object> withItemContent(String expectedText) {
+    public static Matcher<Object> withContent(final String content) {
+        return new BoundedMatcher<Object, Course>(Course.class) {
+            @Override
+            public boolean matchesSafely(Course myObj) {
+                Log.d(TAG,myObj.getCourseKey());
+                return myObj.getCourseKey().equals(content);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with content '" + content + "'");
+            }
+        };
+    }
+
+    public static Matcher<Object> withItemContent(final String expectedText) {
         checkNotNull(expectedText);
         return withItemContent(equalTo(expectedText));
     }
 
     public static Matcher<Object> withItemContent(final Matcher itemTextMatcher) {
         checkNotNull(itemTextMatcher);
+        Log.d("THAG","Running");
         return new BoundedMatcher<Object, Course>(Course.class) {
+
             @Override
             public boolean matchesSafely(Course course) {
+                Log.d("THAG",course.getCourseKey());
                 return itemTextMatcher.matches(course.getCourseKey());
             }
 
             @Override
             public void describeTo(Description description) {
+                Log.d("THAG","not");
                 itemTextMatcher.describeTo(description);
             }
         };
     }
+
 }

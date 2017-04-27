@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -112,19 +113,32 @@ public class SignupActivity extends AppCompatActivity {
                                 User localUser = new User();// creates a user object to store
                                 // Add user to 'user' child in firebase to store information about courses
                                 user = auth.getCurrentUser();
+                                /*
                                 String userID = user.getUid(); // Get userID from firebase, then put in database object
                                 localUser.setUserType(userType);
                                 localUser.setUserID(userID);
                                 localUser.setEmail(email);
                                 mDatabase.child("users").child(userID).setValue(localUser);
+                                */
 
                                 // If sign in fails, display a message to the user. If sign in succeeds
                                 // the auth state listener will be notified and logic to handle the
                                 // signed in user can be handled in the listener.
                                 if (!task.isSuccessful()) {
+
+                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                        Toast.makeText(SignupActivity.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    }
+
                                     Toast.makeText(SignupActivity.this, "Authentication failed." + task.getException(),
                                             Toast.LENGTH_SHORT).show();
                                 } else {
+                                    String userID = user.getUid(); // Get userID from firebase, then put in database object
+                                    localUser.setUserType(userType);
+                                    localUser.setUserID(userID);
+                                    localUser.setEmail(email);
+                                    mDatabase.child("users").child(userID).setValue(localUser);
                                     globalUser = localUser;
                                     if(globalUser.getUserType().equals("TA")) {
                                         startActivity(new Intent(SignupActivity.this, TaActivity.class));
@@ -135,6 +149,7 @@ public class SignupActivity extends AppCompatActivity {
                                 }
                             }
                         });
+
             }
         });
     }
