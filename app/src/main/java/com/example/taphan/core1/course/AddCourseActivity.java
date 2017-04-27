@@ -12,9 +12,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.example.taphan.core1.ProfActivity;
+import com.example.taphan.core1.chat.ProfActivity;
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.chat.ChatActivity;
+import com.example.taphan.core1.chat.StudActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -45,6 +45,8 @@ public class AddCourseActivity extends AppCompatActivity {
     ListView listView;
     CourseAdapter adapter;
     String userType;
+    private String apiURL = "http://www.ime.ntnu.no/api/course/en/";
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,14 +94,14 @@ public class AddCourseActivity extends AppCompatActivity {
                 if(!uCourses.contains(course.toLowerCase()) && !tCourses.contains(course.toLowerCase()) ) {
                     // Check if the course name is valid
                     JSONTask task = new JSONTask();
-                    task.execute("http://www.ime.ntnu.no/api/course/en/", course, "name");
+                    task.execute(apiURL, course, "name");
                 }
                 enterCourse.setText("");
             }
         });
 
 
-        // When an item in the list of courses is chosen, redirect user to ChatActivity with the corresponding course
+        // When an item in the list of courses is chosen, redirect user to StudActivity with the corresponding course
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -116,7 +118,7 @@ public class AddCourseActivity extends AppCompatActivity {
                     chat.putExtras(courseCodeBundle);
 
                 } else {
-                    chat = new Intent(getApplicationContext(), ChatActivity.class);
+                    chat = new Intent(getApplicationContext(), StudActivity.class);
                     chat.putExtras(courseCodeBundle);
                 }
                 startActivity(chat); // Start chat activity with saved chosen course as a global variable
@@ -124,6 +126,10 @@ public class AddCourseActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void setApiURL(String apiURL) {
+        this.apiURL = apiURL;
     }
 
     // JSON Task to check whether the added course is in correct format

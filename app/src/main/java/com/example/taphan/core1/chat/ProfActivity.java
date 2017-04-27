@@ -1,4 +1,4 @@
-package com.example.taphan.core1;
+package com.example.taphan.core1.chat;
 
 
 import android.database.DataSetObserver;
@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.taphan.core1.R;
 import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.chat.ChatArrayAdapter;
 import com.example.taphan.core1.chat.ChatMessage;
@@ -33,7 +34,7 @@ import static com.example.taphan.core1.login.LoginActivity.globalUser;
 public class ProfActivity extends AppCompatActivity {
     private static final String TAG = "ProfActivity";
     Bundle bundle;
-    private TextView tv; // this variable is only here to use for adding test values to the database. And should be deleted
+    private TextView title; // this variable is only here to use for adding test values to the database. And should be deleted
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
@@ -66,7 +67,9 @@ public class ProfActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         uaqDatabase = mDatabase.child(courseCode.toLowerCase()).child(uaQuestionBranchName);
         qList = new ArrayList<>();
-        tv = (TextView) findViewById(R.id.chat_title);
+        title = (TextView) findViewById(R.id.chat_title);
+        String currentCourse = AddCourseActivity.globalCourse.getCourseKey();
+        title.setText(currentCourse.toUpperCase());
 
         // User input is accepted by both pressing "Send" button and the "Enter" key
         chatText = (EditText) findViewById(R.id.msg);
@@ -160,7 +163,7 @@ public class ProfActivity extends AppCompatActivity {
                             lastQuestion = q.getQuestionTxt();
                             sendStudentQuestion(q.getQuestionTxt());
                         }
-                        //tv.setText(q.getQuestionTxt());
+                        //title.setText(q.getQuestionTxt());
                         firstItem = false;
                     }
                 }

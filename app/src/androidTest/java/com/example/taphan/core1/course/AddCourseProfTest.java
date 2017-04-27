@@ -73,7 +73,7 @@ public class AddCourseProfTest {
         onData(anything()).inAdapterView(withId(R.id.courseview)).atPosition(0).perform(click());
 
         // This view is in a different Activity, no need to tell Espresso.
-        //onView(withId(R.id.chat_title)).check(matches(withText(TEST_COURSE)));
+        onView(withId(R.id.chat_title)).check(matches(withText(TEST_COURSE)));
     }
 
     @Test

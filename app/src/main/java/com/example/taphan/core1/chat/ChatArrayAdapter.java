@@ -22,8 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.taphan.core1.chat.ChatActivity.currentCourse;
-import static com.example.taphan.core1.chat.ChatActivity.currentQuestion;
+import static com.example.taphan.core1.chat.StudActivity.currentCourse;
+import static com.example.taphan.core1.chat.StudActivity.currentQuestion;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 

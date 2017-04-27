@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.taphan.core1.R;
-import com.example.taphan.core1.course.AddCourseActivity;
 import com.example.taphan.core1.course.Course;
 import com.example.taphan.core1.languageProcessing.AccessTokenLoader;
 import com.example.taphan.core1.languageProcessing.ApiFragment;
@@ -63,11 +62,12 @@ import ai.api.model.AIRequest;
 import ai.api.model.AIResponse;
 import ai.api.model.Result;
 
+import static com.example.taphan.core1.course.AddCourseActivity.globalCourse;
 import static com.example.taphan.core1.login.LoginActivity.globalUser;
 
 
-public class ChatActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
-    private static final String TAG = "ChatActivity";
+public class StudActivity extends AppCompatActivity implements AIListener, ApiFragment.Callback {
+    private static final String TAG = "StudActivity";
 
     private String client_access_token = "854903e0917e42c384b1e59d1b99af42";
     private ChatArrayAdapter chatArrayAdapter;
@@ -107,16 +107,15 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
         // For testing
-        if(AddCourseActivity.globalCourse == null) {
-            AddCourseActivity.globalCourse = new Course();
-            AddCourseActivity.globalCourse.setCourseKey("tdt4140");
+        if(globalCourse == null) {
+            globalCourse = new Course();
+            globalCourse.setCourseKey("tdt4140");
         }
 
         // Set title of current chat activity corresponds to current course
         title = (TextView) findViewById(R.id.chat_title);
-        currentCourse = AddCourseActivity.globalCourse.getCourseKey();
+        currentCourse = globalCourse.getCourseKey();
         title.setText(currentCourse.toUpperCase());
 
         buttonSend = (Button) findViewById(R.id.send);
@@ -215,7 +214,7 @@ public class ChatActivity extends AppCompatActivity implements AIListener, ApiFr
                 new LoaderManager.LoaderCallbacks<String>() {
                     @Override
                     public Loader<String> onCreateLoader(int id, Bundle args) {
-                        return new AccessTokenLoader(ChatActivity.this);
+                        return new AccessTokenLoader(StudActivity.this);
                     }
 
                     @Override

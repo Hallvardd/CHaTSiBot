@@ -35,7 +35,6 @@ public class AddCourseStudentTest {
 
     public static final String TEST_COURSE = "TDT4100";
     public static final String INVALID_TEST_COURSE = "TDT41111";
-
     /**
      * A JUnit {@link Rule @Rule} to launch your activity under test. This is a replacement
      * for {@link ActivityInstrumentationTestCase2}.
@@ -96,6 +95,5 @@ public class AddCourseStudentTest {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         return targetContext.getResources().getString(id);
     }
-
 
 }
