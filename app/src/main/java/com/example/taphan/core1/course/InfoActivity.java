@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.taphan.core1.R;
 import com.example.taphan.core1.login.LoginActivity;
 import com.example.taphan.core1.user.User;
+import com.google.api.client.testing.util.TestableByteArrayInputStream;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,6 +28,7 @@ public class InfoActivity extends AppCompatActivity{
     private Button addCourseButton;
     private Button infoAppButton;
     private DatabaseReference mUserDatabase;
+    private TextView username;
     private static final String usersBranch =  "users";
 
     public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +42,10 @@ public class InfoActivity extends AppCompatActivity{
         signOutButton = (Button) findViewById(R.id.sign_out);
         infoAppButton = (Button) findViewById(R.id.app_info);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child(usersBranch);
+        username = (TextView) findViewById(R.id.email_name);
+
+        String name = globalUser.getEmail();
+        username.setText("Logged in as: " + name);
 
         addCourseButton.setOnClickListener(new View.OnClickListener() {
             @Override
