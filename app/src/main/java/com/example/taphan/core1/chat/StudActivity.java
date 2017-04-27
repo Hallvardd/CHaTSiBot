@@ -358,7 +358,7 @@ public class StudActivity extends AppCompatActivity implements AIListener, ApiFr
 
     // Check if the string contains only alphabetical characters
     public boolean isAlpha(String name) {
-        return name.matches("[a-zA-Z]+");
+        return name.matches("^[\\p{L} .'-]+$");
     }
 
     public void searchDatabase(final DatabaseReference database, String path, final String questionTxt){
